@@ -1,0 +1,13 @@
+{
+  "name": "kleb_azula",
+  "scripts": {
+    "dev": "bun run --hot src/index.js"
+  },
+  "dependencies": {
+    "hono": "^4.6.2",
+    "tuki_logger": "https://github.com/kelvinauta/logger-blocks.git"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

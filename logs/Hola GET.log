@@ -1,0 +1,68 @@
+Hola GET | seconds: 0
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T02:45:38.786Z
+success: FUnciona | 2024-09-24T02:45:38.787Z
+error: Error | 2024-09-24T02:45:38.787Z
+info: Terminado | 2024-09-24T02:45:38.787Z
+------------------
+Hola GET | seconds: 15.001
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T02:45:38.786Z
+success: FUnciona | 2024-09-24T02:45:38.787Z
+error: Error | 2024-09-24T02:45:38.787Z
+info: Terminado | 2024-09-24T02:45:38.787Z
+------------------
+Hola GET | seconds: 0
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T07:06:53.467Z
+success: FUnciona | 2024-09-24T07:06:53.468Z
+error: Error | 2024-09-24T07:06:53.468Z
+info: Terminado | 2024-09-24T07:06:53.468Z
+------------------
+Hola GET | seconds: 14.999
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T07:06:53.467Z
+success: FUnciona | 2024-09-24T07:06:53.468Z
+error: Error | 2024-09-24T07:06:53.468Z
+info: Terminado | 2024-09-24T07:06:53.468Z
+------------------
+Hola GET | seconds: 0
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T07:25:45.235Z
+success: FUnciona | 2024-09-24T07:25:45.235Z
+error: Error | 2024-09-24T07:25:45.235Z
+info: Terminado | 2024-09-24T07:25:45.235Z
+------------------
+Hola GET | seconds: 15.003
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T07:25:45.235Z
+success: FUnciona | 2024-09-24T07:25:45.235Z
+error: Error | 2024-09-24T07:25:45.235Z
+info: Terminado | 2024-09-24T07:25:45.235Z
+------------------
+Hola GET | seconds: 0
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T07:26:11.770Z
+success: FUnciona | 2024-09-24T07:26:11.770Z
+error: Error | 2024-09-24T07:26:11.770Z
+info: Terminado | 2024-09-24T07:26:11.770Z
+------------------
+Hola GET | seconds: 15.002
+[34minfo: [39mTerminado
+
+info: Empezando | 2024-09-24T07:26:11.770Z
+success: FUnciona | 2024-09-24T07:26:11.770Z
+error: Error | 2024-09-24T07:26:11.770Z
+info: Terminado | 2024-09-24T07:26:11.770Z
+------------------
+Hola GET | seconds: 0
+
+info: Pong | 2024-09-24T07:27:02.960Z
+------------------
