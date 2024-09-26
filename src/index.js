@@ -3,21 +3,56 @@ import { logger } from 'hono/logger'
 import LOGGER from "tuki_logger"
 
 // ROUTES
-import ping from './routes/ping'
+import PING from './routes/ping'
+import WORKSPACE from './routes/workspace'
+import USER from './routes/user'
+import CHAT from './routes/chat'
+import MESSAGE from './routes/message'
+import ASSISTANT from './routes/assistant'
 
-const customLogger = (message, ...rest) => {
-  const logger_master = new LOGGER({
-    title: "Master Logger",
-    save: true,
-    print_end: false,
-  })
-  const log = logger_master
-  log.info(message, ...rest)  
+class ROUTER {
+  constructor(){
+    this.routes ={}
+    this.app = new Hono()
+
+    this.routes_classes = {
+      ping: PING,
+      workspace: WORKSPACE,
+      user: USER,
+      chat: CHAT,
+      message: MESSAGE,
+      assistant: ASSISTANT
+    }
+    this.logger = new LOGGER({
+      title: "Main Router Logger",
+      save: true,
+      print_end: false
+    })
+  }
+  _init_routes(){
+    this.logger.info("Initializing Routers")
+    for (const key in this.routes_classes){
+      this.routes[key] = new this.routes_classes[key]()
+      this.routes[key].set_app(this.app)
+      this.routes[key].set_title(key)   
+    }
+  }
+  _run_routes(){
+    this.logger.info("Running Routers")
+    for (const key in this.routes){
+      this.routes[key].run()
+      this.logger.info(`Run ${key} Router`)
+    }
+  }
+  run(){
+    this._init_routes()
+    this._run_routes()
+  }
+  
 }
 
-const app = new Hono()
-
-app.use("*", logger(customLogger))
-app.route('/ping', ping)
+const router = new ROUTER()
+router.run()
+const app = router.app
 
 export default app

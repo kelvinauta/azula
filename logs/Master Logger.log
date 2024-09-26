@@ -66,3 +66,75 @@ Master Logger | seconds: 15.006
 
 info: --> GET /ping [32m200[0m 0ms | 2024-09-24T07:27:02.960Z
 ------------------
+Master Logger | seconds: 15.002
+
+info: <-- GET /ping | 2024-09-25T08:12:32.963Z
+------------------
+Master Logger | seconds: 15.001
+
+info: --> GET /ping [31m500[0m 2ms | 2024-09-25T08:12:32.966Z
+------------------
+Master Logger | seconds: 15.002
+
+info: <-- GET /ping | 2024-09-25T08:21:12.141Z
+------------------
+Master Logger | seconds: 15.002
+
+info: --> GET /ping [31m500[0m 1ms | 2024-09-25T08:21:12.142Z
+------------------
+Master Logger | seconds: 15.001
+
+info: <-- GET /ping | 2024-09-25T08:22:02.757Z
+------------------
+Master Logger | seconds: 15.001
+
+info: --> GET /ping [33m404[0m 1ms | 2024-09-25T08:22:02.758Z
+------------------
+Master Logger | seconds: 15.003
+
+info: <-- GET /pinga | 2024-09-25T08:23:54.362Z
+------------------
+Master Logger | seconds: 15.003
+
+info: --> GET /pinga [33m404[0m 1ms | 2024-09-25T08:23:54.364Z
+------------------
+Master Logger | seconds: 15
+
+info: <-- GET /ping | 2024-09-25T08:24:04.760Z
+------------------
+Master Logger | seconds: 15
+
+info: --> GET /ping [33m404[0m 2ms | 2024-09-25T08:24:04.762Z
+------------------
+Master Logger | seconds: 15.002
+
+info: <-- GET /pinghttp://localhost:3000/pinga | 2024-09-25T08:24:28.743Z
+------------------
+Master Logger | seconds: 15.001
+
+info: --> GET /pinghttp://localhost:3000/pinga [33m404[0m 0ms | 2024-09-25T08:24:28.744Z
+------------------
+Master Logger | seconds: 15.002
+
+info: <-- GET /ping | 2024-09-25T08:25:57.630Z
+------------------
+Master Logger | seconds: 15.002
+
+info: --> GET /ping [33m404[0m 1ms | 2024-09-25T08:25:57.632Z
+------------------
+Master Logger | seconds: 15.002
+
+info: <-- GET /ping | 2024-09-25T08:56:02.101Z
+------------------
+Master Logger | seconds: 15.001
+
+info: --> GET /ping [33m404[0m 1ms | 2024-09-25T08:56:02.102Z
+------------------
+Master Logger | seconds: 15.006
+
+info: <-- GET /ping | 2024-09-25T08:56:14.244Z
+------------------
+Master Logger | seconds: 15.004
+
+info: --> GET /ping [33m404[0m 0ms | 2024-09-25T08:56:14.246Z
+------------------

@@ -1,8 +1,9 @@
 import ROUTE from '../../classes/route'
-class WORKSPACE extends ROUTE {
+class USER extends ROUTE {
     constructor(props){
         super(props)
     }
+
 }
 
-export default WORKSPACE
+export default USER
