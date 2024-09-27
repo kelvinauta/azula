@@ -42,3 +42,10 @@ success: Route user Configured | 2024-09-26T08:54:47.797Z
 success: user Route Build | 2024-09-26T08:54:47.797Z
 success: user Route Published | 2024-09-26T08:54:47.797Z
 ------------------
+Route user Logger | seconds: 15.003
+
+warn: Route user has no callback | 2024-09-27T07:44:24.236Z
+success: Route user Configured | 2024-09-27T07:44:24.236Z
+success: user Route Build | 2024-09-27T07:44:24.236Z
+success: user Route Published | 2024-09-27T07:44:24.236Z
+------------------
