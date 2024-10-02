@@ -6,10 +6,9 @@ class PING extends ROUTE {
     run(){
         super.run((route)=>{
             route.get("/", (c)=>{
-                return c.text("PONG")
-            });
+                    return c.text("PONG")
+                })
         })
     }
 }
-
 export default PING
