@@ -1,4 +1,4 @@
-import ROUTE from '../../classes/route'
+import ROUTE from '../../models/classes/route'
 class CHAT extends ROUTE {
     constructor(props){
         super(props)

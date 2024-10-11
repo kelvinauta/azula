@@ -1,4 +1,4 @@
-import ROUTE from '../../classes/route'
+import ROUTE from '../../models/classes/route'
 class PING extends ROUTE {
     constructor(props){
         super(props)
