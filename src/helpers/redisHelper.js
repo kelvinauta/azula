@@ -1,17 +1,32 @@
 import Redis from 'ioredis';
+import Rules from './Rules';
 
 class RedisHelper {
   constructor() {
     this.redis = null;
+    this.rules = new Rules({
+      strict: true,
+      prefix: 'RedisHelper:',
+      concatPrefix: true
+    }).build();
   }
 
   async connect() {
     if (!this.redis) {
       const host = process.env.REDIS_HOST || 'localhost';
       const port = parseInt(process.env.REDIS_PORT, 10) || 6379;
-      const password = process.REDIS_PASSWORD || null; // Sending null is the default behavior of ioredis
-      const db = parseInt(process.env.REDIS_DB, 10) || 0; // 0 is default start for most Redis db's
-
+      const password = process.REDIS_PASSWORD || null;
+      const db = parseInt(process.env.REDIS_DB, 10) || 0;
+      
+      this.rules([
+        ['Redis host is not defined', !host],
+        ['Redis port is not valid', isNaN(port)],
+        ['Redis database is not valid', isNaN(db)],
+        ['Redis host must be a string', typeof host !== 'string'],
+        ['Redis port must be a number', typeof port !== 'number'],
+        ['Redis database must be a number', typeof db !== 'number']
+      ]);
+      
       this.redis = new Redis({
         host: host,
         port: port,
@@ -19,7 +34,6 @@ class RedisHelper {
         db: db,
       });
 
-      //TODO: Add error handling
       this.redis.on('error', (err) => {
         console.error('Redis connection error:', err);
       });
@@ -29,17 +43,31 @@ class RedisHelper {
   }
 
   async set(key, value) {
+    this.rules([
+      ['Key is required', !key],
+      ['Value is required', value === undefined],
+      ['Key must be a string', typeof key !== 'string'],
+      ['Value must be a string or number', typeof value !== 'string' && typeof value !== 'number']
+    ]);
     const client = await this.connect();
     await client.set(key, value);
   }
 
   async get(key) {
+    this.rules([
+      ['Key is required', !key],
+      ['Key must be a string', typeof key !== 'string']
+    ]);
     const client = await this.connect();
     const value = await client.get(key);
     return value;
   }
 
   async delete(key) {
+    this.rules([
+      ['Key is required', !key],
+      ['Key must be a string', typeof key !== 'string']
+    ]);
     const client = await this.connect();
     await client.del(key);
   }
@@ -52,6 +80,6 @@ class RedisHelper {
   }
 }
 
-const redisHelperInstance =  new RedisHelper()
+const redisHelperInstance = new RedisHelper();
 
 export default redisHelperInstance;
