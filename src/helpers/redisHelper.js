@@ -9,7 +9,7 @@ class RedisHelper {
     if (!this.redis) {
       const host = process.env.REDIS_HOST || 'localhost';
       const port = parseInt(process.env.REDIS_PORT, 10) || 6379;
-      const password = process.env.REDIS_PASSWORD || null; // Sending null is the default behavior of ioredis
+      const password = process.REDIS_PASSWORD || null; // Sending null is the default behavior of ioredis
       const db = parseInt(process.env.REDIS_DB, 10) || 0; // 0 is default start for most Redis db's
 
       this.redis = new Redis({

@@ -1,4 +1,4 @@
-import ROUTE from '../../models/classes/route'
+import ROUTE from '../../services/composers/route'
 import { RedisHelper } from '../../helpers'
 
 class PING extends ROUTE {
