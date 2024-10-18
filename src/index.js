@@ -47,6 +47,7 @@ class ROUTER {
   run(){
     this._init_routes()
     this._run_routes()
+    console.log("Server is running on port 3000")
   }
   
 }
