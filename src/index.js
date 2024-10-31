@@ -25,8 +25,7 @@ class ROUTER {
     }
     this.logger = new LOGGER({
       title: "Main Router Logger",
-      save: true,
-      print_end: false
+      save: true
     })
   }
   _init_routes(){

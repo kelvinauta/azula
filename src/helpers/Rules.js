@@ -27,7 +27,7 @@ class Rules {
          options.prefix = `${this.options.prefix}${overrideOptions.prefix}`;
          return options;
     }
-    build(overrideOptions = {}){
+    _build(overrideOptions = {}){
         return (...validations) => {
             // Example use:
             // validate(
@@ -64,6 +64,12 @@ class Rules {
             return result;
            
         }
+    }
+    build(overrideOptions = {}){
+        return this._build(overrideOptions);
+    }
+    add_prefix(prefix){
+        return this._build({prefix});
     }
 
 }

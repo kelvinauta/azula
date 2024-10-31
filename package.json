@@ -7,7 +7,8 @@
     "dotenv": "^16.4.5",
     "hono": "^4.6.2",
     "ioredis": "^5.4.1",
-    "tuki_logger": "https://github.com/kelvinauta/logger-blocks.git"
+    "openai": "^4.68.0",
+    "tuki_logger": "^0.1.0"
   },
   "devDependencies": {
     "@types/bun": "latest"

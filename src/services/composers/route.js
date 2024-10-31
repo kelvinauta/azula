@@ -61,12 +61,13 @@ class ROUTE {
     }
 
     set_title(title) {
-        this.rules(['Title must be a non-empty string', typeof title !== 'string' || title.trim() === ''])
+        this.rules([
+            'Title must be a non-empty string', typeof title !== 'string' || title.trim() === ''
+        ])
         this.title = title
         this.logger = new LOGGER({
             title: `Route ${this.title} Logger`,
-            save: true,
-            print_end: false
+            save: true
         })
         return this
     }
