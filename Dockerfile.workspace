@@ -15,14 +15,16 @@ RUN apt-get update && apt-get install -y \
 # Copiamos los archivos de configuración de Bun
 COPY package.json bun.lockb ./
 
-# Instalamos las dependencias
-RUN bun install
 
 # Copiamos el resto del código de la aplicación
 COPY . .
 
+# Copiamos dependencias
+COPY node_modules ./node_modules
 # Copiamos el archivo .env
 COPY .env .
+
+
 
 # Script de entrada que verificará DEV_MODE
 COPY .cli/docker-mode.sh /usr/local/bin/
@@ -30,6 +32,7 @@ RUN chmod +x /usr/local/bin/docker-mode.sh
 
 # Exponemos el puerto 3000 (ajusta según las necesidades de tu aplicación)
 EXPOSE 3000
+
 
 # Comando de entrada
 ENTRYPOINT ["/usr/local/bin/docker-mode.sh"]

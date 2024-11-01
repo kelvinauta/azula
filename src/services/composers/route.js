@@ -1,7 +1,7 @@
 const {Hono} = require('hono')
 import { logger } from 'hono/logger'
 import LOGGER from "tuki_logger"
-import Rules from "../../helpers/Rules.js"
+import Rules from "tuki_rules"
 
 class ROUTE {
     constructor(app, title) {
@@ -10,18 +10,17 @@ class ROUTE {
         this.path = null
         this.logger = null
         this.route = null
-        this.rules = new Rules({
-            strict: true,
-            prefix: 'ROUTE:',
-            concatPrefix: true
-        }).build()
+        this.rules = new Rules("ROUTE").build()
     }
 
     build() {
+        
         this._config_route()
         this._create_route()
-        this.rules(
-            ['Route is not valid', !this._validate_route()],
+
+        const rules = this.rules(".build")
+        this._validate_route(".build")
+        rules(
             ['Route is not defined', !this.route]
         )
         this.logger.success(`${this.title} Route Build`)
@@ -29,8 +28,9 @@ class ROUTE {
     }
 
     publish() {
-        this.rules(
-            ['Route configuration is not valid', !this._validate_route()],
+        const rules = this.rules(".publish")
+        this._validate_route(".publish")
+        rules(
             ['Route is not defined', !this.route]
         )
         this.app.route(this.path, this.route)
@@ -39,7 +39,10 @@ class ROUTE {
     }
 
     run(callback) {
-        this.rules(['Callback must be a function', typeof callback !== 'function' && callback !== undefined])
+        const rules = this.rules(".run")
+        rules(
+            ['Callback must be a function', typeof callback !== 'function' && callback !== undefined]
+        )
         this.build()
        
         if(callback) {
@@ -55,15 +58,19 @@ class ROUTE {
     }
 
     set_app(app) {
-        this.rules(['App must be defined', !app])
+        const rules = this.rules(".set_app")
+        rules(
+            ['App must be defined', !app]
+        )
         this.app = app
         return this
     }
 
     set_title(title) {
-        this.rules([
-            'Title must be a non-empty string', typeof title !== 'string' || title.trim() === ''
-        ])
+        const rules = this.rules(".set_title")
+        rules(
+            ['Title must be a non-empty string', typeof title !== 'string' || title.trim() === '']
+        )
         this.title = title
         this.logger = new LOGGER({
             title: `Route ${this.title} Logger`,
@@ -73,15 +80,19 @@ class ROUTE {
     }
 
     set_logger(logger) {
-        this.rules(['Logger must be defined', !logger])
+        const rules =   this.rules(".set_logger")
+        rules(
+            ['Logger must be defined', !logger]
+        )
         this.logger = logger
         return this
     }
 
     set_path(path) {
-        this.rules([
-            'Path must be a non-empty string', typeof path !== 'string' || path.trim() === ''
-        ])
+        const rules = this.rules(".set_path")
+        rules(
+            ['Path must be a non-empty string', typeof path !== 'string' || path.trim() === '']
+        )
         this.path = path
         return this
     }
@@ -91,20 +102,20 @@ class ROUTE {
         return this
     }
 
-    _validate_route() {
-        const validation = this.rules(
+    _validate_route(context) {
+        const rules = this.rules(context ||".validate_route")
+        rules(
             ['Title must be a non-empty string', typeof this.title !== 'string' || this.title.trim() === ''],
             ['Path must be a non-empty string', typeof this.path !== 'string' || this.path.trim() === ''],
             ['App must be defined', !this.app],
             ['Logger must be defined', !this.logger]
         )
-        return validation.is
+        
     }
 
     _create_route() {
-        this.rules([
-            'Route is not valid', !this._validate_route()
-        ])
+
+        this._validate_route(".create_route")
         const route = new Hono()
         route.use("*", logger((message, ...rest) => {
             this.logger.info(message, ...rest)

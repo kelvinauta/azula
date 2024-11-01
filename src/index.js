@@ -9,6 +9,7 @@ import USER from './routes/user'
 import CHAT from './routes/chat'
 import MESSAGE from './routes/message'
 import ASSISTANT from './routes/assistant'
+import test_dev from './helpers/test_dev'
 
 class ROUTER {
   constructor(){
@@ -54,5 +55,12 @@ class ROUTER {
 const router = new ROUTER()
 router.run()
 const app = router.app
+
+
+// TEST DEV MODE
+if (process.env.DEV_MODE){
+  
+  test_dev()
+}
 
 export default app

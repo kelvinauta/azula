@@ -1,14 +1,10 @@
 import Redis from 'ioredis';
-import Rules from './Rules';
+import Rules from 'tuki_rules';
 
 class RedisHelper {
   constructor() {
     this.redis = null;
-    this.rules = new Rules({
-      strict: true,
-      prefix: 'RedisHelper:',
-      concatPrefix: true
-    }).build();
+    this.rules = new Rules("REDIS_HELPER").build();
   }
 
   async connect() {
@@ -18,14 +14,15 @@ class RedisHelper {
       const password = process.REDIS_PASSWORD || null;
       const db = parseInt(process.env.REDIS_DB, 10) || 0;
       
-      this.rules([
+      const rules = this.rules(".connect")
+      rules(
         ['Redis host is not defined', !host],
         ['Redis port is not valid', isNaN(port)],
         ['Redis database is not valid', isNaN(db)],
         ['Redis host must be a string', typeof host !== 'string'],
         ['Redis port must be a number', typeof port !== 'number'],
         ['Redis database must be a number', typeof db !== 'number']
-      ]);
+      );
       
       this.redis = new Redis({
         host: host,
@@ -43,31 +40,34 @@ class RedisHelper {
   }
 
   async set(key, value) {
-    this.rules([
+    const rules = this.rules(".set")
+    rules(
       ['Key is required', !key],
       ['Value is required', value === undefined],
       ['Key must be a string', typeof key !== 'string'],
       ['Value must be a string or number', typeof value !== 'string' && typeof value !== 'number']
-    ]);
+    );
     const client = await this.connect();
     await client.set(key, value);
   }
 
   async get(key) {
-    this.rules([
+      const rules = this.rules(".get")
+    rules(
       ['Key is required', !key],
       ['Key must be a string', typeof key !== 'string']
-    ]);
+    );
     const client = await this.connect();
     const value = await client.get(key);
     return value;
   }
 
   async delete(key) {
-    this.rules([
+    const rules = this.rules(".delete")
+    rules(
       ['Key is required', !key],
       ['Key must be a string', typeof key !== 'string']
-    ]);
+    );
     const client = await this.connect();
     await client.del(key);
   }
