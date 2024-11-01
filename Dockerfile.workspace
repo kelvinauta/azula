@@ -21,10 +21,16 @@ RUN bun install
 # Copiamos el resto del código de la aplicación
 COPY . .
 
-RUN bun add https://github.com/kelvinauta/logger-blocks.git
+# Copiamos el archivo .env
+COPY .env .
+
+# Script de entrada que verificará DEV_MODE
+COPY .cli/docker-mode.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-mode.sh
 
 # Exponemos el puerto 3000 (ajusta según las necesidades de tu aplicación)
 EXPOSE 3000
 
-# Comando por defecto para ejecutar la aplicación
-CMD ["bun", "run", "dev"]
+# Comando de entrada
+ENTRYPOINT ["/usr/local/bin/docker-mode.sh"]
+
