@@ -26,7 +26,7 @@ const WORKSPACE_TABLE = {
             not_null: true,
             unique: true,
             references: {
-                table: 'user',
+                table: "user",
                 column: "id"
             }
         },
@@ -43,8 +43,8 @@ const WORKSPACE_TABLE = {
     ]
 }
 const schema = [
-    USER_TABLE,
-    // WORKSPACE_TABLE
+    // USER_TABLE,
+    WORKSPACE_TABLE
 ]
 
 export default schema 

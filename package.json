@@ -3,15 +3,17 @@
   "scripts": {
     "dev": "bun run --hot src/index.js",
     "start": "bun run src/index.js",
-    "docker-dev": ".cli/dev.sh"
+    "docker-dev": "bun install && ./cli/dev.sh"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "hono": "^4.6.2",
     "ioredis": "^5.4.1",
     "openai": "^4.68.0",
-    "postgres": "^3.4.5",
-    "tuki_logger": "^0.1.0",
+    "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.5",
+    "tuki_logger": "^0.3.0",
     "tuki_rules": "^0.1.0"
   },
   "devDependencies": {

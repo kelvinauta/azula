@@ -1,4 +1,4 @@
-import ROUTE from '../../services/composers/route'
+import ROUTE from '../../modules/route'
 class USER extends ROUTE {
     constructor(props){
         super(props)
