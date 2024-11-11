@@ -1,0 +1,106 @@
+
+erDiagram
+    User {
+        string email
+    }
+
+    Workspace {
+        int user_id
+        string title
+        string description
+    }
+    Workspace ||--o{ User : "ref User"
+
+    Assistant {
+        int workspace_id
+        string title
+        string description
+        json config
+    }
+    Assistant ||--o{ Workspace : "ref Workspace"
+
+    Prompt {
+        int assistant_id
+        string text
+        string type
+        json config
+    }
+    Prompt ||--o{ Assistant : "ref Assistant"
+
+    Bulk {
+        int assistant_id
+        string title
+        string description
+        json config
+    }
+    Bulk ||--o{ Assistant : "ref Assistant"
+
+    Bulk_Item {
+        int bulk_id
+        json data
+        json searchable_data
+        string embedding_content
+        string embedding
+        string tags
+    }
+    Bulk_Item ||--o{ Bulk : "ref Bulk"
+
+    Tool {
+        int assistant_id
+    }
+    Tool ||--o{ Assistant : "ref Assistant"
+
+    Chat {
+        int workspace_id
+        string origin
+    }
+    Chat ||--o{ Workspace : "ref Workspace"
+
+    Message {
+        int chat_id
+        int human_id
+        int assistant_id
+        string type
+        string text
+        string file_url
+    }
+    Message ||--o{ Chat : "ref Chat"
+    Message ||--o{ Human : "ref Human"
+    Message ||--o{ Assistant : "ref Assistant"
+
+    Thread {
+        int input_message_id
+        int output_message_id
+        int[] history_messages_ids
+        int assistant_id
+        int tool_id
+        int bulk_id
+        int tokens
+        int duration
+        json logs
+        json raw_assistant
+        json raw_bulk
+        json raw_tool
+        json raw_prompt
+        int raw_input_message_id
+        int raw_output_message_id
+        int[] raw_history_messages_ids
+        json raw_system_prompt
+        json raw_request
+        json raw_response
+    }
+    Thread ||--o{ Message : "ref input_message"
+    Thread ||--o{ Message : "ref output_message"
+    Thread ||--o{ Message : "Array ref history_messages"
+    Thread ||--o{ Assistant : "ref Assistant"
+    Thread ||--o{ Tool : "ref Tool"
+    Thread ||--o{ Bulk : "ref Bulk"
+
+    Human {
+        int workspace_id
+        string type
+        string origin
+        int origin_id
+        json data
+    }
+    Human ||--o{ Workspace : "ref Workspace"

@@ -1,15 +1,22 @@
 import { Sequelize } from 'sequelize';
-import Rules from "tuki_rules"
 import Logger from "tuki_logger"
-
-import Models from "./models"
 
 // * Lib sequelize
 class Postgres {
-    #instance = null;
+    static #instance = null;
+    static is_connected = false;
     #logger;
+
+    // * Get instance
+    static getInstance() {
+        if(Postgres.#instance) return Postgres.#instance;
+        Postgres.#instance = new Postgres();
+        return Postgres.#instance;
+    }
+
     constructor() {
-        if (this.#instance) throw new Error("Postgres already initialized");
+        if (Postgres.#instance) throw new Error("This is a singleton class use .getInstance()")
+        Postgres.#instance = this;
         this.sequelize = new Sequelize(process.env.POSTGRES_DB, process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
             host: process.env.POSTGRES_HOST,
             port: process.env.POSTGRES_PORT,
@@ -25,33 +32,18 @@ class Postgres {
         try {
             this.#logger.status("Connecting to Postgres")
             await this.sequelize.authenticate();
+            Postgres.is_connected = true;
             this.#logger.success("Postgres connected")
+            return this;
         } catch (error) {
             this.#logger.error(error)
+            Postgres.is_connected = false;
             throw error
         }
     }
-    async initModels() {
-        this.#logger.status("Initializing models")
-        const models = Models(this.sequelize)
-        for (const model of models) {
-            try {
-                this.#logger.status(`Initializing model ${model.name}`)
-                await model.sync()
-                this.#logger.status(`Model ${model.name} initialized`)
-            } catch (error) {
-                this.#logger.error(`Error initializing model ${model.name}, ${error}`)
-            }
-        }
-        this.#logger.success("Models initialized")
-    }
-    async getTables() {
-        return this.sequelize.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
-    }
-    async getSchemas() {
-        return this.sequelize.query("SELECT schema_name FROM information_schema.schemata")
-    }
+    
     async getTablesSchemas() {
+        this.#logger.status("Getting tables schemas")
         try {
             const query = `
                 SELECT 
@@ -96,12 +88,6 @@ class Postgres {
             this.#logger.error('Error obteniendo esquemas de tablas:', error);
             throw error;
         }
-    }
-    // * Get instance
-    getInstance() {
-        if(this.#instance) return this.#instance;
-        this.#instance = new Postgres();
-        return this.#instance;
     }
 
 }

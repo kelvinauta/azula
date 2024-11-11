@@ -71,3 +71,7 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/.volumes/meili_data
+networks:
+  default:
+    external:
+      name: dev_net
