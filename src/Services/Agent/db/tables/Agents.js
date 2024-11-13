@@ -1,5 +1,7 @@
 import _Table from "./_Table.js";
 import { DataTypes } from "sequelize";
+import { object, string, define, optional } from "superstruct";
+import isUuid from "is-uuid";
 
 class Agent extends _Table {
     static attributes = {
@@ -23,13 +25,21 @@ class Agent extends _Table {
             allowNull: false,
         },
     };
+    static schema = {
+        id: define("id", (value) => isUuid.v4(value)),
+        name: string(),
+        description: optional(string()),
+        config: object(),
+    }
     static options = {
         paranoid: true,
     };
     constructor(...all) {
         super(...all);
     }
-
+    async getAgent(id) {
+        return athis.model.findOne({ where: { id } });
+    }
 }
 
 export default Agent;

@@ -10,45 +10,49 @@ import Tool from "../tables/Tools";
 import Thread from "../tables/Threads";
 import {assert, object, define, is} from "superstruct";
  class Provider { // singleton
-    static #instance = null;
+    static instance = null;
     static #instance_with_build = false;
+    static #db_ok = false;
+    static #sync_ok = false;
     static tables_schema = define("tables_schema", (tables)=>{
         if(typeof tables !== "object") return false;
         if(!Object.values(tables).every((table)=> table instanceof _Table)) return false;
         return true;
     });
 
-    static async getInstance(){
-        if(Provider.#instance && Provider.#instance_with_build) return Provider.#instance;
+    static async build(){
+        if(Provider.instance && Provider.#instance_with_build) return Provider.instance;
 
         //validate
         Provider.#instance_with_build = true;
         const provider = new Provider();
-        await provider.#build();
-        Provider.#instance = provider;
+        await provider.#_build();
+        Provider.instance = provider;
         return provider;
     }
     constructor() {
-        if(!Provider.#instance_with_build) throw new Error("first constructor is disabled, use getInstance() instead");
-        if(Provider.#instance) return Provider.#instance;
+        if(!Provider.#instance_with_build) throw new Error("first constructor is disabled, use build() instead");
+        if(Provider.instance) return Provider.instance;
         this.db = Postgres.getInstance();
         this.tables = {};
     }
-
-    async #build(){
+    static all_is_ok(){
+        return Provider.#db_ok && Provider.#sync_ok;
+    }
+    async #_build(){
         await this.db.connect();
-        const db = this.db;
-        const agents = new Agent(db);
-        const prompts = new Prompt(db);
-        const bulks = new Bulk(db);
-        const tools = new Tool(db);
-        const chats = new Chat(db);
-        const humans = new Human(db);
-        const messages = new Message(db);
-        const threads = new Thread(db);
+        Provider.#db_ok = true;
+        const agents = await Agent.getInstance();
+        const prompts = await Prompt.getInstance();
+        const bulks = await Bulk.getInstance();
+        const tools = await Tool.getInstance();
+        const chats = await Chat.getInstance();
+        const humans = await Human.getInstance();
+        const messages = await Message.getInstance();
+        const threads = await Thread.getInstance();
         const relations_many_to_many = [
-            agents.many_to_many(bulks),
-            agents.many_to_many(tools),
+            await agents.many_to_many(bulks),
+            await agents.many_to_many(tools),
         ];
         messages.ref(agents);
         messages.ref(humans);
@@ -76,6 +80,7 @@ import {assert, object, define, is} from "superstruct";
         this.tables[humans.get_name()] = humans;
         this.tables[messages.get_name()] = messages;
         this.tables[threads.get_name()] = threads;
+        Provider.#sync_ok = true;
     }
 
     getTables(){

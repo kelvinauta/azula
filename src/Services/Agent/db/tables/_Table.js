@@ -3,6 +3,12 @@ import { DataTypes, Model } from "sequelize";
 import superstruct from "superstruct";
 import isUuid from "is-uuid";
 class _Table {
+    static instance = null;
+    static is_synced = false;
+    static db = null;
+
+    
+
     static attributes = {
         id: {
             type: DataTypes.UUID,
@@ -14,34 +20,33 @@ class _Table {
     static options = {
         paranoid: true,
     };
-    static relations = [];
     static schema = {
         id: superstruct.define("id", (value) => isUuid(value)),
     };
-    static async sync_relations() {
-        if (!_Table.relations) return true;
-        for (const relation of _Table.relations) {
-            _Table.#validate_relation(relation);
-            await relation.sync({ force: true });
+
+    static async getInstance(params){
+        if(this.name === _Table.name) throw new Error("Table cannot be instantiated");  
+        if(this.instance) return this.instance;
+        await this.db_connected();
+        const instance = new this(params);
+        this.instance = instance;
+        return instance;
+    }
+    static async db_connected(){
+        
+        let db;
+        if(_Table.db && _Table.db instanceof Postgres) db = _Table.db;
+        else{
+            db = Postgres.getInstance();
+            await db.connect();
+            _Table.db = db;
         }
-        return true;
+        this.db = db;
     }
-
-    static #validate_relation(relation) {
-        if (!_Table.relations) return true;
-        if (!Object.prototype.isPrototypeOf.call(Model, relation))
-            throw new Error("Relation must be a Model class");
-        return true;
-    }
-
-    constructor(db, params) {
-        // validate
-        // console.log(db);
-        if (!db) throw new Error("Db is required");
-        if (!(db instanceof Postgres))
-            throw new Error("Db must be an instance of Postgres");
-        if (!db.constructor.is_connected)
-            throw new Error("Db is not connected");
+    constructor(params) {
+        if (!this.constructor.db ) throw new Error("Db is required");
+        this.#validate_db();
+        if(this.constructor.instance) return this.constructor.instance;
         if (params && typeof params === "object") {
             const params_schema = superstruct.object({
                 name: superstruct.string(),
@@ -52,7 +57,7 @@ class _Table {
         }
 
         // logic
-        this.db = db;
+        this.db = this.constructor.db;
         this.params = params || {
             name: this.constructor.name,
             attributes: this.constructor.attributes,
@@ -72,8 +77,10 @@ class _Table {
         return this.params.name;
     }
 
-    sync() {
-        return this.model.sync({ force: true });
+    async sync() {
+        this.#validate_db();
+        this.constructor.is_synced = true;
+        return await this.model.sync({ force: true });
     }
     ref(ref_table, foreign_key_name) {
         // validate
@@ -96,19 +103,20 @@ class _Table {
             foreignKey: foreign_key_name,
         });
     }
-    many_to_many(ref_table) {
-        // Read many to many sequelize docs
-
+    async many_to_many(ref_table) {
+        // validate
         this.#validate_table(ref_table);
+        if(this.model.tableName === ref_table.model.tableName) throw new Error("Table must be different from the current table");
+        // logic
         const params = this.#build_many2many_params(this, ref_table);
-        const relation_table = new _Table(this.db, params);
+        class RelationTable extends _Table {}
+        const relation_table = await RelationTable.getInstance(params);
         this.model.belongsToMany(ref_table.model, {
             through: relation_table.model,
         });
         ref_table.model.belongsToMany(this.model, {
-            through: relation_table,
+            through: relation_table.model,
         });
-        _Table.relations.push(relation_table);
         return relation_table;
     }
 
@@ -157,6 +165,12 @@ class _Table {
         if (table.constructor.name === this.constructor.name)
             throw new Error("Table must be different from the current table");
         return true;
+    }
+    #validate_db(){
+        if (!this.constructor.db ) throw new Error("Db is required");
+        if(!this.constructor.db instanceof Postgres) throw new Error("Db is not connected");
+        if (!this.constructor.db.is_connected)
+            throw new Error("Db.is_connected is false");
     }
 }
 

@@ -1,22 +1,23 @@
 import { Sequelize } from 'sequelize';
-import Logger from "tuki_logger"
+// import Logger from "tuki_logger"
 
 // * Lib sequelize
 class Postgres {
-    static #instance = null;
-    static is_connected = false;
+    static instance = null;
     #logger;
 
     // * Get instance
     static getInstance() {
-        if(Postgres.#instance) return Postgres.#instance;
-        Postgres.#instance = new Postgres();
-        return Postgres.#instance;
+        if(Postgres.instance) return Postgres.instance;
+        Postgres.instance = new Postgres();
+        return Postgres.instance;
     }
 
     constructor() {
-        if (Postgres.#instance) throw new Error("This is a singleton class use .getInstance()")
-        Postgres.#instance = this;
+        if (Postgres.instance) throw new Error("This is a singleton class use .getInstance()")
+        Postgres.instance = this;
+
+        this.is_connected = false;
         this.sequelize = new Sequelize(process.env.POSTGRES_DB, process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
             host: process.env.POSTGRES_HOST,
             port: process.env.POSTGRES_PORT,
@@ -25,25 +26,27 @@ class Postgres {
         })
 
         
-        this.#logger = new Logger({title: "Postgres"});
+        // this.#logger = new Logger({title: "Postgres"});
     }
     // * Public methods
     async connect() {
         try {
-            this.#logger.status("Connecting to Postgres")
+            // this.#logger.status("Connecting to Postgres")
+            console.log("Connecting to Postgres");
             await this.sequelize.authenticate();
-            Postgres.is_connected = true;
-            this.#logger.success("Postgres connected")
+            this.is_connected = true;
+            console.log("Postgres connected");
+            // this.#logger.success("Postgres connected")
             return this;
         } catch (error) {
-            this.#logger.error(error)
-            Postgres.is_connected = false;
+            // this.#logger.error(error)
+            this.is_connected = false;
             throw error
         }
     }
     
     async getTablesSchemas() {
-        this.#logger.status("Getting tables schemas")
+        // this.#logger.status("Getting tables schemas")
         try {
             const query = `
                 SELECT 
@@ -85,7 +88,7 @@ class Postgres {
             
             return schemas;
         } catch (error) {
-            this.#logger.error('Error obteniendo esquemas de tablas:', error);
+            // this.#logger.error('Error obteniendo esquemas de tablas:', error);
             throw error;
         }
     }

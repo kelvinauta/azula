@@ -24,14 +24,10 @@ class Human extends _Table {
         }
     }
     static schema = {
-        id: define("id", (value) => isUuid.v4(value)),
-        external_id: string(),
-        some_id: object({
-            id: optional(string()),
-            external_id: optional(string()),
-        }),
-        type: string(),
-        info: object(),
+        id: optional(define("id", (value) => isUuid.v4(value))),
+        external_id: optional(string()),
+        type: optional(string()),
+        info: optional(object()),
     }
     constructor(...all) {
         super(...all);

@@ -24,14 +24,10 @@ class Chat extends _Table {
         },
     }
     static schema = {
-        id: define("id", (value) => isUuid.v4(value)),
-        external_id: string(),
-        some_id: object({
-            id: optional(string()),
-            external_id: optional(string()),
-        }),
-        origin: string(),
-        last_interaction: date(),
+        id: optional(define("id", (value) => isUuid.v4(value))),
+        external_id: optional(string()),
+        origin: optional(string()),
+        last_interaction: optional(date()),
     }
     constructor(...all) {
         super(...all);

@@ -1,59 +1,77 @@
 import Provider from "../db/provider";
 import { assert, mask, instance, define, object } from "superstruct";
 import { Op } from "sequelize";
-import Chats from "../db/tables/Chats";
-import Messages from "../db/tables/Messages";
-import Agents from "../db/tables/Agents";
+import Chat from "../db/tables/Chats";
+import Message from "../db/tables/Messages";
+import Agent from "../db/tables/Agents";
+import Human from "../db/tables/Humans";
 class Channel {
     static schema = object({
         sender: define(
             "sender",
-            (value) => instance(value, Agents) || instance(value, Humans)
+            (sender) => sender instanceof Agent.instance.model || sender instanceof Human.instance.model
         ),
-        chat: instance(Chats),
-        message: instance(Messages),
+        chat: define("chat", (chat) => chat instanceof Chat.instance.model),
+        message: define("message", (message) => message instanceof Message.instance.model),
     });
     constructor() {
-        this.tables = null;
+        
     }
-    async #get_tables() {
-        if (this.tables) return this;
-        const provider = await Provider.getInstance();
-        this.tables = provider.getTables();
-        return this;
-    }
-    async sender_human({ human, chat, message }) {
-        await this.#get_tables();
-        const { Human, Chat, Message } = this.tables;
-        assert(human, Human.constructor.schema.some_id);
-        assert(chat, Chat.constructor.schema.some_id);
-        assert(message, Message.constructor.schema.some_input);
-        const mask_human = mask(human, Human.constructor.schema.some_id);
-        const mask_chat = mask(chat, Chat.constructor.schema.some_id);
-        const mask_message = mask(
-            message,
-            Message.constructor.schema.some_input
-        );
+    async sender({ sender, chat, message, sender_type }) {
+        if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
+        assert(chat, object(Chat.schema));
+        assert(message, object(Message.schema));
 
-        const human_row = await Human.touch_one({
-            ...mask_human,
-            type: "external",
-        });
-        const chat_row = await Chat.touch_one({
-            ...mask_chat,
-            origin: "whatsapp",
-        });
-        const message_row = await Message.touch_one({
+        const mask_chat = mask(chat, object(Chat.schema));
+        const mask_message = mask(message, object(Message.schema));
+
+        if(!mask_chat.external_id && !mask_chat.id) throw new Error("Invalid chat");
+        
+        const chat_row = await Chat.instance.touch_one(mask_chat);
+        const message_row = await Message.instance.touch_one({
             ...mask_message,
-            type: "external",
-            [Chat.foreign_key_name]: chat_row.id,
-            [Human.foreign_key_name]: human_row.id,
+            [Chat.instance.foreign_key_name]: chat_row.id,
+            [`${sender.table.foreign_key_name}`]: sender.row.id,
         });
+
         return {
-            sender: human_row,
+            sender: sender.row,
             chat: chat_row,
             message: message_row,
         };
+    }
+
+    async sender_human({ human, chat, message }) {
+        if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
+        assert(human, object(Human.schema));
+        const mask_human = mask(human, object(Human.schema));
+        if(!mask_human.external_id && !mask_human.id) throw new Error("Invalid human"); 
+        const human_row = await Human.instance.touch_one(mask_human);
+        return this.sender({
+            sender: {
+                table: Human.instance,
+                row: human_row,
+            },
+            chat,
+            message,
+            sender_type: Human.instance.foreign_key_name
+        });
+    }
+
+    async sender_agent({ agent, chat, message }) {
+        if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
+        assert(agent, object({ id: Agent.schema.id }));
+        const agent_row = await Agent.instance.getAgent(agent.id);
+        if(!agent_row) throw new Error("Invalid agent");
+        return this.sender({
+            sender: {
+                table: Agent.instance,
+                row: agent_row,
+            },
+            chat,
+            message, 
+            sender_type: Agent.instance.foreign_key_name
+        });
     }
 }
 

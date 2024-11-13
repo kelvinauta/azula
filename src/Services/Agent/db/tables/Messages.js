@@ -24,15 +24,10 @@ class Message extends _Table {
         },
     }
     static schema = {
-        id: define("id", (value) => isUuid.v4(value)),
-        type: string(),
+        id: optional(define("id", (value) => isUuid.v4(value))),
+        type: optional(string()),
         texts: optional(array(string())),
-        files: optional(object()),
-        some_input: object({
-            texts: optional(array(string())),
-            files: optional(object()),
-        }),
-        
+        files: optional(array(object())),
     }
     
     constructor(...all) {

@@ -26,7 +26,7 @@ const test_dev = async () => {
     
     for(const fakeData of fakeRecords) {
         const result = await channel.sender_human(fakeData);
-        console.log('Created fake record:', result);
+        // console.log('Created fake record:', result);
     }
 }
 
