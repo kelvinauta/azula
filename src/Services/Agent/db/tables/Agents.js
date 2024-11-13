@@ -26,10 +26,13 @@ class Agent extends _Table {
         },
     };
     static schema = {
-        id: define("id", (value) => isUuid.v4(value)),
+        id: optional(define("id", (value) => isUuid.v4(value))),
         name: string(),
         description: optional(string()),
-        config: object(),
+        config: object({
+            prompt: string(),
+            model: string(),
+        }),
     }
     static options = {
         paranoid: true,
@@ -38,8 +41,7 @@ class Agent extends _Table {
         super(...all);
     }
     async getAgent(id) {
-        return athis.model.findOne({ where: { id } });
+        return this.model.findOne({ where: { id } });
     }
 }
-
 export default Agent;
