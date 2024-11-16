@@ -58,10 +58,16 @@ class Channel {
         });
     }
 
-    async sender_agent({ agent, chat, message }) {
+    async sender_agent({ agent_id, chat, message }) {
         if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
-        assert(agent, object({ id: Agent.schema.id }));
-        const agent_row = await Agent.instance.getAgent(agent.id);
+        assert(agent_id, Agent.schema.id);
+        if(!agent_id) throw new Error("Agent id is required");
+        if(!chat) throw new Error("Chat is required");
+        if(!message) throw new Error("Message is required");
+        assert(chat, object(Chat.schema));
+        assert(message, object(Message.schema));
+        const agent = await Agent.getInstance();
+        const agent_row = await agent.getAgent(agent_id);
         if(!agent_row) throw new Error("Invalid agent");
         return this.sender({
             sender: {

@@ -41,7 +41,9 @@ class Agent extends _Table {
         super(...all);
     }
     async getAgent(id) {
-        return this.model.findOne({ where: { id } });
+        const agent = await this.model.findOne({ where: { id } });
+        if (!agent) throw new Error("Agent not found");
+        return agent;
     }
 }
 export default Agent;

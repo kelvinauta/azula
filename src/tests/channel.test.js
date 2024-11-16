@@ -111,4 +111,24 @@ describe('Channel', () => {
             expect(() => assert(result, Channel.schema)).not.toThrow();
         });
     });
+    describe('sender_agent input validation', () => {
+        let id;
+        beforeEach(async () => {
+            id = "c9acb8e0-fe12-4918-8f38-4f77dc8594a2"
+        });
+        it('should fail if agent_id is missing', async () => {
+            await expect(channel.sender_agent({ agent_id: null })).rejects.toThrow();
+        });
+
+        it('should fail if chat is missing', async () => {
+            await expect(channel.sender_agent({ agent_id: id, chat: null })).rejects.toThrow();
+        });
+
+        it('should fail if message is missing', async () => {
+            await expect(channel.sender_agent({ agent_id: id, chat: validData.chat, message: null })).rejects.toThrow();
+        });
+        it('should not throw error if agent_id, chat and message are valid', async () => {
+            await expect(channel.sender_agent({ agent_id: id, chat: validData.chat, message: validData.message })).resolves.not.toThrow();
+        });
+    });
 });

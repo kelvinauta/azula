@@ -47,7 +47,8 @@ class _Table {
         if (!this.constructor.db ) throw new Error("Db is required");
         this.#validate_db();
         if(this.constructor.instance) return this.constructor.instance;
-        if (params && typeof params === "object") {
+        if (params) {
+            if(typeof params !== "object") throw new Error("Params must be an object");
             const params_schema = superstruct.object({
                 name: superstruct.string(),
                 attributes: superstruct.object(),
