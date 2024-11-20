@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-// import Logger from "tuki_logger"
+// import Logger from "tuki_logger" // TODO: Mejor Logger
 
 // * Lib sequelize
 class Postgres {

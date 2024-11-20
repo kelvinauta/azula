@@ -5,28 +5,41 @@ import Chat from "../db/tables/Chats";
 import Message from "../db/tables/Messages";
 import Agent from "../db/tables/Agents";
 import Human from "../db/tables/Humans";
+import Composer from './composer.js';
 class Channel {
-    static schema = object({
+    static schema = object({ // TODO: los input y output schemas compartidos deberian estar en un archivo aparte
         sender: define(
             "sender",
-            (sender) => sender instanceof Agent.instance.model || sender instanceof Human.instance.model
+            (sender) =>
+                sender instanceof Agent.instance.model ||
+                sender instanceof Human.instance.model,
+        ),
+        receiber: define(
+            "receiber",
+            (sender) =>
+                sender instanceof Agent.instance.model ||
+                sender instanceof Human.instance.model,
         ),
         chat: define("chat", (chat) => chat instanceof Chat.instance.model),
-        message: define("message", (message) => message instanceof Message.instance.model),
+        message: define(
+            "message",
+            (message) => message instanceof Message.instance.model,
+        ),
     });
-    constructor() {
-        
+    constructor(proxy) {
+        this.proxy = proxy; // TODO: Validate instance of proxy
     }
-    async sender({ sender, chat, message, sender_type }) {
-        if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
+    async sender({ sender, receiver, chat, message, sender_type }) {
+        if (!Provider.all_is_ok()) throw new Error("Provider not initialized");
         assert(chat, object(Chat.schema));
         assert(message, object(Message.schema));
 
         const mask_chat = mask(chat, object(Chat.schema));
         const mask_message = mask(message, object(Message.schema));
 
-        if(!mask_chat.external_id && !mask_chat.id) throw new Error("Invalid chat");
-        
+        if (!mask_chat.external_id && !mask_chat.id)
+            throw new Error("Invalid chat");
+
         const chat_row = await Chat.instance.touch_one(mask_chat);
         const message_row = await Message.instance.touch_one({
             ...mask_message,
@@ -41,42 +54,52 @@ class Channel {
         };
     }
 
-    async sender_human({ human, chat, message }) {
-        if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
+    async sender_human({ human, agent, chat, message }) {
+        if (!Provider.all_is_ok()) throw new Error("Provider not initialized");
         assert(human, object(Human.schema));
+        assert(agent.id, Agent.schema.id);
         const mask_human = mask(human, object(Human.schema));
-        if(!mask_human.external_id && !mask_human.id) throw new Error("Invalid human"); 
+        if (!mask_human.external_id && !mask_human.id)
+            throw new Error("Invalid human"); // TODO: Validate Human debería ser como Validate Message
+        const agent_row = await (await Agent.getInstance()).getAgent(agent.id);
+
         const human_row = await Human.instance.touch_one(mask_human);
-        return this.sender({
+        const receiver_human = this.sender({
             sender: {
                 table: Human.instance,
                 row: human_row,
             },
+            receiver: {
+                table: Agent.instance,
+                row: agent_row,
+            },
             chat,
             message,
-            sender_type: Human.instance.foreign_key_name
+            sender_type: Human.instance.foreign_key_name,
         });
+        const composer = new Composer()
+        await composer.build(receiver_human)
     }
 
     async sender_agent({ agent_id, chat, message }) {
-        if(!Provider.all_is_ok()) throw new Error("Provider not initialized");
+        if (!Provider.all_is_ok()) throw new Error("Provider not initialized");
         assert(agent_id, Agent.schema.id);
-        if(!agent_id) throw new Error("Agent id is required");
-        if(!chat) throw new Error("Chat is required");
-        if(!message) throw new Error("Message is required");
+        if (!agent_id) throw new Error("Agent id is required");
+        if (!chat) throw new Error("Chat is required");
+        if (!message) throw new Error("Message is required");
         assert(chat, object(Chat.schema));
         assert(message, object(Message.schema));
         const agent = await Agent.getInstance();
         const agent_row = await agent.getAgent(agent_id);
-        if(!agent_row) throw new Error("Invalid agent");
+        if (!agent_row) throw new Error("Invalid agent");
         return this.sender({
             sender: {
                 table: Agent.instance,
                 row: agent_row,
             },
             chat,
-            message, 
-            sender_type: Agent.instance.foreign_key_name
+            message,
+            sender_type: Agent.instance.foreign_key_name,
         });
     }
 }

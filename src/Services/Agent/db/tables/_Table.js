@@ -1,6 +1,6 @@
 import Postgres from "../postgres";
 import { DataTypes, Model } from "sequelize";
-import superstruct from "superstruct";
+import {assert, enums, define, object, string, number, array} from "superstruct";
 import isUuid from "is-uuid";
 class _Table {
     static instance = null;
@@ -21,7 +21,7 @@ class _Table {
         paranoid: true,
     };
     static schema = {
-        id: superstruct.define("id", (value) => isUuid(value)),
+        id: define("id", (value) => isUuid(value)),
     };
 
     static async getInstance(params){
@@ -49,12 +49,12 @@ class _Table {
         if(this.constructor.instance) return this.constructor.instance;
         if (params) {
             if(typeof params !== "object") throw new Error("Params must be an object");
-            const params_schema = superstruct.object({
-                name: superstruct.string(),
-                attributes: superstruct.object(),
-                options: superstruct.object(),
+            const params_schema = object({
+                name: string(),
+                attributes: object(),
+                options: object(),
             });
-            superstruct.assert(params, params_schema);
+            assert(params, params_schema);
         }
 
         // logic
@@ -81,7 +81,7 @@ class _Table {
     async sync() {
         this.#validate_db();
         this.constructor.is_synced = true;
-        return await this.model.sync({ force: true });
+        return await this.model.sync({ alter: true });
     }
     ref(ref_table, foreign_key_name) {
         // validate
