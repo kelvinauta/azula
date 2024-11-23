@@ -12,7 +12,8 @@ class ProxyTool {
     async run(parameters) {
         // Consulta a la API
         // Parsing de Datos
-
+askdfjhaksdjhaskhadskjasdh
+        askjdhaksjdh:
         // * Validate Result #validate_result
     }
     #validate_result(result) {
