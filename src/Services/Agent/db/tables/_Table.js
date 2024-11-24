@@ -121,7 +121,7 @@ class _Table {
         return relation_table;
     }
 
-    async touch_one(where_params) {
+    async touch_one(where_params) { // TODO: deberiamos usar findOrCreate de squealiza
         if (!where_params) throw new Error("Where params are required");
         if (typeof where_params !== "object")
             throw new Error("Where params must be an object");

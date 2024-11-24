@@ -20,8 +20,8 @@ class Channel {
                 sender instanceof Agent.instance.model ||
                 sender instanceof Human.instance.model,
         ),
-        chat: define("chat", (chat) => chat instanceof Chat.instance.model),
-        message: define(
+        chat_row: define("chat", (chat) => chat instanceof Chat.instance.model),
+        message_row: define(
             "message",
             (message) => message instanceof Message.instance.model,
         ),
@@ -48,9 +48,10 @@ class Channel {
         });
 
         return {
-            sender: sender.row,
-            chat: chat_row,
-            message: message_row,
+            sender: sender.row, // TODO: Refactorizar, es confuso que exista sender y sender.row
+            receiver: receiver.row,
+            chat_row,
+            message_row,
         };
     }
 
@@ -64,7 +65,7 @@ class Channel {
         const agent_row = await (await Agent.getInstance()).getAgent(agent.id);
 
         const human_row = await Human.instance.touch_one(mask_human);
-        const receiver_human = this.sender({
+        const receiver_human = await this.sender({
             sender: {
                 table: Human.instance,
                 row: human_row,
@@ -77,31 +78,31 @@ class Channel {
             message,
             sender_type: Human.instance.foreign_key_name,
         });
-        const composer = new Composer()
-        await composer.build(receiver_human)
+        return receiver_human
     }
 
-    async sender_agent({ agent_id, chat, message }) {
-        if (!Provider.all_is_ok()) throw new Error("Provider not initialized");
-        assert(agent_id, Agent.schema.id);
-        if (!agent_id) throw new Error("Agent id is required");
-        if (!chat) throw new Error("Chat is required");
-        if (!message) throw new Error("Message is required");
-        assert(chat, object(Chat.schema));
-        assert(message, object(Message.schema));
-        const agent = await Agent.getInstance();
-        const agent_row = await agent.getAgent(agent_id);
-        if (!agent_row) throw new Error("Invalid agent");
-        return this.sender({
-            sender: {
-                table: Agent.instance,
-                row: agent_row,
-            },
-            chat,
-            message,
-            sender_type: Agent.instance.foreign_key_name,
-        });
-    }
+    //TODO: sender_agent aún no está implementado
+    // async sender_agent({ agent_id, chat, message }) {
+    //     if (!Provider.all_is_ok()) throw new Error("Provider not initialized");
+    //     assert(agent_id, Agent.schema.id);
+    //     if (!agent_id) throw new Error("Agent id is required");
+    //     if (!chat) throw new Error("Chat is required");
+    //     if (!message) throw new Error("Message is required");
+    //     assert(chat, object(Chat.schema));
+    //     assert(message, object(Message.schema));
+    //     const agent = await Agent.getInstance();
+    //     const agent_row = await agent.getAgent(agent_id);
+    //     if (!agent_row) throw new Error("Invalid agent");
+    //     return this.sender({
+    //         sender: {
+    //             table: Agent.instance,
+    //             row: agent_row,
+    //         },
+    //         chat,
+    //         message,
+    //         sender_type: Agent.instance.foreign_key_name,
+    //     });
+    // }
 }
 
 export default Channel;

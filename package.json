@@ -4,7 +4,6 @@
     "dev": "bun run --watch src/index.js",
     "start": "bun run src/index.js",
     "test": "bun run test",
-    "test-jest": "jest ./src/tests/factory.test.js",
     "reset-db": "rm -rf .volumes && docker compose down && docker compose up -d",
     "docker-dev": "docker compose down && docker compose up -d && docker exec -it workspace_azula /bin/bash",
     "docker-shell-dev": "bun install && ./cli/dev.sh"
