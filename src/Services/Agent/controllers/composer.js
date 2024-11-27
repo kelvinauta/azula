@@ -29,8 +29,8 @@ class Composer {
     }
     async build(receiver_human) {
         this.#validate(receiver_human);
-        const data = await this.getData(receiver_human)
-        return data
+        const data = await this.getData(receiver_human) // NOTE: Un mejor nombre para "data"
+        
     }
     request() {
 
