@@ -1,0 +1,154 @@
+{
+    "documents": [
+        {
+            "title": "The First Superman Comic",
+            "content": "Action Comics #1, featuring Superman's debut, was published in 1938 and originally sold for 10 cents. A copy sold in 2014 for $3.2 million.",
+            "category": "comics",
+            "question": "¿Cuál fue el precio original y el precio de venta más alto de Action Comics #1?"
+        },
+        {
+            "title": "Spider-Man's Original Design",
+            "content": "Spider-Man was originally designed with a completely different costume that included a gun and web-wings under his arms, before Steve Ditko created the classic design we know today.",
+            "category": "comics",
+            "question": "¿Qué elementos inusuales incluía el diseño original de Spider-Man?"
+        },
+        {
+            "title": "Batman's Creation Story",
+            "content": "Batman was created by Bob Kane and Bill Finger after being inspired by Leonardo da Vinci's sketch of a flying machine with bat-like wings.",
+            "category": "comics",
+            "question": "¿Qué inspiró la creación de Batman?"
+        },
+        {
+            "title": "Wonder Woman's Origins",
+            "content": "Wonder Woman was created by psychologist William Moulton Marston, who also invented the lie detector test, which likely inspired her Lasso of Truth.",
+            "category": "comics",
+            "question": "¿Qué invento de William Moulton Marston inspiró el Lazo de la Verdad de Wonder Woman?"
+        },
+        {
+            "title": "X-Men Allegory",
+            "content": "The X-Men were created by Stan Lee and Jack Kirby as an allegory for the Civil Rights Movement, with Professor X and Magneto representing different approaches to achieving equality.",
+            "category": "comics",
+            "question": "¿Qué movimiento social inspiró la creación de los X-Men?"
+        },
+        {
+            "title": "Great Wall Construction Time",
+            "content": "The Great Wall of China took more than 2000 years to build, with the earliest construction dating back to the 7th century BCE and continuing through multiple dynasties.",
+            "category": "history",
+            "question": "¿Cuánto tiempo tomó construir la Gran Muralla China?"
+        },
+        {
+            "title": "Cleopatra's True Origins",
+            "content": "Cleopatra was actually Greek, not Egyptian. She was part of the Ptolemaic dynasty, a family of Macedonian Greek origin that ruled Egypt after Alexander the Great's death.",
+            "category": "history",
+            "question": "¿Cuál era el verdadero origen étnico de Cleopatra?"
+        },
+        {
+            "title": "Viking Helmets Truth",
+            "content": "Despite popular belief, there is no evidence that Vikings ever wore horned helmets. This image was created by costume designers for Wagner's Der Ring des Nibelungen opera.",
+            "category": "history",
+            "question": "¿De dónde surgió el mito de los cascos vikingos con cuernos?"
+        },
+        {
+            "title": "Ancient Roman Concrete",
+            "content": "Roman concrete was more durable than modern concrete. Some Roman structures still stand after 2000 years because their concrete actually becomes stronger over time.",
+            "category": "history",
+            "question": "¿Por qué el concreto romano era superior al concreto moderno?"
+        },
+        {
+            "title": "Coca-Cola's Original Color",
+            "content": "Coca-Cola was originally green before it was dyed its characteristic brown color. The formula was also originally created as a medicine.",
+            "category": "history",
+            "question": "¿Cuál era el color original de la Coca-Cola y cuál era su propósito inicial?"
+        },
+        {
+            "title": "Venus's Day Length",
+            "content": "A day on Venus is longer than its year. It takes Venus 243 Earth days to rotate on its axis (a day) but only 225 Earth days to orbit the Sun (a year).",
+            "category": "planets",
+            "question": "¿Por qué un día en Venus es más largo que su año?"
+        },
+        {
+            "title": "Jupiter's Great Red Spot",
+            "content": "Jupiter's Great Red Spot is a giant storm that has been raging for at least 400 years. It's so large that three Earths could fit inside it.",
+            "category": "planets",
+            "question": "¿Cuál es el tamaño de la Gran Mancha Roja de Júpiter y cuánto tiempo ha existido?"
+        },
+        {
+            "title": "Mars's Olympus Mons",
+            "content": "Mars is home to Olympus Mons, the largest known volcano in the solar system. It's three times taller than Mount Everest and about the size of Arizona.",
+            "category": "planets",
+            "question": "¿Qué tan grande es el Olympus Mons comparado con el Monte Everest?"
+        },
+        {
+            "title": "Saturn's Floating Ability",
+            "content": "Saturn could float in water because its density is less than that of water. It's the only planet in our solar system that would float.",
+            "category": "planets",
+            "question": "¿Por qué Saturno es el único planeta que flotaría en agua?"
+        },
+        {
+            "title": "Uranus's Sideways Rotation",
+            "content": "Uranus rotates on its side, likely due to a massive collision early in its history. This means its seasons last for 21 Earth years each.",
+            "category": "planets",
+            "question": "¿Qué efecto tiene la rotación lateral de Urano en sus estaciones?"
+        },
+        {
+            "title": "Cat Sleep Patterns",
+            "content": "Cats spend 70% of their lives sleeping, which equates to around 16 hours a day. They are most active at dawn and dusk.",
+            "category": "cats",
+            "question": "¿Qué porcentaje de su vida pasan durmiendo los gatos?"
+        },
+        {
+            "title": "Cat Communication",
+            "content": "Adult cats only meow to communicate with humans, not other cats. They developed this behavior specifically to interact with people.",
+            "category": "cats",
+            "question": "¿Por qué los gatos adultos maúllan?"
+        },
+        {
+            "title": "Cat Whiskers Function",
+            "content": "A cat's whiskers are roughly as wide as their body, helping them determine if they can fit through narrow spaces. They also help cats judge distances in the dark.",
+            "category": "cats",
+            "question": "¿Cuál es la función de los bigotes de los gatos?"
+        },
+        {
+            "title": "Cat Taste Limitations",
+            "content": "Cats can't taste sweetness. They lack the genetic ability to detect sweet flavors, making them the only mammal known to lack this ability.",
+            "category": "cats",
+            "question": "¿Por qué los gatos no pueden saborear lo dulce?"
+        },
+        {
+            "title": "Cat Purring Healing",
+            "content": "Cat purring occurs at frequencies of 25-150 Hz, which can promote healing of bones and muscles. This might explain why cats heal from injuries faster than dogs.",
+            "category": "cats",
+            "question": "¿Cómo puede el ronroneo de los gatos ayudar en la curación?"
+        },
+        {
+            "title": "Heart's Daily Work",
+            "content": "Your heart pumps about 2,000 gallons of blood every day. Over a lifetime, that's enough to fill three super tanker ships.",
+            "category": "health",
+            "question": "¿Cuánta sangre bombea el corazón humano diariamente?"
+        },
+        {
+            "title": "Bone Strength",
+            "content": "Human bones are ounce for ounce stronger than steel. A block of bone the size of a matchbox can support 18,000 pounds of weight.",
+            "category": "health",
+            "question": "¿Qué tan fuertes son los huesos humanos comparados con el acero?"
+        },
+        {
+            "title": "Stomach Acid Power",
+            "content": "Your stomach acid is strong enough to dissolve metal. The only reason it doesn't dissolve your stomach is because of the constant regeneration of the stomach lining.",
+            "category": "health",
+            "question": "¿Por qué el ácido estomacal no disuelve el estómago?"
+        },
+        {
+            "title": "Brain Information Speed",
+            "content": "Information travels through your neurons at speeds of up to 268 miles per hour. This is faster than Formula 1 race cars.",
+            "category": "health",
+            "question": "¿A qué velocidad viaja la información a través de las neuronas?"
+        },
+        {
+            "title": "Skin Regeneration",
+            "content": "Your skin completely replaces itself every 27 days. In a lifetime, you'll shed around 40 pounds of skin cells.",
+            "category": "health",
+            "question": "¿Cada cuánto tiempo se regenera completamente la piel humana?"
+        }
+    ]
+}

@@ -11,8 +11,10 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.0.4",
     "@faker-js/faker": "^9.2.0",
+    "@libsql/client": "^0.14.0",
     "ai": "^4.0.3",
     "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0",
     "hono": "^4.6.2",
     "ioredis": "^5.4.1",
     "is-uuid": "^1.0.2",
