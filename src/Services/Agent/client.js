@@ -2,7 +2,8 @@ import { assert, object, string, define, type } from "superstruct";
 import Message from "./db/tables/Messages";
 import Channel from "./controllers/channel";
 import Provider from "./db/provider";
-class ProxyAgent {
+import Composer from "./controllers/composer";
+class Client {
     static input_schema = {
         external_human_id: string(),
         external_chat_id: string(),
@@ -15,11 +16,11 @@ class ProxyAgent {
     constructor() {
         this.channel = new Channel();
     }
-    run() {}
-    async input(received) {
-        assert(received, object(ProxyAgent.input_schema));
+    async get_answer(received) {
+        assert(received, object(Client.input_schema));
         await Provider.build();
-        return await this.channel.sender_human({
+        const composer = new Composer()
+        const receiver_human = await this.channel.sender_human({
             human: {
                 external_id: received.external_human_id,
                 type: "external", // TODO: Harcodeado, a futuro deberia poder se un humano interno como externo
@@ -33,8 +34,8 @@ class ProxyAgent {
                 id: received.agent_id,
             },
         });
+        const {history_chat} = composer.getData(receiver_human)
+
     }
-    output() {}
-    #validate() {}
 }
-export default ProxyAgent;
+export default Client;

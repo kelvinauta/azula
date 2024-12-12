@@ -1,7 +1,7 @@
-import AgentFactory from "../Services/Agent/db/factory/AgentFactory";
-import Agent from "../Services/Agent/db/tables/Agents";
-import Provider from "../Services/Agent/db/provider";
-import Postgres from "../Services/Agent/db/postgres";
+import AgentFactory from "../../Services/Agent/db/factory/AgentFactory";
+import Agent from "../../Services/Agent/db/tables/Agents";
+import Provider from "../../Services/Agent/db/provider";
+import Postgres from "../../Services/Agent/db/postgres";
 import { faker } from '@faker-js/faker';
 
 describe('AgentFactory', () => {

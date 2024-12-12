@@ -3,9 +3,8 @@ import { embed, embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 class Insert {
-    constructor(client, ai, ai) {
+    constructor(client, ai) {
         this.client = client;
-        this.ai = ai;
         this.ai = ai;
     }
     async one({ title, content, category }) {

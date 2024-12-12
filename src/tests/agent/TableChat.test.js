@@ -1,7 +1,7 @@
-import Chats from "../Services/Agent/db/tables/Chats";
-import Messages from "../Services/Agent/db/tables/Messages";
-import Channel from "../Services/Agent/controllers/channel";
-import Provider from "../Services/Agent/db/provider";
+import Chats from "../../Services/Agent/db/tables/Chats";
+import Messages from "../../Services/Agent/db/tables/Messages";
+import Channel from "../../Services/Agent/controllers/channel";
+import Provider from "../../Services/Agent/db/provider";
 import { v4 as uuidv4 } from "uuid"
 describe("Chats Table Test", () => {
     describe(".getHistoryChat", async () => {

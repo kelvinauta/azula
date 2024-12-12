@@ -1,5 +1,5 @@
-import _Table from "../Services/Agent/db/tables/_Table";
-import Postgres from "../Services/Agent/db/postgres";
+import _Table from "../../Services/Agent/db/tables/_Table";
+import Postgres from "../../Services/Agent/db/postgres";
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { DataTypes } from "sequelize";
 // Clase de prueba que hereda de _Table
