@@ -2,12 +2,12 @@ import { expect, test } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import Update from "../../Services/Bulk/update";
 import Insert from "../../Services/Bulk/insert";
-import Bulk from "../../Services/Bulk/bulk";
+import Core from "../../Services/Bulk/core";
 
-const bulk = new Bulk();
-await bulk.init();
-const insert = new Insert(bulk.client);
-const update = new Update(bulk.client);
+const core = new Core();
+await core.init();
+const insert = new Insert(core.client);
+const update = new Update(core.client);
 
 test("should update a single document", async () => {
     // Primero insertamos un documento
@@ -19,7 +19,7 @@ test("should update a single document", async () => {
     };
 
     const insertResult = await insert.one(testDoc);
-    const docId = insertResult.lastInsertRowid;
+    const docId = insertResult.toJSON().lastInsertRowid;
 
     // Actualizamos el documento
     const updateData = {
@@ -31,7 +31,7 @@ test("should update a single document", async () => {
     await update.one(updateData);
 
     // Verificamos la actualización
-    const result = await bulk.client.execute({
+    const result = await core.client.execute({
         sql: "SELECT * FROM bulks WHERE id = ?",
         args: [docId],
     });
@@ -53,7 +53,7 @@ test("should update multiple documents", async () => {
     
     // Preparamos las actualizaciones
     const updates = testDocs.map((_, index) => ({
-        id: insertResults.lastInsertRowid - (2 - index),
+        id: insertResults.toJSON().lastInsertRowid - (2 - index),
         title: `updated-title-${uuidv4()}`,
         content: `updated-content-${uuidv4()}`,
     }));
@@ -62,7 +62,7 @@ test("should update multiple documents", async () => {
 
     // Verificamos las actualizaciones
     for (const doc of updates) {
-        const result = await bulk.client.execute({
+        const result = await core.client.execute({
             sql: "SELECT * FROM bulks WHERE id = ?",
             args: [doc.id],
         });
@@ -91,7 +91,7 @@ test("should update category for multiple documents", async () => {
     });
 
     // Verificamos que se actualizaron todas las categorías
-    const result = await bulk.client.execute({
+    const result = await core.client.execute({
         sql: "SELECT * FROM bulks WHERE category = ?",
         args: [newCategory],
     });

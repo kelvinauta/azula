@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client";
 import path from "path";
 import fs from "fs-extra";
-export class Bulk {
+class Core {
     #PATH = process.env.LIBSQL_PATH;
     #NAME = "bulk.db";
     constructor() {
@@ -39,4 +39,4 @@ export class Bulk {
         return this.client;
     }
 }
-export default Bulk
+export default Core

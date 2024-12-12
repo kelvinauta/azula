@@ -2,8 +2,9 @@ import { embed } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 class Query {
-    constructor(client) {
+    constructor(client, ai) {
         this.client = client;
+        this.ai = ai;
     }
 
     async one(queryInput) {

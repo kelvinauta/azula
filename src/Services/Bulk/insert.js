@@ -1,12 +1,13 @@
-// TODO: Si un documento tiene el mismo title y category que uno que ya existe entonces reemplaza el anterior
+// TODO: Si un documento tiene el mismo title  que uno que ya existe entonces reemplaza el anterior
 import { embed, embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 class Insert {
-    constructor(client) {
+    constructor(client, ai, ai) {
         this.client = client;
+        this.ai = ai;
+        this.ai = ai;
     }
-
     async one({ title, content, category }) {
         try {
             console.log("Iniciando proceso de inserción de documento");
@@ -16,6 +17,13 @@ class Insert {
                 console.error("Campos requeridos faltantes");
                 throw new Error("Los campos title y content son requeridos");
             }
+
+            // Eliminar documento existente con el mismo título
+            console.log("Verificando documento existente con el mismo título");
+            await this.client.execute({
+                sql: "DELETE FROM bulks WHERE title = :title",
+                args: { title },
+            });
 
             // Generar embedding
             console.log("Generando embedding para el contenido");
@@ -29,12 +37,17 @@ class Insert {
             console.log("Insertando documento en la base de datos");
             const result = await this.client.execute({
                 sql: `INSERT INTO bulks (title, content, category, embedding) 
-                      VALUES (?, ?, ?, vector32(?))`,
-                args: [title, content, category, JSON.stringify(embedding)],
+                  VALUES (:title, :content, :category, vector32(:embedding))`,
+                args: {
+                    title,
+                    content,
+                    category,
+                    embedding: JSON.stringify(embedding),
+                },
             });
 
             console.log("Documento insertado exitosamente");
-            return result.toJSON();
+            return result;
         } catch (error) {
             console.error("Error al insertar documento", {
                 error: error.message,
@@ -43,7 +56,6 @@ class Insert {
         }
     }
 
-    // En la clase Crud
     async many(documents) {
         try {
             console.log("Iniciando proceso de inserción múltiple", {
@@ -66,6 +78,21 @@ class Insert {
                 }
             });
 
+            // Eliminar documentos existentes con los mismos títulos
+            console.log(
+                "Eliminando documentos existentes con títulos duplicados",
+            );
+            const titles = documents.map((doc) => doc.title);
+            const placeholders = titles.map((_, i) => `:title${i}`).join(",");
+
+            await this.client.execute({
+                sql: `DELETE FROM bulks WHERE title IN (${placeholders})`,
+                args: titles.reduce((acc, title, i) => {
+                    acc[`title${i}`] = title;
+                    return acc;
+                }, {}),
+            });
+
             // Generar embeddings para todos los contenidos
             console.log("Generando embeddings para los documentos");
             const { embeddings } = await embedMany({
@@ -76,26 +103,32 @@ class Insert {
 
             // Construir consulta para inserción múltiple
             console.log("Preparando inserción en batch");
-            const placeholders = documents
-                .map(() => "(?, ?, ?, vector32(?))")
+            const insertPlaceholders = documents
+                .map(
+                    (_, i) =>
+                        `(:title${i}, :content${i}, :category${i}, vector32(:embedding${i}))`,
+                )
                 .join(",");
-            const values = documents.flatMap((doc, i) => [
-                doc.title,
-                doc.content,
-                doc.category,
-                JSON.stringify(embeddings[i]),
-            ]);
+
+            // Preparar argumentos para la inserción
+            const insertArgs = documents.reduce((acc, doc, i) => {
+                acc[`title${i}`] = doc.title;
+                acc[`content${i}`] = doc.content;
+                acc[`category${i}`] = doc.category;
+                acc[`embedding${i}`] = JSON.stringify(embeddings[i]);
+                return acc;
+            }, {});
 
             // Insertar todos los documentos
             const result = await this.client.execute({
-                sql: `INSERT INTO bulks (title, content, category, embedding) VALUES ${placeholders}`,
-                args: values,
+                sql: `INSERT INTO bulks (title, content, category, embedding) VALUES ${insertPlaceholders}`,
+                args: insertArgs,
             });
 
             console.log("Documentos insertados exitosamente", {
                 count: documents.length,
             });
-            return result.toJSON();
+            return result;
         } catch (error) {
             console.error("Error en inserción múltiple", {
                 error: error.message,

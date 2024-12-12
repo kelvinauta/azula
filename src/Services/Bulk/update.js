@@ -2,8 +2,9 @@ import { embed, embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 class update {
-    constructor(client) {
+    constructor(client, ai) {
         this.client = client;
+        this.ai = ai;
     }
 
     async one({ id, title, content, category }) {

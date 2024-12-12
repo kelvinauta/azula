@@ -2,16 +2,16 @@ import { expect, test } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import Query from "../../Services/Bulk/query";
 import Insert from "../../Services/Bulk/insert";
-import Bulk from "../../Services/Bulk/bulk";
+import Core from "../../Services/Bulk/core";
 import mockupData from "./mockup.json";
 
 const DEFAULT_LIMIT = 3;
 const AVAILABLE_CATEGORIES = ["comics", "history", "planets", "cats", "health"];
 
-const bulk = new Bulk();
-await bulk.init();
-const insert = new Insert(bulk.client);
-const query = new Query(bulk.client);
+const core = new Core();
+await core.init();
+const insert = new Insert(core.client);
+const query = new Query(core.client);
 
 // Función auxiliar para generar grupos de categorías aleatorias
 function generateRandomCategories() {

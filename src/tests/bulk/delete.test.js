@@ -4,12 +4,12 @@ import { expect, test } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import Delete from "../../Services/Bulk/delete";
 import Insert from "../../Services/Bulk/insert";
-import Bulk from "../../Services/Bulk/bulk";
+import Core from "../../Services/Bulk/core";
 
-const bulk = new Bulk();
-await bulk.init();
-const insert = new Insert(bulk.client);
-const deleteOp = new Delete(bulk.client);
+const core = new Core();
+await core.init();
+const insert = new Insert(core.client);
+const deleteOp = new Delete(core.client);
 
 test("should delete a single document", async () => {
     // Primero insertamos un documento
@@ -21,13 +21,13 @@ test("should delete a single document", async () => {
     };
 
     const insertResult = await insert.one(testDoc);
-    const docId = insertResult.lastInsertRowid;
+    const docId = insertResult.toJSON().lastInsertRowid;
 
     // Eliminamos el documento
     await deleteOp.one({ id: docId });
 
     // Verificamos que fue eliminado
-    const result = await bulk.client.execute({
+    const result = await core.client.execute({
         sql: "SELECT * FROM bulks WHERE id = ?",
         args: [docId],
     });
@@ -44,14 +44,14 @@ test("should delete multiple documents", async () => {
     }));
 
     const insertResult = await insert.many(testDocs);
-    const baseId = insertResult.lastInsertRowid - 2;
+    const baseId = insertResult.toJSON().lastInsertRowid - 2;
     const ids = [baseId, baseId + 1, baseId + 2];
 
     // Eliminamos los documentos
     await deleteOp.many(ids);
 
     // Verificamos que fueron eliminados
-    const result = await bulk.client.execute({
+    const result = await core.client.execute({
         sql: "SELECT * FROM bulks WHERE id IN (?, ?, ?)",
         args: ids,
     });
@@ -76,7 +76,7 @@ test("should delete documents by category", async () => {
     });
 
     // Verificamos que fueron eliminados
-    const result = await bulk.client.execute({
+    const result = await core.client.execute({
         sql: "SELECT * FROM bulks WHERE category = ?",
         args: [`category-${categoryId}`],
     });
