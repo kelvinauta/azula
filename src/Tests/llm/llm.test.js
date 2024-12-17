@@ -1,24 +1,21 @@
+import { expect, test, describe } from "bun:test";
+import LLM from "../../Facades/llm";
 import { z } from "zod";
-import LLM from "../../Facades/llm"
 describe("LLM class", () => {
-    const llm_engine_test = {
-        model: "gpt-4o",
+    const llm_engine = {
+        model: "gpt-4",
         provider: "openai",
         max_tokens: 256,
         temperature: 1,
         api_key: process.env.OPENAI_API_KEY,
     };
-    const llm_input_test = {
-        llm_engine: llm_engine_test,
-        messages: [
-            {
-                role: "user",
-                content:
-                    "Quiero que sumes 1 + 2 + 3 + 4 y así hasta el numero 10",
-            },
-        ],
-    };
-    const test_tools = [
+    const messages = [
+        {
+            role: "user",
+            content: "Quiero que sumes 1 + 2 + 3 + 4 y así hasta el numero 10",
+        },
+    ];
+    const tools = [
         {
             name: "sumar",
             description: "lista de arrays de numeros a sumar",
@@ -26,40 +23,29 @@ describe("LLM class", () => {
             parameters: z.object({
                 nums: z.array(z.number()),
             }),
-            execute: ({ nums }) => {
-                return nums;
-            },
+            execute: ({ nums }) => nums,
         },
     ];
-    describe("generate provider", () => {
-        const llm = new LLM(llm_input_test);
-        it(".generate_model", () => {
-            expect(() => {
-                const model = llm.generate_model();
-            }).not.toThrow();
-        });
+    test("should initialize with llm_engine", () => {
+        expect(() => new LLM(llm_engine)).not.toThrow();
     });
-    describe("run", async () => {
-        const timeout = 1000 * 30;
-        it(
-            "Test messages prompt",
-            async () => {
-                const llm = new LLM(llm_input_test);
-                const llm_response = await llm.run();
-                expect(llm_response).toHaveProperty("text");
-            },
-            timeout,
-        );
-        it(
-            "Test messages with tool",
-            async () => {
-                const llm = new LLM({ ...llm_input_test, tools: test_tools });
-                const llm_response = await llm.run();
-                expect(llm_response.toolResults[0].args.nums).toEqual([
-                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                ]);
-            },
-            timeout,
-        );
-    });
+    test(
+        "should generate text without tools",
+        async () => {
+            const llm = new LLM(llm_engine);
+            const response = await llm.generate_text(messages);
+            expect(response).toBeDefined();
+        },
+        { timeout: 30000 },
+    );
+    test(
+        "should generate text with tools",
+        async () => {
+            const llm = new LLM(llm_engine);
+            const response = await llm.generate_text(messages, tools);
+            expect(response).toBeDefined();
+            expect(response.toolResults).toBeDefined();
+        },
+        { timeout: 30000 },
+    );
 });

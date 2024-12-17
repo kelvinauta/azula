@@ -12,7 +12,6 @@ import {
     func,
     create,
 } from "superstruct";
-
 class LLM {
     static schema = {
         input: {
@@ -34,13 +33,12 @@ class LLM {
             tool: {
                 name: string(),
                 description: string(),
-                strict: defaulted(boolean()),
+                strict: defaulted(boolean(), false),
                 parameters: object(),
                 execute: func(),
             },
         },
     };
-
     constructor(llm_engine) {
         this.llm_engine = this.#generate_llm_engine(llm_engine);
     }
@@ -48,39 +46,35 @@ class LLM {
         const _messages = this.#build_message(messages);
         const generateTextConfig = {
             model: this.llm_engine.model,
-            messages: _messages
-        }
-        if(tools) generateTextConfig.tools = this.#build_tools(tools)
-        const response = await generateText(generateTextConfig)
-        return response
+            messages: _messages,
+        };
+        if (tools) generateTextConfig.tools = this.#build_tools(tools);
+        const response = await generateText(generateTextConfig);
+        return response;
     }
     #build_message(messages) {
         assert(messages, LLM.schema.input.generate_text.messages);
-        messages = create(messages, LLM.schema.input.generate_text.messages);
-        return messages;
+        return create(messages, LLM.schema.input.generate_text.messages);
     }
     #build_tools(tools) {
-        assert(tools, array(LLM.schema.input.tool));
-        tools = create(tools, array(LLM.schema.input.tool));
-        if (!tools) return;
+        assert(tools, array(object(LLM.schema.input.tool)));
+        tools = create(tools, array(object(LLM.schema.input.tool)));
         let new_tools = {};
         for (const t of tools) {
             new_tools[t.name] = tool(t);
         }
-        return tools;
+        return new_tools;
     }
     #generate_llm_engine(llm_engine) {
         assert(llm_engine, object(LLM.schema.input.llm_engine));
-        llm_engine = create(object(LLM.schema.input.llm_engine));
-        let model;
-        if (this.llm_input.llm_engine.provider == "openai")
-            model = createOpenAI({
-                apiKey: this.llm_input.llm_engine.api_key,
+        const engine = create(llm_engine, object(LLM.schema.input.llm_engine));
+        if (engine.provider === "openai") {
+            engine.model = createOpenAI({
+                apiKey: engine.api_key,
                 compatibility: "strict",
-            })(this.llm_input.llm_engine.model);
-        llm_engine.model = model;
-        return llm_engine;
+            })(engine.model);
+        }
+        return engine;
     }
 }
-
 export default LLM;
