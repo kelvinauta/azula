@@ -1,11 +1,9 @@
 import Provider from "../db/provider";
 import { assert, mask, instance, define, object } from "superstruct";
-import { Op } from "sequelize";
 import Chat from "../db/tables/Chats";
 import Message from "../db/tables/Messages";
 import Agent from "../db/tables/Agents";
 import Human from "../db/tables/Humans";
-import Composer from './composer.js';
 class Channel {
     static schema = object({ // TODO: los input y output schemas compartidos deberian estar en un archivo aparte
         sender: define(

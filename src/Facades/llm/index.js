@@ -1,61 +1,86 @@
-import { createOpenAI } from "@ai-sdk/openai"
-import { generateText, tool } from "ai"
-import { assert, optional, defaulted, number, object, string, enums, array, boolean, func } from "superstruct"
+import { createOpenAI } from "@ai-sdk/openai";
+import { generateText, tool } from "ai";
+import {
+    assert,
+    defaulted,
+    number,
+    object,
+    string,
+    enums,
+    array,
+    boolean,
+    func,
+    create,
+} from "superstruct";
 
 class LLM {
-    static llm_engine_schema = {
-        model: string(),
-        provider: enums(["openai", "anthropic"]),
-        max_tokens: defaulted(number(), 256),
-        temperature: defaulted(number(), 1), // TODO: coercion min an max values
-        api_key: string()
-    }
-    static llm_input_schema = {
-        llm_engine: object(LLM.llm_engine_schema),
-        messages: array(), // TODO: validation of message schema
-        tools: optional(array(object(LLM.llm_tool))), // TODO: validation of tools schema
+    static schema = {
+        input: {
+            llm_engine: {
+                model: string(),
+                provider: enums(["openai", "anthropic"]),
+                max_tokens: defaulted(number(), 256),
+                temperature: defaulted(number(), 1),
+                api_key: string(),
+            },
+            generate_text: {
+                messages: array(
+                    object({
+                        role: string(),
+                        content: string(),
+                    }),
+                ),
+            },
+            tool: {
+                name: string(),
+                description: string(),
+                strict: defaulted(boolean()),
+                parameters: object(),
+                execute: func(),
+            },
+        },
+    };
 
+    constructor(llm_engine) {
+        this.llm_engine = this.#generate_llm_engine(llm_engine);
     }
-    static llm_tool = {
-        name: string(),
-        description: string(),
-        strict: defaulted(boolean()),
-        parameters: object(),
-        execute: func()
-    }
-
-    generate_tools() {
-        if (!this.llm_input.tools) return null
-        let tools = {}
-        for (const t of this.llm_input.tools) {
-            tools[t.name] = tool(t)
-        }
-        return tools
-    }
-    generate_model() {
-        assert(this.llm_input.llm_engine, object(LLM.llm_engine_schema))
-        let model
-        if (this.llm_input.llm_engine.provider == "openai") model = createOpenAI({
-            apiKey: this.llm_input.llm_engine.api_key,
-            compatibility: "strict"
-        })(this.llm_input.llm_engine.model)
-        return model
-    }
-    constructor(llm_input) {
-        assert(llm_input, object(LLM.llm_input_schema))
-        this.llm_input = llm_input
-    }
-    async run() {
-        const model = this.generate_model()
-        const tools = this.generate_tools()
+    async generate_text(messages, tools) {
+        const _messages = this.#build_message(messages);
         const generateTextConfig = {
-            model,
-            messages: this.llm_input.messages
+            model: this.llm_engine.model,
+            messages: _messages
         }
-        if (tools) generateTextConfig.tools = tools
-        const llm_response = await generateText(generateTextConfig)
-        return llm_response
+        if(tools) generateTextConfig.tools = this.#build_tools(tools)
+        const response = await generateText(generateTextConfig)
+        return response
+    }
+    #build_message(messages) {
+        assert(messages, LLM.schema.input.generate_text.messages);
+        messages = create(messages, LLM.schema.input.generate_text.messages);
+        return messages;
+    }
+    #build_tools(tools) {
+        assert(tools, array(LLM.schema.input.tool));
+        tools = create(tools, array(LLM.schema.input.tool));
+        if (!tools) return;
+        let new_tools = {};
+        for (const t of tools) {
+            new_tools[t.name] = tool(t);
+        }
+        return tools;
+    }
+    #generate_llm_engine(llm_engine) {
+        assert(llm_engine, object(LLM.schema.input.llm_engine));
+        llm_engine = create(object(LLM.schema.input.llm_engine));
+        let model;
+        if (this.llm_input.llm_engine.provider == "openai")
+            model = createOpenAI({
+                apiKey: this.llm_input.llm_engine.api_key,
+                compatibility: "strict",
+            })(this.llm_input.llm_engine.model);
+        llm_engine.model = model;
+        return llm_engine;
     }
 }
 
-export default LLM
+export default LLM;
