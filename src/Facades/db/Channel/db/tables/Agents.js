@@ -1,6 +1,6 @@
 import _Table from "./_Table.js";
 import { DataTypes } from "sequelize";
-import { object, string, define, optional } from "superstruct";
+import { object, string, define, optional, defaulted } from "superstruct";
 import isUuid from "is-uuid";
 
 class Agent extends _Table {
@@ -31,9 +31,15 @@ class Agent extends _Table {
         description: optional(string()),
         config: object({
             prompt: string(),
-            model: string(),
         }),
-    }
+        llm_engine: object({
+            model: string(),
+            provider: enums(["openai", "anthropic"]),
+            max_tokens: defaulted(number(), 256),
+            temperature: defaulted(number(), 1),
+            api_key: string(),
+        }),
+    };
     static options = {
         paranoid: true,
     };

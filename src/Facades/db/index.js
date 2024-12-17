@@ -20,6 +20,9 @@ class Data {
             },
         ];
     }
+    getDocuments(){
+
+    }
 }
 
 export default Data;
