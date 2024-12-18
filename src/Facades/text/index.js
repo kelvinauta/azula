@@ -1,14 +1,10 @@
-async function processor(text, functions, args) {
-    // 1. Encontrar todos los tokens {{...}}
+async function processor({ text, functions, args }) {
     const tokenRegex = /{{([^}]+)}}/g;
     const matches = [...text.matchAll(tokenRegex)];
     if (!matches.length) return text;
-    // 2. Procesar cada token
     const functionResults = await Promise.all(
         matches.map(async ([fullMatch, content]) => {
-            // Solo procesar si empieza con /
             if (!content.startsWith("/")) return fullMatch;
-            // Extraer nombre de función y argumentos
             const functionParts = content
                 .slice(1)
                 .match(/([^(]+)(?:\((.*)\))?/);
@@ -27,7 +23,6 @@ async function processor(text, functions, args) {
             }
         }),
     );
-    // 3. Reemplazar los resultados
     let result = text;
     matches.forEach(([fullMatch], index) => {
         result = result.replace(fullMatch, functionResults[index]);

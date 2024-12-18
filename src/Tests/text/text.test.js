@@ -6,7 +6,7 @@ test("processor - función simple sin argumentos", async () => {
     const functions = {
         time: async () => "12:00",
     };
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     expect(result).toBe("La hora es 12:00");
 });
 test("processor - múltiples funciones simples", async () => {
@@ -16,7 +16,7 @@ test("processor - múltiples funciones simples", async () => {
         name: async () => "Juan",
         time: async () => "15:30",
     };
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     expect(result).toBe("Hola Juan! Son las 15:30");
 });
 test("processor - función con args", async () => {
@@ -25,7 +25,7 @@ test("processor - función con args", async () => {
         showArgs: async (args) => JSON.stringify(args),
     };
     const args = { user: "admin", id: 123 };
-    const result = await processor(text, functions, args);
+    const result = await processor({ text, functions, args });
     expect(result).toBe('Datos: {"user":"admin","id":123}');
 });
 test("processor - función con argumentos personalizados", async () => {
@@ -36,7 +36,7 @@ test("processor - función con argumentos personalizados", async () => {
             return `${nombre.toUpperCase()} ${apellido.toUpperCase()}`;
         },
     };
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     expect(result).toBe("Nombre: JUAN CARLOS PÉREZ GARCÍA");
 });
 test("processor - mezcla de funciones simples y con argumentos", async () => {
@@ -50,13 +50,13 @@ test("processor - mezcla de funciones simples y con argumentos", async () => {
         },
         date: async () => "2024-01-01",
     };
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     expect(result).toBe("Hola ANA LÓPEZ! La fecha es 2024-01-01");
 });
 test("processor - función inexistente mantiene el texto original", async () => {
     const text = "Test {{/noexiste}} continúa";
     const functions = {};
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     expect(result).toBe("Test {{/noexiste}} continúa");
 });
 test("processor - ejecución paralela", async () => {
@@ -73,7 +73,7 @@ test("processor - ejecución paralela", async () => {
         }),
     };
     const startTime = Date.now();
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     const endTime = Date.now();
     expect(result).toBe("A B");
     expect(endTime - startTime).toBeLessThan(150); // Debería tomar ~100ms, no 200ms
@@ -85,6 +85,6 @@ test("processor - argumentos personalizados con espacios", async () => {
     const functions = {
         join: async (args, customArgs) => customArgs.join(" - "),
     };
-    const result = await processor(text, functions, {});
+    const result = await processor({ text, functions, args: {} });
     expect(result).toBe("hola mundo - otro texto con espacios");
 });
