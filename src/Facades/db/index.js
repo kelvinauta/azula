@@ -1,26 +1,19 @@
+import Provider from "./Channel/db/provider"
+import Message from "./Channel/db/tables/Messages"
 class Data {
-    async init() {}
-    getMessage() {}
+    constructor({ context, message }){
+        this.context = context
+        this.message = message
+    }
+    async init() {
+        await Provider.build()        
+    }
+    getMessage(message) {
+        return message
+    }
     getAgent() {
-        return {
-            config: {
-                prompt: "Eres un agente",
-            },
-            tools: {},
-            bulks: {
-                id: "1234",
-            },
-        };
     }
     getHistory() {
-        return [
-            {
-                role: "user",
-                content: "Hola",
-            },
-        ];
-    }
-    getDocuments(){
     }
 }
 export default Data;

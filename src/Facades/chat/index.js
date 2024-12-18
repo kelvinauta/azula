@@ -25,17 +25,34 @@ class Builder {
         this.message = message;
     }
     async run() {
-        const { message, agent, history } = await this.#getData();
         const llm = new LLM(agent.llm_engine);
         const messages = await this.#buildMessages()
-        
+        const tools = new Tools().get().to.ai
+        const answer = llm.generate_text(messages, tools)
+    }
+    async #buildMessages(){
+        const { message, agent, history } = await this.#getData();
+        const args = this.#getArgs({
+            message,
+            history,
+            agent,
+            context: this.context
+        })
+        const messages = await this.#buildMessages({
+            system_prompt: agent.config.prompt,
+            message,
+            history,
+            args
+        })
+
+        return messages
     }
     async #getData() {
-        const data = new Data();
-        await data.init({
+        const data = new Data({
             context: this.context,
             message: this.message,
         });
+        await data.init()
         const message = data.getMessage();
         const agent = data.getAgent();
         const history = data.getHistory();
@@ -63,7 +80,7 @@ class Builder {
         ]
         return messages
     }
-    async #getArgs({ message, history, agent, context }){
+    #getArgs({ message, history, agent, context }){
         return {
             message,
             history,

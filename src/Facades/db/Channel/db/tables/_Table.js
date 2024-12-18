@@ -6,9 +6,6 @@ class _Table {
     static instance = null;
     static is_synced = false;
     static db = null;
-
-    
-
     static attributes = {
         id: {
             type: DataTypes.UUID,
@@ -23,7 +20,6 @@ class _Table {
     static schema = {
         id: define("id", (value) => isUuid(value)),
     };
-
     static async getInstance(params){
         if(this.name === _Table.name) throw new Error("Table cannot be instantiated");  
         if(this.instance) return this.instance;
@@ -33,7 +29,6 @@ class _Table {
         return instance;
     }
     static async db_connected(){
-        
         let db;
         if(_Table.db && _Table.db instanceof Postgres) db = _Table.db;
         else{
@@ -56,7 +51,6 @@ class _Table {
             });
             assert(params, params_schema);
         }
-
         // logic
         this.db = this.constructor.db;
         this.params = params || {
@@ -64,10 +58,8 @@ class _Table {
             attributes: this.constructor.attributes,
             options: this.constructor.options,
         };
-
         this.sequelize = this.db.sequelize;
         this.foreign_key_name = `_${this.params.name.toLowerCase()}`;
-
         this.model = this.sequelize.define(
             this.params.name,
             this.params.attributes,
@@ -77,14 +69,12 @@ class _Table {
     get_name(){
         return this.params.name;
     }
-
     async sync() {
         this.#validate_db();
         this.constructor.is_synced = true;
         return await this.model.sync({ alter: true });
     }
     ref(ref_table, foreign_key_name) {
-        // validate
         if (foreign_key_name && typeof foreign_key_name !== "string")
             throw new Error("foreign_key_name must be a string");
         if (!ref_table) throw new Error("ref_table is required");
@@ -92,9 +82,6 @@ class _Table {
             throw new Error("ref_table must be an instance of _Table");
         if (!Object.prototype.isPrototypeOf.call(Model, ref_table.model))
             throw new Error("ref_table.model must be a Model class");
-        // * logic
-        // Read many to one sequelize docs
-        // has many or has one is the same bassically
         foreign_key_name = foreign_key_name || ref_table.foreign_key_name;
         this.#validate_table(ref_table);
         this.model.belongsTo(ref_table.model, {
@@ -105,10 +92,8 @@ class _Table {
         });
     }
     async many_to_many(ref_table) {
-        // validate
         this.#validate_table(ref_table);
         if(this.model.tableName === ref_table.model.tableName) throw new Error("Table must be different from the current table");
-        // logic
         const params = this.#build_many2many_params(this, ref_table);
         class RelationTable extends _Table {}
         const relation_table = await RelationTable.getInstance(params);
@@ -120,17 +105,14 @@ class _Table {
         });
         return relation_table;
     }
-
     async touch_one(where_params) {
         if (!where_params) throw new Error("Where params are required");
         if (typeof where_params !== "object")
             throw new Error("Where params must be an object");
-
         let row = await this.model.findOne({ where: where_params });
         if (!row) row = await this.model.create(where_params);
         return row;
     }
-    // * Private methods
     #build_many2many_params(tableA, tableB) {
         if (!tableA || !tableB)
             throw new Error("TableA and TableB are required");
@@ -174,5 +156,4 @@ class _Table {
             throw new Error("Db.is_connected is false");
     }
 }
-
 export default _Table;

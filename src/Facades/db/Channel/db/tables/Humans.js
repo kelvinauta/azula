@@ -1,5 +1,5 @@
 import _Table from "./_Table"
-import {DataTypes} from "sequelize"
+import { DataTypes } from "sequelize"
 import { object, string,  define, optional} from "superstruct"
 import isUuid from "is-uuid"
 class Human extends _Table {
@@ -18,7 +18,7 @@ class Human extends _Table {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        info: {
+        metadata: {
             type: DataTypes.JSONB,
             allowNull: true,
         }

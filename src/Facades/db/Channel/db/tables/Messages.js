@@ -58,18 +58,7 @@ class Message extends _Table {
     constructor(...all) {
         super(...all);
     }
-    async getMessagesWhereChat(chat_row){
-        // TODO: Sin validaciones porque provocaria una importacion circular
-        const all_messages = await this.model.findAll({
-            where: {
-                _chat: chat_row.id
-            },
-            order: [
-                ["createdAt", "DESC"]
-            ]
-        })
-        return all_messages
-    } 
+     
 }
 
 export default Message
