@@ -1,6 +1,7 @@
-import _Table from "../tables/_Table";
 import Postgres from "../postgres";
+import _Table from "../tables/_Table";
 import Agent from "../tables/Agents";
+import Chat from "../tables/Chats";
 import Human from "../tables/Humans";
 import Message from "../tables/Messages";
 import {assert, define} from "superstruct";
@@ -16,6 +17,7 @@ import {assert, define} from "superstruct";
     });
     static async build(){
         if(Provider.instance && Provider.#instance_with_build) return Provider.instance;
+        //validate
         Provider.#instance_with_build = true;
         const provider = new Provider();
         await provider.#_build();
@@ -35,13 +37,16 @@ import {assert, define} from "superstruct";
         await this.db.connect();
         Provider.#db_ok = true;
         const agents = await Agent.getInstance();
+        const chats = await Chat.getInstance();
         const humans = await Human.getInstance();
         const messages = await Message.getInstance();
         const relations_many_to_many = [
         ];
         messages.ref(agents);
         messages.ref(humans);
+        messages.ref(chats);
         await agents.sync();
+        await chats.sync();
         await humans.sync();
         await messages.sync();
         for (const relation of relations_many_to_many) {
@@ -49,6 +54,7 @@ import {assert, define} from "superstruct";
             this.tables[relation.get_name()] = relation;
         }
         this.tables[agents.get_name()] = agents;
+        this.tables[chats.get_name()] = chats;
         this.tables[humans.get_name()] = humans;
         this.tables[messages.get_name()] = messages;
         Provider.#sync_ok = true;

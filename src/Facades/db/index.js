@@ -1,19 +1,20 @@
-import Provider from "./Channel/db/provider"
-import Message from "./Channel/db/tables/Messages"
+import DB from "./Channel/db"
 class Data {
     constructor({ context, message }){
         this.context = context
         this.message = message
     }
     async init() {
-        await Provider.build()        
+
     }
     getMessage(message) {
         return message
     }
     getAgent() {
     }
-    getHistory() {
+    async getHistory(human_external_id) {
+        const messages = await DB.getMessagesByExternalId(human_external_id)
+
     }
 }
 export default Data;

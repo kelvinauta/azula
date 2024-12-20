@@ -58,7 +58,7 @@ class Message extends _Table {
     constructor(...all) {
         super(...all);
     }
-     
+    
 }
 
 export default Message
