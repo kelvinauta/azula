@@ -1,30 +1,35 @@
-import DB from "./Channel/db"
+import DB from "./Channel/db";
 class Data {
-    constructor({ context, message }){
-        this.context = context
-        this.message = message
+    constructor({ context, message }) {
+        this.context = context;
+        this.message = message;
     }
-    async init() {
-
+    async getMessage() {
+        const message_data = await DB.pushMessage(
+            this.message,
+            this.context.chat,
+            this.context.human,
+        );
+        return message_data;
     }
-    getMessage(message) {
-        return message
-    }
-    getAgent() {
+    async getAgent() {
+        DB.getAgent(this.context.channel)
     }
     async getHistory() {
-        const chat_external_id = this.context.chat
-        const messages = await DB.getHistoryByExternalId(chat_external_id)
-        const history = messages.map((msg)=>{
-            const msg_data = msg
-            const agent = msg_data.agent && "assistant"
-            const human = msg_data.human && "user"
-            return msg_data.texts.map((txt)=>({
-                role: agent || human,
-                content: txt
-            }))
-        }).flat()
-        return history
+        const chat_external_id = this.context.chat;
+        const messages = await DB.getHistoryByExternalId(chat_external_id);
+        const history = messages
+            .map((msg) => {
+                const msg_data = msg;
+                const agent = msg_data.agent && "assistant";
+                const human = msg_data.human && "user";
+                return msg_data.texts.map((txt) => ({
+                    role: agent || human,
+                    content: txt,
+                }));
+            })
+            .flat();
+        return history;
     }
 }
 export default Data;

@@ -7,7 +7,8 @@ class Builder {
     static input_schema = {
         context: object({
             chat: string(),
-            origin: string(),
+            human: string(),
+            channel: string(),
             metadata: optional(
                 object({
                     name: string(),
@@ -52,10 +53,11 @@ class Builder {
             context: this.context,
             message: this.message,
         });
-        await data.init()
-        const message = data.getMessage();
-        const agent = data.getAgent();
-        const history = data.getHistory();
+        const [message, agent, history] = await Promise.all([
+            data.getMessage(),
+            data.getAgent(),
+            data.getHistory(),
+        ])
         return {
             message,
             agent,

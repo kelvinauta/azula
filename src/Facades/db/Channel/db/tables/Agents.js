@@ -21,10 +21,14 @@ class Agent extends _Table {
             allowNull: true,
         },
         config: {
-            type: DataTypes.JSON,
+            type: DataTypes.JSONB,
             allowNull: false,
         },
-    };
+        channel: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
+    }
     static schema = {
         id: optional(define("id", (value) => isUuid.v4(value))),
         name: string(),

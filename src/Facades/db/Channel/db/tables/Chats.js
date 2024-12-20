@@ -15,7 +15,7 @@ class Chat extends _Table {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        origin: {
+        channel: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -33,7 +33,7 @@ class Chat extends _Table {
     static schema_strict = {
         id: define("id", (value) => isUuid.v4(value)),
         external_id: string(),
-        origin: string(),
+        channel: string(),
         last_interaction: optional(date()),
     }
     constructor(...all) {
