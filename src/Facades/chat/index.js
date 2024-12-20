@@ -6,7 +6,7 @@ import Tools from "../tools";
 class Builder {
     static input_schema = {
         context: object({
-            human: string(),
+            chat: string(),
             origin: string(),
             metadata: optional(
                 object({

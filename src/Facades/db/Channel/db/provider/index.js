@@ -17,7 +17,6 @@ import {assert, define} from "superstruct";
     });
     static async build(){
         if(Provider.instance && Provider.#instance_with_build) return Provider.instance;
-        //validate
         Provider.#instance_with_build = true;
         const provider = new Provider();
         await provider.#_build();
@@ -40,8 +39,7 @@ import {assert, define} from "superstruct";
         const chats = await Chat.getInstance();
         const humans = await Human.getInstance();
         const messages = await Message.getInstance();
-        const relations_many_to_many = [
-        ];
+        const relations_many_to_many = [];
         messages.ref(agents);
         messages.ref(humans);
         messages.ref(chats);

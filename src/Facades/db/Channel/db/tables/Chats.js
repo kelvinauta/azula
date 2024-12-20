@@ -39,14 +39,6 @@ class Chat extends _Table {
     constructor(...all) {
         super(...all);
     }
-    async getHistoryChat(chat_row) {
-        if (!chat_row) throw new Error("chat_row args is required")
-        assert(chat_row, object(Chat.schema_strict))
-        const messages = await Messages.getInstance()
-        const all_messages = await messages.getMessagesWhereChat(chat_row)
-        return all_messages
-
-    }
+    
 }
-
 export default Chat;
