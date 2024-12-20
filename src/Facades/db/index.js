@@ -7,13 +7,14 @@ class Data {
     async getMessage() {
         const message_data = await DB.pushMessage(
             this.message,
+            this.context.channel,
             this.context.chat,
             this.context.human,
         );
         return message_data;
     }
     async getAgent() {
-        DB.getAgent(this.context.channel)
+        return await DB.getAgent(this.context.channel)
     }
     async getHistory() {
         const chat_external_id = this.context.chat;

@@ -5,7 +5,7 @@ import _Agent from "./tables/Agents";
 import _Chat from "./tables/Chats";
 
 class _DB {
-    async getInstance() {
+    static async getInstance() {
         await Provider.build();
         const [Human, Message, Agent, Chat] = await Promise.all([
             _Human.getInstance(),
@@ -21,27 +21,29 @@ class _DB {
         this.Agent = Tables.Agent;
         this.Message = Tables.Message;
         this.Human = Tables.Human;
+        this.Chat = Tables.Chat;
     }
     async getAgent(channel) {
-        return await this.Tables.Agent.model.findOne({
+        return await this.Agent.model.findOne({
             where: {
                 channel,
             },
         });
     }
-    async pushMessage(message, chat_external_id, human_external_id) {
-        const chat = await this.Tables.Chat.touch_one({
+    async pushMessage(message, channel, chat_external_id, human_external_id) {
+        const chat = await this.Chat.touch_one({
             external_id: chat_external_id,
-        });
-        const human = await this.Tables.Human.touch_one({
+            channel,
+        })
+        const human = await this.Human.touch_one({
             external_id: human_external_id,
-        });
-        const message = await this.Tables.Message.model.create({
+        })
+        const new_message =  await this.Message.model.create({
             texts: message.texts,
-            human,
-            chat,
-        });
-        return message;
+            _human: human.dataValues.id,
+            _chat: chat.dataValues.id,
+        })
+        return new_message.dataValues
     }
     async getHistoryByExternalId(external_id) {
         const chat = await this.getChatByExternalId(external_id);
@@ -49,22 +51,20 @@ class _DB {
         return messages;
     }
     async getMessagesByChat(chat) {
-        const chat_id = chat.id;
-        return await this.Tables.Message.model.findAll({
-            where: {
-                chat: chat_id,
-            },
-            order: [["created_at", "ASC"]],
-        });
+        const chat_id = chat.dataValues.id;
+        return await this.Message.model
+            .findAll({
+                where: {
+                    _chat: chat_id,
+                },
+                order: [["createdAt", "ASC"]],
+            })
     }
     async getChatByExternalId(external_id) {
-        return await this.Tables.Chat.model.findOne({
-            where: {
-                external_id,
-            },
+        return await this.Chat.touch_one({
+            external_id,
         });
     }
 }
 
-const DB = await _DB.getInstance();
-return DB;
+export default await _DB.getInstance();

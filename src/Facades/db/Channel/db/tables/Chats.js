@@ -27,7 +27,7 @@ class Chat extends _Table {
     static schema = {
         id: optional(define("id", (value) => isUuid.v4(value))),
         external_id: optional(string()),
-        origin: optional(string()),
+        channel: optional(string()),
         last_interaction: optional(date()),
     };
     static schema_strict = {
