@@ -16,7 +16,8 @@ class AgentFactory {
     async simple(agent_data){
         this.#validate();
         assert(agent_data, object(this.agent_table_intance.constructor.schema));
-        return await this.agent_table_intance.model.create(agent_data);
+        const agent = await this.agent_table_intance.model.create(agent_data);
+        return agent.dataValues
     }
 }
 export default AgentFactory;

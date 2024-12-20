@@ -1,66 +1,68 @@
-
-import { test, beforeAll } from "bun:test";
+import { test, beforeAll, expect } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import Data from "../../../Facades/db";
 import AgentFactory from "../../../Facades/db/Channel/db/factory/AgentFactory";
 import Agent from "../../../Facades/db/Channel/db/tables/Agents";
 import Provider from "../../../Facades/db/Channel/db/provider";
-
 let testAgent;
 let dataInstance;
-
+let testData;
 beforeAll(async () => {
-  // Inicializar Provider
-  await Provider.build();
-  
-  // Crear agente de prueba
-  const agentInstance = await Agent.getInstance();
-  const factory = new AgentFactory(agentInstance);
-  
-  testAgent = await factory.simple({
-    name: `test-agent-${uuidv4()}`,
-    description: "Agente de prueba",
-    config: {
-      prompt: "Prompt de prueba"
-    },
-    llm_engine: {
-      model: "gpt-3.5-turbo",
-      provider: "openai",
-      max_tokens: 256,
-      temperature: 1,
-      api_key: "test-key"
-    },
-    channel: "test-channel"
-  });
-
-  // Crear instancia de Data con datos de prueba
-  const testData = {
-    context: {
-      chat: uuidv4(),
-      human: uuidv4(),
-      channel: "test-channel",
-      metadata: {
-        name: "Usuario Test",
-        phone: "123456789",
-        profile_url: "https://test.com/profile"
-      }
-    },
-    message: {
-      texts: ["Hola", "Este es un mensaje de prueba"]
-    }
-  };
-
-  dataInstance = new Data(testData);
+    await Provider.build();
+    const agentInstance = await Agent.getInstance();
+    const factory = new AgentFactory(agentInstance);
+    testAgent = await factory.simple({
+        name: `test-agent-${uuidv4()}`,
+        description: "Agente de prueba",
+        config: {
+            prompt: "Prompt de prueba",
+        },
+        llm_engine: {
+            model: "gpt-3.5-turbo",
+            provider: "openai",
+            max_tokens: 256,
+            temperature: 1,
+            api_key: "test-key",
+        },
+        channel: uuidv4(),
+    });
+    testData = {
+        context: {
+            chat: uuidv4(),
+            human: uuidv4(),
+            channel: testAgent.channel,
+            metadata: {
+                name: "Usuario Test",
+                phone: "123456789",
+                profile_url: "https://test.com/profile",
+            },
+        },
+        message: {
+            texts: ["Hola", "Este es un mensaje de prueba"],
+        },
+    };
+    dataInstance = new Data(testData);
 });
-
-test("getMessage debe crear y retornar un mensaje", async () => {
-  const result = await dataInstance.getMessage();
+test("getMessage debe crear y retornar un mensaje con estructura correcta", async () => {
+    const result = await dataInstance.getMessage();
+    console.log("Mensaje creado:", result);
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.createdAt).toBeDefined();
+    expect(result.texts).toEqual(testData.message.texts);
+    expect(result._human).toBeDefined();
+    expect(result._chat).toBeDefined();
 });
-
-test("getAgent debe obtener el agente del canal", async () => {
-  const result = await dataInstance.getAgent();
+test("getAgent debe obtener el agente creado", async () => {
+    const result = await dataInstance.getAgent();
+    console.log("Agente obtenido:", result);
+    expect(result.id).toBe(testAgent.id);
+    expect(result.name).toBe(testAgent.name);
+    expect(result.description).toBe(testAgent.description);
+    expect(result.config).toEqual(testAgent.config);
+    expect(result.channel).toBe(testAgent.channel);
 });
-
 test("getHistory debe obtener el historial de mensajes", async () => {
-  const result = await dataInstance.getHistory();
+    const result = await dataInstance.getHistory();
+    console.log("Historial obtenido:", result);
 });

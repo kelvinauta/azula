@@ -24,11 +24,12 @@ class _DB {
         this.Chat = Tables.Chat;
     }
     async getAgent(channel) {
-        return await this.Agent.model.findOne({
+        const agent = await this.Agent.model.findOne({
             where: {
                 channel,
             },
         });
+        return agent.dataValues
     }
     async pushMessage(message, channel, chat_external_id, human_external_id) {
         const chat = await this.Chat.touch_one({
