@@ -1,5 +1,5 @@
-import _Table from "../../../Facades/db/Chats/db/tables/_Table";
-import Postgres from "../../../Facades/db/Chats/db/postgres";
+import _Table from "../../../Facades/db/Channel/db/tables/_Table";
+import Postgres from "../../../Facades/db/Channel/db/postgres";
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { DataTypes } from "sequelize";
 // Clase de prueba que hereda de _Table

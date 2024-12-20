@@ -1,6 +1,6 @@
 import _Table from "./_Table.js";
 import { DataTypes } from "sequelize";
-import { object, string, define, optional, defaulted } from "superstruct";
+import { object, string, define, optional, enums, number, defaulted } from "superstruct";
 import isUuid from "is-uuid";
 
 class Agent extends _Table {
@@ -27,6 +27,10 @@ class Agent extends _Table {
         channel: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        llm_engine:{
+            type: DataTypes.JSONB,
+            allowNull: false
         }
     }
     static schema = {
@@ -43,6 +47,7 @@ class Agent extends _Table {
             temperature: defaulted(number(), 1),
             api_key: string(),
         }),
+        channel: string()
     };
     static options = {
         paranoid: true,
