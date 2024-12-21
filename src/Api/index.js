@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import Builder from './Facades/builder'
+import Builder from '../Facades/builder'
 const app = new Hono()
 const chatSchema = z.object({
   context: z.object({
@@ -36,4 +36,7 @@ app.post('/v1/chat', zValidator('json', chatSchema), async (c) => {
     }, 500)
   }
 })
-export default app
+export default {
+    port: 3333,
+    fetch: app.fetch
+}

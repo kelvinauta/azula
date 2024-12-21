@@ -1,4 +1,4 @@
-import { string, array, object, optional, assert } from "superstruct";
+import { string, array, object, optional, assert , define} from "superstruct";
 import LLM from "../llm";
 import Data from "../db";
 import Text from "../text";
@@ -33,6 +33,9 @@ class Builder {
     async run() {
         assert(this.context, Builder.input_schema.context);
         assert(this.message, Builder.input_schema.message);
+        assert(this.context, define("Human or Agent required",((context)=>{
+            return Boolean(context.agent)  || Boolean(context.human)
+        })))
         const { messages, llm, tools } = await this.#build();
         const answer = await llm.generate_text(messages, tools.get().to.ai);
         this.answer = answer;

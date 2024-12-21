@@ -2,7 +2,7 @@
   "name": "kleb_azula",
   "scripts": {
     "dev": "bun run --watch src/index.js",
-    "start": "bun run src/index.js",
+    "start": "bun run src/Api/index.js",
     "test": "bun run test",
     "reset-db": "rm -rf .volumes && docker compose down && docker compose up -d",
     "docker-dev": "docker compose down && docker compose up -d && docker exec -it workspace_azula /bin/bash",
@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.0.4",
     "@faker-js/faker": "^9.2.0",
+    "@hono/zod-validator": "^0.4.2",
     "@libsql/client": "^0.14.0",
     "ai": "^4.0.3",
     "axios": "^1.7.9",
