@@ -28,6 +28,7 @@ class Builder {
     async run() {
         const { messages, llm, tools } = await this.#build();
         const answer = await llm.generate_text(messages, tools.get().to.ai); 
+        return answer
     }
     async #build() {
         const { message, agent, history } = await this.#getData();
@@ -54,7 +55,7 @@ class Builder {
         };
     }
     async #buildMessages({ system_prompt, message, history, args, tools }) {
-        const functions = tools.getPromptFunctions();
+        const functions = tools.get().to.prompt
         const system = {
             role: "system",
             content: await Text.processor({
@@ -63,6 +64,7 @@ class Builder {
                 args,
             }),
         };
+        console.log(functions)
         const new_messages = message.texts.map((txt) => ({
             role: "user",
             content: txt,
