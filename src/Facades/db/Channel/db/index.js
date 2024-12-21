@@ -64,8 +64,7 @@ class _DB {
                     external_id: human_external_id,
                 })
             ).dataValues.id;
-        }
-        if (agent_id) {
+        } else if (agent_id) {
             message_input._agent = (
                 await this.Agent.model.findOne({
                     where: {

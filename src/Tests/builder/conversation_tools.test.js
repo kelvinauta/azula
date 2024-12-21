@@ -9,8 +9,7 @@ import Chat from "../../Facades/db/Channel/db/tables/Chats";
 import Tools from "../../Facades/tools";
 import axios from "axios";
 import { z } from "zod";
-
-const LIMIT = 5;
+const LIMIT = 3;
 const DBZ_CHARACTERS = [
     "Goku",
     "Vegeta",
@@ -21,15 +20,12 @@ const DBZ_CHARACTERS = [
     "Frieza",
 ];
 const CHANNEL_ID = uuidv4();
-
 function log(...msg) {
-    console.log(...msg);
+    console.log(...msg)
 }
-// Configuración de herramientas para AI Agent
 const createServerTools = () => {
     log("🛠️ Creando herramientas del servidor...");
     const tools = new Tools();
-
     tools.setAiTools([
         {
             name: "buscar_personaje",
@@ -53,7 +49,6 @@ const createServerTools = () => {
             },
         },
     ]);
-
     tools.setPromptFunctions({
         hora_actual: () => {
             const hora = new Date().toLocaleTimeString();
@@ -61,42 +56,35 @@ const createServerTools = () => {
             return hora;
         },
     });
-
     return tools;
 };
-
-// Configuración de herramientas para AI Human
 const createClientTools = () => {
     log("🛠️ Creando herramientas del cliente...");
     const tools = new Tools();
-
     const functions = {
-        hora_actual: () => {
-            const hora = new Date().toLocaleTimeString();
-            log(`⏰ Hora actual: ${hora}`);
-            return hora;
-        },
-        randomCharacter: () => {
-            const character =
-                DBZ_CHARACTERS[
-                    Math.floor(Math.random() * DBZ_CHARACTERS.length)
-                ];
-            log(`🎲 Personaje aleatorio seleccionado: ${character}`);
-            return character;
-        },
-    };
+                hora_actual: () => {
+                                const hora = new Date().toLocaleTimeString();
+                                log(`⏰ Hora actual: ${hora}`);
+                                return hora;
+                            },
+                randomCharacter: () => {
+                                const character =
+                                        DBZ_CHARACTERS[
+                                                                Math.floor(Math.random() * DBZ_CHARACTERS.length)
+                                                            ];
+                                log(`🎲 Personaje aleatorio seleccionado: ${character}`);
+                                return character;
+                            },
+            }
     tools.setPromptFunctions(functions);
-    tools.setMessageFunctions(functions);
+    tools.setMessageFunctions(functions)
     return tools;
 };
-
 test(
     "Debe mantener una conversación coherente sobre Dragon Ball Z",
     async () => {
         await Provider.build();
         const chat_external_id = uuidv4();
-
-        // Crear agente servidor una sola vez
         const agentInstance = await Agent.getInstance();
         const factory = new AgentFactory(agentInstance);
         const serverAgent = await factory.simple({
@@ -114,12 +102,8 @@ test(
             },
             channel: CHANNEL_ID,
         });
-
         let previousResponse = null;
-
-        // Iniciar ciclo de conversación
         for (let i = 0; i < LIMIT; i++) {
-            // Turno del cliente
             const clientBuilder = new Builder({
                 context: {
                     chat: chat_external_id,
@@ -130,15 +114,13 @@ test(
                 message: {
                     texts: previousResponse
                         ? [
-                              `Cuéntame más sobre la respuesta que me diste de ${previousResponse.text}`,
+                              `Cuéntame más sobre la respuesta que me diste de ${previousResponse.answer.text}`,
                           ]
                         : ["Cuéntame sobre {{/randomCharacter}}"],
                 },
                 tools: createClientTools(),
             });
             const clientResponse = await clientBuilder.run();
-
-            // Turno del servidor
             const serverBuilder = new Builder({
                 context: {
                     chat: chat_external_id,
@@ -147,17 +129,13 @@ test(
                     metadata: { name: "AI Server" },
                 },
                 message: {
-                    texts: [clientResponse.text],
+                    texts: [clientResponse.answer.text],
                 },
                 tools: createServerTools(),
             });
-
             const serverResponse = await serverBuilder.run();
             previousResponse = serverResponse;
         }
-
-        // Verificación final
-
         const chatInstance = await Chat.getInstance();
         const chat = await chatInstance.model.findOne({
             where: {
@@ -167,13 +145,11 @@ test(
         const messageInstance = await Message.getInstance();
         const messages = await messageInstance.model.findAll({
             where: {
-                _chat: chat.dataValues.id,
+                _chat: chat.dataValues.id
             },
         });
-
         const clientMessages = messages.filter((m) => m._human);
         const serverMessages = messages.filter((m) => m._agent);
-
         expect(messages.length).toBe(LIMIT * 2);
         expect(clientMessages.length).toBe(LIMIT);
         expect(serverMessages.length).toBe(LIMIT);

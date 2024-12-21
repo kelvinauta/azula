@@ -47,10 +47,11 @@ class LLM {
         const generateTextConfig = {
             model: this.llm_engine.model,
             messages: _messages,
+            maxTokens: this.llm_engine.max_tokens,
         };
         if (tools) generateTextConfig.tools = this.#build_tools(tools);
         const response = await generateText(generateTextConfig);
-        
+
         return response;
     }
     #build_message(messages) {

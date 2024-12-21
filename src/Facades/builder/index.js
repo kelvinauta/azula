@@ -7,14 +7,14 @@ class Builder {
     static input_schema = {
         context: object({
             chat: string(),
-            human: optional( string() ),
-            agent: optional( string() ),
+            human: optional(string()),
+            agent: optional(string()),
             channel: string(),
             metadata: optional(
                 object({
-                    name: optional( string() ),
-                    phone: optional( string() ),
-                    profile_url: optional( string() ),
+                    name: optional(string()),
+                    phone: optional(string()),
+                    profile_url: optional(string()),
                 }),
             ),
         }),
@@ -31,16 +31,23 @@ class Builder {
         this.Data.setContext(this.context);
     }
     async run() {
-        assert(this.context, Builder.input_schema.context)
-        assert(this.message, Builder.input_schema.message)
+        assert(this.context, Builder.input_schema.context);
+        assert(this.message, Builder.input_schema.message);
         const { messages, llm, tools } = await this.#build();
         const answer = await llm.generate_text(messages, tools.get().to.ai);
         this.answer = answer;
         return {
-            text: answer.text,
-            toolCalls: answer.toolCalls,
-            toolResults: answer.toolResults,
-            finishReason: answer.finishReason,
+            answer: {
+                text: answer.text,
+                toolCalls: answer.toolCalls,
+                toolResults: answer.toolResults,
+                finishReason: answer.finishReason,
+            },
+            input:{
+                messages,
+                tools,
+                llm_engine: llm.llm_engine
+            }
         };
     }
     async saveAnswer(answer) {
@@ -65,7 +72,7 @@ class Builder {
             tools,
         });
         this.Data.setMessage({
-            texts: new_messages
+            texts: new_messages,
         });
         const message = await this.Data.getMessage();
         const llm = new LLM(agent.llm_engine);
