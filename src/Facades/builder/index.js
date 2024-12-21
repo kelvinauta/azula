@@ -21,9 +21,10 @@ class Builder {
             texts: array(string()),
         }),
     };
-    constructor({ context, message }) {
+    constructor({ context, message, tools }) {
         this.context = context;
         this.message = message;
+        this.Tools = tools || new Tools()
     }
     async run() {
         const { messages, llm, tools } = await this.#build();
@@ -32,7 +33,7 @@ class Builder {
     }
     async #build() {
         const { message, agent, history } = await this.#getData();
-        const tools = new Tools();
+        const tools = this.Tools
         const llm = new LLM(agent.llm_engine);
         const args = this.#getArgs({
             message,

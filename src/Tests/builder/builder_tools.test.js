@@ -1,5 +1,6 @@
-import { test, beforeAll, expect , spyOn} from "bun:test";
+import { test, beforeAll, expect, spyOn } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 import Builder from "../../Facades/builder";
 import Provider from "../../Facades/db/Channel/db/provider";
 import AgentFactory from "../../Facades/db/Channel/db/factory/AgentFactory";
@@ -7,16 +8,60 @@ import Agent from "../../Facades/db/Channel/db/tables/Agents";
 import Human from "../../Facades/db/Channel/db/tables/Humans";
 import Chat from "../../Facades/db/Channel/db/tables/Chats";
 import Message from "../../Facades/db/Channel/db/tables/Messages";
-
+import Tools from "../../Facades/tools";
 let testAgent;
 let testHuman;
 let testChat;
 let builderInstance;
 let testData;
 
+const test_tools = new Tools();
+test_tools.setAiTools([
+    {
+        name: "buscar_producto",
+        description: "Busca un producto en la base de datos",
+        strict: true,
+        parameters: z.object({
+            nombre: z.string(),
+            categoria: z.string().optional(),
+        }),
+        execute: async ({ nombre, categoria }) => {
+            return {
+                nombre,
+                precio: 100,
+                categoria: categoria || "general",
+            };
+        },
+    },
+    {
+        name: "verificar_stock",
+        description: "Verifica el stock de un producto",
+        strict: true,
+        parameters: z.object({
+            producto_id: z.string(),
+        }),
+        execute: async ({ producto_id }) => {
+            return {
+                disponible: true,
+                cantidad: 50,
+            };
+        },
+    },
+]);
+test_tools.setPromptFunctions({
+    get_user_name: (args) => args.context.metadata.name,
+    get_last_interaction: (args) => {
+        const lastMsg = args.history[args.history.length - 1];
+        return lastMsg ? lastMsg.content : "No hay interacciones previas";
+    },
+});
+test_tools.setMessageFunctions({
+    format_price: (price) => `$${price.toFixed(2)}`,
+    format_date: (date) => new Date(date).toLocaleDateString(),
+});
 beforeAll(async () => {
     await Provider.build();
-    
+
     const agentInstance = await Agent.getInstance();
     const factory = new AgentFactory(agentInstance);
     testAgent = await factory.simple({
@@ -30,7 +75,7 @@ beforeAll(async () => {
             provider: "openai",
             max_tokens: 256,
             temperature: 1,
-            api_key: process.env.OPENAI_API_KEY
+            api_key: process.env.OPENAI_API_KEY,
         },
         channel: uuidv4(),
     });
@@ -73,29 +118,33 @@ beforeAll(async () => {
         message: {
             texts: ["Busco una laptop para programación"],
         },
+        tools: test_tools
     };
 
-    
     builderInstance = new Builder(testData);
 });
 
-test("Builder.run() debe procesar el mensaje usando tools y crear un nuevo registro", async () => {
-    const response = await builderInstance.run();
+test(
+    "Builder.run() debe procesar el mensaje usando tools y crear un nuevo registro",
+    async () => {
+        const response = await builderInstance.run();
 
-    // Verificar que se creó el mensaje
-    const messageInstance = await Message.getInstance();
-    const lastMessage = await messageInstance.model.findOne({
-        where: {
-            _chat: testChat.id,
-            _human: testHuman.id,
-        },
-        order: [['createdAt', 'DESC']],
-    });
+        // Verificar que se creó el mensaje
+        const messageInstance = await Message.getInstance();
+        const lastMessage = await messageInstance.model.findOne({
+            where: {
+                _chat: testChat.id,
+                _human: testHuman.id,
+            },
+            order: [["createdAt", "DESC"]],
+        });
 
-    expect(lastMessage).toBeDefined();
-    expect(lastMessage.texts).toEqual(testData.message.texts);
-    expect(response).toBeDefined();
-    
-    // Verificar que la respuesta incluya resultados de las tools
-    expect(response.toolResults).toBeDefined();
-}, { timeout: 30000 });
+        expect(lastMessage).toBeDefined();
+        expect(lastMessage.texts).toEqual(testData.message.texts);
+        expect(response).toBeDefined();
+
+        // Verificar que la respuesta incluya resultados de las tools
+        expect(response.toolResults).toBeDefined();
+    },
+    { timeout: 30000 },
+);
