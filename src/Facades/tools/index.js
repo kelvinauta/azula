@@ -1,9 +1,8 @@
-import { z } from "zod";
 class Tools {
-    constructor() {
-        this.aiTools = [];
-        this.promptFunctions = {};
-        this.messageFunctions = {};
+    constructor(messageFunctions, promptFunctions, aiTools) {
+        this.aiTools = aiTools
+        this.promptFunctions = promptFunctions
+        this.messageFunctions = messageFunctions
     }
     setAiTools(aiTools) {
         this.aiTools = aiTools;
