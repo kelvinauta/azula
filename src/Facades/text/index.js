@@ -1,4 +1,5 @@
 async function processor({ text, functions, args }) {
+    if(!functions) return text
     const tokenRegex = /{{([^}]+)}}/g;
     const matches = [...text.matchAll(tokenRegex)];
     if (!matches.length) return text;

@@ -1,13 +1,6 @@
 import _Table from "./_Table";
 import { DataTypes } from "sequelize";
-import {
-    object,
-    string,
-    array,
-    define,
-    optional,
-    assert,
-} from "superstruct";
+import { object, string, array, define, optional, assert } from "superstruct";
 import isUuid from "is-uuid";
 class Message extends _Table {
     static attributes = {
@@ -18,7 +11,12 @@ class Message extends _Table {
             primaryKey: true,
         },
         texts: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
+            type: DataTypes.ARRAY(DataTypes.TEXT),
+            allowNull: false,
+        },
+        tools: {
+            // TODO: Se debe guardar historial de las llamadas a las tools
+            type: DataTypes.JSONB,
             allowNull: true,
         },
         files: {

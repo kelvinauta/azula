@@ -18,7 +18,7 @@ class Tools {
             to: {
                 ai: this.aiTools,
                 prompt: this.promptFunctions,
-                answer: this.messageFunctions,
+                message: this.messageFunctions,
             },
         };
     }

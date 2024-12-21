@@ -135,6 +135,5 @@ class Insert {
             throw error;
         }
     }
-    // TODO: Implementar métodos read, update, delete y query
 }
 export default Insert;

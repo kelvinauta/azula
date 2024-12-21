@@ -2,38 +2,54 @@ import DB from "./Channel/db";
 
 class Data {
     // NOTE: Objeto desechable de un unico uso
-    constructor({ context, message }) {
-        this.context = context;
-        this.message = message;
+    constructor() {
+        this.context
+        this.message
         this.data = {
             agent_id: null,
             human_id: null,
             chat_id: null,
         };
     }
-    async pushAnswer(answer){
-        const answer_data = await DB.pushAnswer(answer, this.data.chat_id, this.data.agent_id)
-        return answer_data
+    setMessage(message){
+        this.message = message
+    }
+    setContext(context){
+        this.context = context
+    }
+    async pushAnswer(answer) {
+        const answer_data = await DB.pushAnswer(
+            answer,
+            this.data.chat_id,
+            this.data.agent_id,
+            this.context.channel,
+        );
+        return answer_data;
     }
     async getMessage() {
-        const message_data = await DB.pushMessage(
-            this.message,
-            this.context.channel,
-            this.context.chat,
-            this.context.human,
-        );
+        const message_data = await DB.pushMessage(this.message, {
+            channel: this.context.channel,
+            chat_external_id: this.context.chat,
+            human_external_id: this.context.human,
+            agent_id: this.context.agent,
+        });
         this.data.chat_id = message_data._chat;
-        this.data.human_id - message_data._human;
+        this.data.human_id = message_data._human;
         return message_data;
     }
     async getAgent() {
-        const agent = await DB.getAgent(this.context.channel);
+        const agent = this.context.agent
+            ? await DB.getAgentById(this.context.agent)
+            : await DB.getAgentByChannel(this.context.channel);
         this.data.agent_id = agent.id;
         return agent;
     }
     async getHistory() {
         const chat_external_id = this.context.chat;
-        const messages = await DB.getHistoryByExternalId(chat_external_id);
+        const messages = await DB.getHistoryByExternalId(
+            chat_external_id,
+            this.context.channel,
+        );
         const history = messages
             .map((msg) => {
                 const msg_data = msg;

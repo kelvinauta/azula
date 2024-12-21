@@ -50,6 +50,7 @@ class LLM {
         };
         if (tools) generateTextConfig.tools = this.#build_tools(tools);
         const response = await generateText(generateTextConfig);
+        
         return response;
     }
     #build_message(messages) {
