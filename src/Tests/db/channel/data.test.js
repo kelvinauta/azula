@@ -41,7 +41,9 @@ beforeAll(async () => {
             texts: ["Hola", "Este es un mensaje de prueba"],
         },
     };
-    dataInstance = new Data(testData);
+    dataInstance = new Data();
+    dataInstance.setMessage(testData.message)
+    dataInstance.setContext(testData.context)
 });
 test("getMessage debe crear y retornar un mensaje con estructura correcta", async () => {
     const result = await dataInstance.getMessage();
