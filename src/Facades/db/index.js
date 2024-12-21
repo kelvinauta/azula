@@ -22,8 +22,8 @@ class Data {
         const history = messages
             .map((msg) => {
                 const msg_data = msg;
-                const agent = msg_data.agent && "assistant";
-                const human = msg_data.human && "user";
+                const agent = msg_data._agent && "assistant";
+                const human = msg_data._human && "user";
                 return msg_data.texts.map((txt) => ({
                     role: agent || human,
                     content: txt,
