@@ -4,7 +4,6 @@ import Builder from "../../Facades/builder";
 import Provider from "../../Facades/db/Channel/db/provider";
 import AgentFactory from "../../Facades/db/Channel/db/factory/AgentFactory";
 import Agent from "../../Facades/db/Channel/db/tables/Agents";
-
 const MESSAGES = [
     "1 Lorem ipsum dolor sit amet",
     "2 Consectetur adipiscing elit",
@@ -17,12 +16,10 @@ const MESSAGES = [
     "9 Excepteur sint occaecat cupidatat",
     "10 Sunt in culpa qui officia deserunt"
 ];
-
 test("Los mensajes y respuestas deben mantener el orden correcto", async () => {
     await Provider.build();
     const CHANNEL_ID = uuidv4();
     const chat_external_id = uuidv4();
-    
     const agentInstance = await Agent.getInstance();
     const factory = new AgentFactory(agentInstance);
     const agent = await factory.simple({
@@ -40,11 +37,8 @@ test("Los mensajes y respuestas deben mantener el orden correcto", async () => {
         },
         channel: CHANNEL_ID,
     });
-
     let lastResponse;
     let allResponses = [];
-    
-    // Enviar mensajes y guardar respuestas
     for (const message of MESSAGES) {
         const builder = new Builder({
             context: {
@@ -57,36 +51,25 @@ test("Los mensajes y respuestas deben mantener el orden correcto", async () => {
                 texts: [message],
             },
         });
-        
         const response = await builder.run();
         await builder.saveAnswer(response.answer)
         allResponses.push(response);
         lastResponse = response;
     }
-
     const messages = lastResponse.input.messages;
-    
         console.log(messages)
-    // Saltamos el mensaje del sistema
     const conversationMessages = messages.slice(1);
-    
-    // Verificar alternancia y orden
     for (let i = 0; i < conversationMessages.length; i++) {
         const msg = conversationMessages[i];
-        
         if (i % 2 === 0) {
-            // Mensajes del usuario deben coincidir con el array original
             expect(msg.role).toBe("user");
             const messageIndex = Math.floor(i/2);
             expect(msg.content).toBe(MESSAGES[messageIndex]);
         } else {
-            // Respuestas del asistente deben ser iguales al mensaje anterior
             expect(msg.role).toBe("assistant");
             expect(msg.content).toBe(conversationMessages[i-1].content);
         }
     }
-
-    // Verificar que el último mensaje en input es el último del array
     const lastUserMessage = conversationMessages.filter(m => m.role === "user").pop();
     expect(lastUserMessage.content).toBe(MESSAGES[MESSAGES.length - 1]);
 }, { timeout: 30000 });
