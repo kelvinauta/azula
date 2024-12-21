@@ -36,12 +36,6 @@ class Builder {
         const { messages, llm, tools } = await this.#build();
         const answer = await llm.generate_text(messages, tools.get().to.ai);
         this.answer = answer;
-        console.log("_______");
-        console.log(`De: ${this.context.agent ? "Agente" : "Humano"}`);
-        console.log(`Para: ${this.context.agent ? "Humano" : "Agente"}`);
-        console.log(messages);
-        console.log(answer.text);
-        console.log("_______");
         return {
             text: answer.text,
             toolCalls: answer.toolCalls,
