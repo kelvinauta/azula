@@ -26,27 +26,49 @@ class Builder {
         this.message = message;
     }
     async run() {
-        const llm = new LLM(agent.llm_engine);
-        const messages = await this.#buildMessages()
-        const tools = new Tools().get().to.ai
-        const answer = llm.generate_text(messages, tools)
+        const { messages, llm, tools } = await this.#build();
+        const answer = await llm.generate_text(messages, tools.get().to.ai); 
     }
-    async #buildMessages(){
+    async #build() {
         const { message, agent, history } = await this.#getData();
+        const tools = new Tools();
+        const llm = new LLM(agent.llm_engine);
         const args = this.#getArgs({
             message,
             history,
             agent,
-            context: this.context
-        })
+            context: this.context,
+        });
         const messages = await this.#buildMessages({
             system_prompt: agent.config.prompt,
             message,
             history,
-            args
-        })
+            args,
+            tools,
+        });
 
-        return messages
+        return {
+            messages,
+            llm,
+            tools,
+        };
+    }
+    async #buildMessages({ system_prompt, message, history, args, tools }) {
+        const functions = tools.getPromptFunctions();
+        const system = {
+            role: "system",
+            content: await Text.processor({
+                text: system_prompt,
+                functions,
+                args,
+            }),
+        };
+        const new_messages = message.texts.map((txt) => ({
+            role: "user",
+            content: txt,
+        }));
+        const messages = [system, ...history, ...new_messages];
+        return messages;
     }
     async #getData() {
         const data = new Data({
@@ -57,38 +79,20 @@ class Builder {
             data.getMessage(),
             data.getAgent(),
             data.getHistory(),
-        ])
+        ]);
         return {
             message,
             agent,
             history,
         };
     }
-    async #buildMessages({ system_prompt, message, history, args }) {
-        const tools = new Tools();
-        const functions = tools.getPromptFunctions()
-        const system = {
-            role: "system",
-            content: await Text.processor({ system_prompt, functions, args }),
-        };
-        const new_messages = message.texts((txt)=>({
-            role: "user",
-            content: txt
-        }))
-        const messages = [
-            system,
-            ...history,
-            ...new_messages
-        ]
-        return messages
-    }
-    #getArgs({ message, history, agent, context }){
+    #getArgs({ message, history, agent, context }) {
         return {
             message,
             history,
             agent,
-            context
-        }
+            context,
+        };
     }
 }
-export default Builder
+export default Builder;

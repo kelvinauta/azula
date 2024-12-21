@@ -5,9 +5,8 @@ class Tools {
         };
     }
     getAiTools() {
-        return {
-            function1: () => {},
-        };
+        return [
+        ];
     }
     getMessageFunctions() {
         return {
@@ -17,8 +16,8 @@ class Tools {
     get() {
         return {
             to: {
-                prompt: this.getPromptFunctions(),
                 ai: this.getAiTools(),
+                prompt: this.getPromptFunctions(),
                 answer: this.getMessageFunctions(),
             },
         };
