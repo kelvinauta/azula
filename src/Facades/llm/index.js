@@ -43,7 +43,6 @@ class LLM {
         this.llm_engine = this.#generate_llm_engine(llm_engine);
     }
     async generate_text(messages, tools) {
-        console.log(messages)
         const _messages = this.#build_message(messages);
         const generateTextConfig = {
             model: this.llm_engine.model,

@@ -24,16 +24,30 @@ class Builder {
     constructor({ context, message, tools }) {
         this.context = context;
         this.message = message;
-        this.Tools = tools || new Tools()
+        this.Tools = tools || new Tools();
+        this.answer = null;
+        this.data = new Data({
+            context: this.context,
+            message: this.message,
+        });
     }
     async run() {
         const { messages, llm, tools } = await this.#build();
-        const answer = await llm.generate_text(messages, tools.get().to.ai); 
-        return answer
+        const answer = await llm.generate_text(messages, tools.get().to.ai);
+        this.answer = answer;
+        return {
+            text: answer.text,
+            toolCalls: answer.toolCalls,
+            toolResults: answer.toolResults,
+            finishReason: answer.finishReason
+        }
+    }
+    async saveAnswer(answer) {
+        return await this.data.pushAnswer(answer)
     }
     async #build() {
         const { message, agent, history } = await this.#getData();
-        const tools = this.Tools
+        const tools = this.Tools;
         const llm = new LLM(agent.llm_engine);
         const args = this.#getArgs({
             message,
@@ -56,7 +70,7 @@ class Builder {
         };
     }
     async #buildMessages({ system_prompt, message, history, args, tools }) {
-        const functions = tools.get().to.prompt
+        const functions = tools.get().to.prompt;
         const system = {
             role: "system",
             content: await Text.processor({
@@ -65,7 +79,6 @@ class Builder {
                 args,
             }),
         };
-        console.log(functions)
         const new_messages = message.texts.map((txt) => ({
             role: "user",
             content: txt,
@@ -74,14 +87,10 @@ class Builder {
         return messages;
     }
     async #getData() {
-        const data = new Data({
-            context: this.context,
-            message: this.message,
-        });
         const [message, agent, history] = await Promise.all([
-            data.getMessage(),
-            data.getAgent(),
-            data.getHistory(),
+            this.data.getMessage(),
+            this.data.getAgent(),
+            this.data.getHistory(),
         ]);
         return {
             message,

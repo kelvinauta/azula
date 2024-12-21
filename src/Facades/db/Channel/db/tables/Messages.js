@@ -6,7 +6,6 @@ import {
     array,
     define,
     optional,
-    enums,
     assert,
 } from "superstruct";
 import isUuid from "is-uuid";

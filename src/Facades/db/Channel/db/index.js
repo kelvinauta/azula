@@ -29,22 +29,30 @@ class _DB {
                 channel,
             },
         });
-        return agent.dataValues
+        return agent.dataValues;
+    }
+    async pushAnswer(answer, chat_id, agent_id) {
+        const answer_data = await this.Message.model.create({
+            texts: [answer.text],
+            _agent: agent_id,
+            _chat: chat_id,
+        });
+        return answer_data.dataValues;
     }
     async pushMessage(message, channel, chat_external_id, human_external_id) {
         const chat = await this.Chat.touch_one({
             external_id: chat_external_id,
             channel,
-        })
+        });
         const human = await this.Human.touch_one({
             external_id: human_external_id,
-        })
-        const new_message =  await this.Message.model.create({
+        });
+        const new_message = await this.Message.model.create({
             texts: message.texts,
             _human: human.dataValues.id,
             _chat: chat.dataValues.id,
-        })
-        return new_message.dataValues
+        });
+        return new_message.dataValues;
     }
     async getHistoryByExternalId(external_id) {
         const chat = await this.getChatByExternalId(external_id);
@@ -53,13 +61,12 @@ class _DB {
     }
     async getMessagesByChat(chat) {
         const chat_id = chat.dataValues.id;
-        return await this.Message.model
-            .findAll({
-                where: {
-                    _chat: chat_id,
-                },
-                order: [["createdAt", "ASC"]],
-            })
+        return await this.Message.model.findAll({
+            where: {
+                _chat: chat_id,
+            },
+            order: [["createdAt", "ASC"]],
+        });
     }
     async getChatByExternalId(external_id) {
         return await this.Chat.touch_one({

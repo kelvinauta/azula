@@ -14,7 +14,6 @@ let testHuman;
 let testChat;
 let builderInstance;
 let testData;
-
 const test_tools = new Tools();
 test_tools.setAiTools([
     {
@@ -61,7 +60,6 @@ test_tools.setMessageFunctions({
 });
 beforeAll(async () => {
     await Provider.build();
-
     const agentInstance = await Agent.getInstance();
     const factory = new AgentFactory(agentInstance);
     testAgent = await factory.simple({
@@ -79,31 +77,26 @@ beforeAll(async () => {
         },
         channel: uuidv4(),
     });
-
     const humanInstance = await Human.getInstance();
     testHuman = await humanInstance.model.create({
         external_id: uuidv4(),
     });
-
     const chatInstance = await Chat.getInstance();
     testChat = await chatInstance.model.create({
         external_id: uuidv4(),
         channel: testAgent.channel,
     });
-
     const messageInstance = await Message.getInstance();
     await messageInstance.model.create({
         texts: ["¿Tienen laptops disponibles?"],
         _human: testHuman.id,
         _chat: testChat.id,
     });
-
     await messageInstance.model.create({
         texts: ["Sí, tenemos varios modelos. ¿Qué características busca?"],
         _agent: testAgent.id,
         _chat: testChat.id,
     });
-
     testData = {
         context: {
             chat: testChat.external_id,
@@ -120,16 +113,12 @@ beforeAll(async () => {
         },
         tools: test_tools
     };
-
     builderInstance = new Builder(testData);
 });
-
 test(
     "Builder.run() debe procesar el mensaje usando tools y crear un nuevo registro",
     async () => {
         const response = await builderInstance.run();
-
-        // Verificar que se creó el mensaje
         const messageInstance = await Message.getInstance();
         const lastMessage = await messageInstance.model.findOne({
             where: {
@@ -138,13 +127,28 @@ test(
             },
             order: [["createdAt", "DESC"]],
         });
-
         expect(lastMessage).toBeDefined();
         expect(lastMessage.texts).toEqual(testData.message.texts);
         expect(response).toBeDefined();
-
-        // Verificar que la respuesta incluya resultados de las tools
         expect(response.toolResults).toBeDefined();
     },
     { timeout: 30000 },
 );
+test("Builder.saveAnswer() debe guardar la respuesta del agente incluyendo resultados de tools", async () => {
+    const response = await builderInstance.run();
+    await builderInstance.saveAnswer(response);
+    
+    const messageInstance = await Message.getInstance();
+    const lastAgentMessage = await messageInstance.model.findOne({
+        where: {
+            _chat: testChat.id,
+            _agent: testAgent.id,
+        },
+        order: [['createdAt', 'DESC']],
+    });
+
+    expect(lastAgentMessage).toBeDefined();
+    expect(lastAgentMessage._agent).toEqual(testAgent.id);
+    expect(lastAgentMessage._chat).toEqual(testChat.id);
+    expect(typeof lastAgentMessage.texts[0]).toBe('string');
+}, { timeout: 30000 });

@@ -81,3 +81,23 @@ test("Builder.run() debe procesar el mensaje y crear un nuevo registro", async (
     expect(lastMessage).toBeDefined();
     expect(lastMessage.texts).toEqual(testData.message.texts);
 });
+
+
+test("Builder.saveAnswer() debe guardar la respuesta del agente en la base de datos", async () => {
+    const response = await builderInstance.run();
+    await builderInstance.saveAnswer(response);
+    
+    const messageInstance = await Message.getInstance();
+    const lastAgentMessage = await messageInstance.model.findOne({
+        where: {
+            _chat: testChat.id,
+            _agent: testAgent.id,
+        },
+        order: [['createdAt', 'DESC']],
+    });
+
+    expect(lastAgentMessage).toBeDefined();
+    expect(lastAgentMessage._agent).toEqual(testAgent.id);
+    expect(lastAgentMessage._chat).toEqual(testChat.id);
+    expect(typeof lastAgentMessage.texts[0]).toBe('string');
+});
