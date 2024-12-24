@@ -1,39 +1,43 @@
-# Usamos la imagen oficial de Bun
-FROM oven/bun:alpine
+FROM archlinux:latest
 
-# Establecemos el directorio de trabajo
+# Instalar dependencias necesarias
+RUN pacman -Syu --noconfirm \
+    && pacman -S --noconfirm curl git base-devel unzip glibc
+
+# Instalar Bun
+RUN curl -fsSL https://bun.sh/install | bash
+
+# Establecer el path de Bun
+ENV PATH="/root/.bun/bin:$PATH"
+
+# Instalar SQLite3
+RUN pacman -S --noconfirm sqlite
+
+# Crear un usuario para evitar usar root y cumplir requisitos de makepkg
+RUN useradd -m builder -G wheel
+
+# Configurar sudo para permitir al usuario 'builder' usar sudo sin contraseña
+RUN echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+# Cambiar a usuario 'builder'
+USER builder
+WORKDIR /home/builder
+
+# Clonar y construir yay
+RUN git clone https://aur.archlinux.org/yay.git \
+    && cd yay \
+    && makepkg -si --noconfirm
+
+# Cambiar a usuario root para continuar con instalaciones
+USER root
+
+# Establecer directorio de trabajo
 WORKDIR /app
-
-# Instalamos dependencias del sistema
-RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    redis-tools \
-    curl \
-    && rm -rf /var/lib/apt/lists/* 
-  
-
-# Copiamos los archivos de configuración de Bun
 COPY package.json bun.lockb ./
-
-
-# Copiamos el resto del código de la aplicación
 COPY . .
-
-# Copiamos dependencias
-COPY node_modules ./node_modules
-# Copiamos el archivo .env
 COPY .env .
-
-
-
-# Script de entrada que verificará DEV_MODE
 COPY .cli/docker-mode.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-mode.sh
 
-# Exponemos el puerto 3000 (ajusta según las necesidades de tu aplicación)
 EXPOSE 3000
-
-
-# Comando de entrada
 ENTRYPOINT ["/usr/local/bin/docker-mode.sh"]
-

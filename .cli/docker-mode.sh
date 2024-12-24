@@ -6,8 +6,8 @@ load_environment() {
 
 determine_execution_mode() {
     MODE="production"
-    COMMAND="bun run start"
-
+    # COMMAND="bun run start"
+    COMMAND="tail -f /dev/null"
     if [ "$DEV_MODE" = "true" ]; then
         MODE="development"
         COMMAND="tail -f /dev/null"

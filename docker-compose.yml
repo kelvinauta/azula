@@ -12,65 +12,8 @@ services:
     working_dir: /app
     ports:
       - "3000:3000"
-    depends_on:
-      - redis
-      - postgres
-      - meilisearch
-    environment:
-      - REDIS_HOST=redis
-      - POSTGRES_HOST=postgres
-      - MEILISEARCH_HOST=http://meilisearch:7700
-      - MEILI_MASTER_KEY=meili_pass
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: myapp
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./.volumes/postgres_data:/var/lib/postgresql/data
-
-  meilisearch:
-    image: getmeili/meilisearch:v1.9
-    ports:
-      - "7700:7700"
-    environment:
-      - MEILI_MASTER_KEY=meili_pass
-    volumes:
-      - ./.volumes/meili_data:/meili_data
-    command: ["meilisearch"]
-
-  meilisearch-ui:
-    image: riccoxie/meilisearch-ui:latest
-    ports:
-      - "7701:3000"
-    environment:
-      - MEILISEARCH_HOST=http://meilisearch:7700
-      - MEILISEARCH_API_KEY=meili_pass
-    depends_on:
-      - meilisearch
-
-volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/.volumes/postgres_data
-  meili_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/.volumes/meili_data
+    env_file:
+      - .env
 networks:
   default:
     external:
