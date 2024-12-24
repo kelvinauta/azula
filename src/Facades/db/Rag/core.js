@@ -2,8 +2,8 @@ import { createClient } from "@libsql/client";
 import path from "path";
 import fs from "fs-extra";
 class Core {
-    #PATH = process.env.LIBSQL_PATH;
-    #NAME = process.env.LIBSQL_NAME
+    #PATH = process.env.SQLITE_PATH;
+    #NAME = process.env.SQLITE_EMBEDDING_NAME
     constructor() {
         this.path = path.join(process.cwd(), this.#PATH);
         this.name = this.#NAME;

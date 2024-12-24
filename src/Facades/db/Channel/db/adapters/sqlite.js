@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 class SQLite {
     static instance = null;
-    #NAME = process.env.LIBSQL_NAME;
+    #NAME = process.env.SQLITE_APP_NAME;
     static getInstance() {
         if (SQLite.instance) return SQLite.instance;
         SQLite.instance = new SQLite();
@@ -13,7 +13,7 @@ class SQLite {
         SQLite.instance = this;
         this.is_connected = false;
         this.sequelize = new Sequelize(
-            `sqlite:${process.env.LIBSQL_PATH}/${this.#NAME}`,
+            `sqlite:${process.env.SQLITE_PATH}/${this.#NAME}`,
             {
                 dialect: "sqlite",
                 logging: false,
