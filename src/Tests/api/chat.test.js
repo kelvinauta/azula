@@ -103,14 +103,14 @@ describe("Chat API Tests", () => {
             expect(res2.status).toBe(200);
 
             const response2 = await res2.json();
-            const respuesta_texto = response2.answer.text.toLowerCase();
+            const respuesta_texto = response2.output.text.toLowerCase();
 
             // Verificar que la respuesta contenga el nombre completo
             expect(
                 respuesta_texto.includes(nombre_completo.toLowerCase()),
             ).toBe(true);
 
-            console.log("\n📝 Respuesta del agente:", response2.answer.text);
+            console.log("\n📝 Respuesta del agente:", response2.output.text);
             console.log(
                 `⏱️ Tiempo total: ${((end2 - start1) / 1000).toFixed(2)}s (${(end2 - start1).toFixed(2)}ms)`,
             );

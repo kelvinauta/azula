@@ -51,14 +51,16 @@ test("Los mensajes y respuestas deben mantener el orden correcto", async () => {
                 texts: [message],
             },
         });
-        const response = await builder.run();
-        await builder.saveAnswer(response.answer)
-        allResponses.push(response);
-        lastResponse = response;
+        const answer = await builder.run();
+        await builder.saveAnswer(answer)
+        allResponses.push(answer);
+        lastResponse = answer;
     }
     const messages = lastResponse.input.messages;
         console.log(messages)
     const conversationMessages = messages.slice(1);
+    console.log( `const conversationMessages = messages.slice(1);` )
+    console.log(conversationMessages)
     for (let i = 0; i < conversationMessages.length; i++) {
         const msg = conversationMessages[i];
         if (i % 2 === 0) {

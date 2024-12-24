@@ -3,6 +3,7 @@ import _Human from "./tables/Humans";
 import _Message from "./tables/Messages";
 import _Agent from "./tables/Agents";
 import _Chat from "./tables/Chats";
+import { define } from "superstruct";
 //TODO: Añadir una capa de cache para no consultar varias veces la base de datos para los chat_external_id
 class _DB {
     static async getInstance() {
@@ -40,11 +41,21 @@ class _DB {
         return agent.dataValues;
     }
     async pushAnswer(answer, chat_id, agent_id, channel) {
-        const answer_data = await this.Message.model.create({
-            texts: [answer.text],
+        let message_answer = {
             _agent: agent_id,
             _chat: chat_id,
-        });
+            texts: [],
+        };
+        if (answer.output.toolResults?.length) {
+            message_answer.texts = [JSON.stringify(answer.output.toolResults)];
+        }
+        if (answer.output.text) {
+            message_answer.texts = [
+                answer.output.text,
+                ...message_answer.texts,
+            ];
+        }
+        const answer_data = await this.Message.model.create(message_answer);
         return answer_data.dataValues;
     }
     async pushMessage(message, context) {
@@ -73,6 +84,9 @@ class _DB {
                 })
             ).dataValues.id;
         }
+        if (!message_input._chat) throw new Error("Chat is required");
+        if (!message_input._human && !message_input._agent)
+            throw new Error("human or agent assign in message is required");
         const new_message = await this.Message.model.create(message_input);
         return new_message.dataValues;
     }

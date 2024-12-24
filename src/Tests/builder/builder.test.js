@@ -69,7 +69,8 @@ beforeAll(async () => {
     builderInstance = new Builder(testData);
 });
 test("Builder.run() debe procesar el mensaje y crear un nuevo registro", async () => {
-    await builderInstance.run();
+    const answer = await builderInstance.run();
+    await builderInstance.saveAnswer(answer)
     const messageInstance = await Message.getInstance();
     const lastMessage = await messageInstance.model.findOne({
         where: {
@@ -84,17 +85,18 @@ test("Builder.run() debe procesar el mensaje y crear un nuevo registro", async (
 
 
 test("Builder.saveAnswer() debe guardar la respuesta del agente en la base de datos", async () => {
-    const response = await builderInstance.run();
-    await builderInstance.saveAnswer(response);
+    const answer = await builderInstance.run();
+    await builderInstance.saveAnswer(answer);
     
     const messageInstance = await Message.getInstance();
-    const lastAgentMessage = await messageInstance.model.findOne({
+    const lastAgentMessage = ( await messageInstance.model.findOne({
         where: {
             _chat: testChat.id,
             _agent: testAgent.id,
         },
         order: [['createdAt', 'DESC']],
-    });
+    }) ).dataValues
+    console.log(lastAgentMessage)
 
     expect(lastAgentMessage).toBeDefined();
     expect(lastAgentMessage._agent).toEqual(testAgent.id);

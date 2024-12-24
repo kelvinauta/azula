@@ -114,7 +114,7 @@ test(
                 message: {
                     texts: previousResponse
                         ? [
-                              `Cuéntame más sobre la respuesta que me diste de ${previousResponse.answer.text}`,
+                              `Cuéntame más sobre la respuesta que me diste de ${previousResponse.output.text}`,
                           ]
                         : ["Cuéntame sobre {{/randomCharacter}}"],
                 },
@@ -129,7 +129,7 @@ test(
                     metadata: { name: "AI Server" },
                 },
                 message: {
-                    texts: [clientResponse.answer.text],
+                    texts: [clientResponse.output.text],
                 },
                 tools: createServerTools(),
             });

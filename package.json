@@ -13,6 +13,7 @@
     "@faker-js/faker": "^9.2.0",
     "@hono/zod-validator": "^0.4.2",
     "@libsql/client": "^0.14.0",
+    "@sequelize/sqlite3": "^7.0.0-alpha.43",
     "ai": "^4.0.3",
     "axios": "^1.7.9",
     "dotenv": "^16.4.5",

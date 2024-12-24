@@ -120,32 +120,33 @@ test(
     async () => {
         const response = await builderInstance.run();
         const messageInstance = await Message.getInstance();
-        const lastMessage = await messageInstance.model.findOne({
+        const lastMessage = ( await messageInstance.model.findOne({
             where: {
                 _chat: testChat.id,
                 _human: testHuman.id,
             },
             order: [["createdAt", "DESC"]],
-        });
+        }) ).dataValues
         expect(lastMessage).toBeDefined();
         expect(lastMessage.texts).toEqual(testData.message.texts);
         expect(response).toBeDefined();
-        expect(response.toolResults).toBeDefined();
+        expect(response.output.toolResults).toBeDefined();
     },
     { timeout: 30000 },
 );
 test("Builder.saveAnswer() debe guardar la respuesta del agente incluyendo resultados de tools", async () => {
-    const response = await builderInstance.run();
-    await builderInstance.saveAnswer(response);
-    
+    const answer = await builderInstance.run();
+    console.log( `const answer = await builderInstance.run();` )
+    console.log(answer)
+    await builderInstance.saveAnswer(answer);
     const messageInstance = await Message.getInstance();
-    const lastAgentMessage = await messageInstance.model.findOne({
+    const lastAgentMessage = ( await messageInstance.model.findOne({
         where: {
             _chat: testChat.id,
             _agent: testAgent.id,
         },
         order: [['createdAt', 'DESC']],
-    });
+    }) ).dataValues
 
     expect(lastAgentMessage).toBeDefined();
     expect(lastAgentMessage._agent).toEqual(testAgent.id);

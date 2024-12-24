@@ -11,16 +11,16 @@ class Message extends _Table {
             primaryKey: true,
         },
         texts: {
-            type: DataTypes.ARRAY(DataTypes.TEXT),
+            type: DataTypes.JSON,
             allowNull: false,
         },
         tools: {
             // TODO: Se debe guardar historial de las llamadas a las tools
-            type: DataTypes.JSONB,
+            type: DataTypes.JSON,
             allowNull: true,
         },
         files: {
-            type: DataTypes.JSONB,
+            type: DataTypes.JSON,
             allowNull: true,
         },
     };

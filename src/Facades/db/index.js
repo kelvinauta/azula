@@ -3,19 +3,19 @@ import DB from "./Channel/db";
 class Data {
     // NOTE: Objeto desechable de un unico uso
     constructor() {
-        this.context
-        this.message
+        this.context;
+        this.message;
         this.data = {
             agent_id: null,
             human_id: null,
             chat_id: null,
         };
     }
-    setMessage(message){
-        this.message = message
+    setMessage(message) {
+        this.message = message;
     }
-    setContext(context){
-        this.context = context
+    setContext(context) {
+        this.context = context;
     }
     async pushAnswer(answer) {
         const answer_data = await DB.pushAnswer(

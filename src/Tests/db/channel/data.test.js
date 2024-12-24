@@ -38,7 +38,7 @@ beforeAll(async () => {
             },
         },
         message: {
-            texts: ["Hola", "Este es un mensaje de prueba"],
+            texts: ["2 Hola", "Este es un mensaje de prueba"],
         },
     };
     dataInstance = new Data();
@@ -47,7 +47,6 @@ beforeAll(async () => {
 });
 test("getMessage debe crear y retornar un mensaje con estructura correcta", async () => {
     const result = await dataInstance.getMessage();
-    console.log("Mensaje creado:", result);
     expect(result).toBeDefined();
     expect(result.id).toBeDefined();
     expect(result.createdAt).toBeDefined();
@@ -57,7 +56,6 @@ test("getMessage debe crear y retornar un mensaje con estructura correcta", asyn
 });
 test("getAgent debe obtener el agente creado", async () => {
     const result = await dataInstance.getAgent();
-    console.log("Agente obtenido:", result);
     expect(result.id).toBe(testAgent.id);
     expect(result.name).toBe(testAgent.name);
     expect(result.description).toBe(testAgent.description);
@@ -66,5 +64,4 @@ test("getAgent debe obtener el agente creado", async () => {
 });
 test("getHistory debe obtener el historial de mensajes", async () => {
     const result = await dataInstance.getHistory();
-    console.log("Historial obtenido:", result);
 });

@@ -1,5 +1,5 @@
 import _Table from "../../../Facades/db/Channel/db/tables/_Table";
-import Postgres from "../../../Facades/db/Channel/db/postgres";
+import SQLite from "../../../Facades/db/Channel/db/adapters/sqlite";
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { DataTypes } from "sequelize";
 // Clase de prueba que hereda de _Table
@@ -65,10 +65,10 @@ describe('Pruebas para _Table y TestTable', () => {
                 expect(instance).toBeInstanceOf(TableClass);
             });
 
-            it('db debería ser instancia de Postgres después de getInstance', async () => {
+            it('db debería ser instancia de SQLite después de getInstance', async () => {
                 const instance = await TableClass.getInstance();
-                expect(instance.db).toBeInstanceOf(Postgres);
-                expect(Postgres.instance.is_connected).toBe(true);
+                expect(instance.db).toBeInstanceOf(SQLite);
+                expect(SQLite.instance.is_connected).toBe(true);
             });
 
             it('sync debería setear is_synced como true', async () => {

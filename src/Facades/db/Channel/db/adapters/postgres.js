@@ -1,22 +1,15 @@
 import { Sequelize } from 'sequelize';
-// import Logger from "tuki_logger" // TODO: Mejor Logger
-
-// * Lib sequelize
 class Postgres {
     static instance = null;
     #logger;
-
-    // * Get instance
     static getInstance() {
         if(Postgres.instance) return Postgres.instance;
         Postgres.instance = new Postgres();
         return Postgres.instance;
     }
-
     constructor() {
         if (Postgres.instance) throw new Error("This is a singleton class use .getInstance()")
         Postgres.instance = this;
-
         this.is_connected = false;
         this.sequelize = new Sequelize(process.env.POSTGRES_DB, process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
             host: process.env.POSTGRES_HOST,
@@ -24,29 +17,20 @@ class Postgres {
             dialect: "postgres",
             logging: false,
         })
-
-        
-        // this.#logger = new Logger({title: "Postgres"});
     }
-    // * Public methods
     async connect() {
         try {
-            // this.#logger.status("Connecting to Postgres")
             console.log("Connecting to Postgres");
             await this.sequelize.authenticate();
             this.is_connected = true;
             console.log("Postgres connected");
-            // this.#logger.success("Postgres connected")
             return this;
         } catch (error) {
-            // this.#logger.error(error)
             this.is_connected = false;
             throw error
         }
     }
-    
     async getTablesSchemas() {
-        // this.#logger.status("Getting tables schemas")
         try {
             const query = `
                 SELECT 
@@ -65,10 +49,7 @@ class Postgres {
                     t.table_name,
                     c.ordinal_position;
             `;
-            
             const [results] = await this.sequelize.query(query);
-            
-            // Organizar los resultados por tabla
             const schemas = {};
             results.forEach(row => {
                 if (!schemas[row.table_name]) {
@@ -76,7 +57,6 @@ class Postgres {
                         columns: []
                     };
                 }
-                
                 schemas[row.table_name].columns.push({
                     name: row.column_name,
                     type: row.data_type,
@@ -85,44 +65,10 @@ class Postgres {
                     default: row.column_default
                 });
             });
-            
             return schemas;
         } catch (error) {
-            // this.#logger.error('Error obteniendo esquemas de tablas:', error);
             throw error;
         }
     }
-
 }
-
 export default Postgres
-
-
-// * Lib postgres.js
-// class Postgres {
-//     constructor() {
-        
-//         // private
-//         this.logger = new Logger({title: "Postgres"})
-//         this.rules = new Rules("Postgres")
-//         this.sql = _postgres({
-//             host: process.env.POSTGRES_HOST,
-//             port: process.env.POSTGRES_PORT,
-//             database: process.env.POSTGRES_DB,
-//             user: process.env.POSTGRES_USER,
-//             password: process.env.POSTGRES_PASSWORD,
-//             debug: (...data) => this._debug(...data)
-//         })
-//     }
-
-//     async get_sql() {
-//         return this.sql
-//     }
-
-//     // private methods
-//     _debug(...data){
-//         // this.logger.info(...data)
-//     }
-
-// }
-

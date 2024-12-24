@@ -40,7 +40,7 @@ class Builder {
         const answer = await llm.generate_text(messages, tools.get().to.ai);
         this.answer = answer;
         return {
-            answer: {
+            output: {
                 text: answer.text,
                 toolCalls: answer.toolCalls,
                 toolResults: answer.toolResults,

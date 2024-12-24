@@ -9,13 +9,14 @@ class Human extends _Table {
             defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             primaryKey: true,
+            unique: true
         },
         external_id: {
             type: DataTypes.STRING,
             allowNull: false,
         },
         metadata: {
-            type: DataTypes.JSONB,
+            type: DataTypes.JSON,
             allowNull: true,
         },
     };

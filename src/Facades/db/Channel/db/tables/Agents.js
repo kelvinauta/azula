@@ -21,7 +21,7 @@ class Agent extends _Table {
             allowNull: true,
         },
         config: {
-            type: DataTypes.JSONB,
+            type: DataTypes.JSON,
             allowNull: false,
         },
         channel: {
@@ -29,7 +29,7 @@ class Agent extends _Table {
             allowNull: false
         },
         llm_engine:{
-            type: DataTypes.JSONB,
+            type: DataTypes.JSON,
             allowNull: false
         }
     }
