@@ -41,7 +41,6 @@ describe("Chat API Tests", () => {
             const nombre_completo = "Rogelio Alberto Flores";
 
             // Primera solicitud - Presentación
-            console.log("\n🤖 Iniciando primera solicitud...");
             const start1 = performance.now();
 
             const res1 = await fetch(`${API_URL}/v1/chat`, {
@@ -72,7 +71,6 @@ describe("Chat API Tests", () => {
             expect(res1.status).toBe(200);
 
             // Segunda solicitud - Pregunta por el nombre
-            console.log("\n🤖 Iniciando segunda solicitud...");
             const start2 = performance.now();
 
             const res2 = await fetch(`${API_URL}/v1/chat`, {
@@ -110,7 +108,6 @@ describe("Chat API Tests", () => {
                 respuesta_texto.includes(nombre_completo.toLowerCase()),
             ).toBe(true);
 
-            console.log("\n📝 Respuesta del agente:", response2.output.text);
             console.log(
                 `⏱️ Tiempo total: ${((end2 - start1) / 1000).toFixed(2)}s (${(end2 - start1).toFixed(2)}ms)`,
             );

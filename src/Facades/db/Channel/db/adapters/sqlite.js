@@ -22,10 +22,8 @@ class SQLite {
     }
     async connect() {
         try {
-            console.log("Connecting to SQLite");
             await this.sequelize.authenticate();
             this.is_connected = true;
-            console.log("SQLite connected");
             return this;
         } catch (error) {
             this.is_connected = false;

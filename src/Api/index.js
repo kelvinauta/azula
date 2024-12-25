@@ -25,7 +25,7 @@ const chatSchema = z.object({
 });
 app.post(
     "/v1/chat",
-    zValidator("json", chatSchema, (result, c) => {}),
+    zValidator("json", chatSchema, () => {}),
     async (c) => {
         try {
             const body = c.req.valid("json");

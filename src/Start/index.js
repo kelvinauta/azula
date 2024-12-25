@@ -17,7 +17,7 @@ async function Start() {
         agents.forEach(({ name, prompt }) =>
             promises.push(data.addAgent({ name, prompt })),
         );
-        const result = await Promise.all(promises);
+        await Promise.all(promises);
         return true;
     } catch (error) {
         console.error(error);

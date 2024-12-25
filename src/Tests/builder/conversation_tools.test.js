@@ -20,11 +20,7 @@ const DBZ_CHARACTERS = [
     "Frieza",
 ];
 const CHANNEL_ID = uuidv4();
-function log(...msg) {
-    console.log(...msg)
-}
 const createServerTools = () => {
-    log("🛠️ Creando herramientas del servidor...");
     const tools = new Tools();
     tools.setAiTools([
         {
@@ -35,15 +31,12 @@ const createServerTools = () => {
                 name: z.string(),
             }),
             execute: async ({ name }) => {
-                log(`🔍 Buscando información de: ${name}`);
                 try {
                     const response = await axios.get(
                         `https://dragonball-api.com/api/characters?name=${name}`,
                     );
-                    log(`✅ Información encontrada para ${name}`);
                     return response.data;
                 } catch (error) {
-                    log(`❌ Error buscando ${name}: ${error.message}`);
                     return { error: "Personaje no encontrado" };
                 }
             },
@@ -52,32 +45,28 @@ const createServerTools = () => {
     tools.setPromptFunctions({
         hora_actual: () => {
             const hora = new Date().toLocaleTimeString();
-            log(`⏰ Hora actual: ${hora}`);
             return hora;
         },
     });
     return tools;
 };
 const createClientTools = () => {
-    log("🛠️ Creando herramientas del cliente...");
     const tools = new Tools();
     const functions = {
-                hora_actual: () => {
-                                const hora = new Date().toLocaleTimeString();
-                                log(`⏰ Hora actual: ${hora}`);
-                                return hora;
-                            },
-                randomCharacter: () => {
-                                const character =
-                                        DBZ_CHARACTERS[
-                                                                Math.floor(Math.random() * DBZ_CHARACTERS.length)
-                                                            ];
-                                log(`🎲 Personaje aleatorio seleccionado: ${character}`);
-                                return character;
-                            },
-            }
+        hora_actual: () => {
+            const hora = new Date().toLocaleTimeString();
+            return hora;
+        },
+        randomCharacter: () => {
+            const character =
+                DBZ_CHARACTERS[
+                    Math.floor(Math.random() * DBZ_CHARACTERS.length)
+                ];
+            return character;
+        },
+    };
     tools.setPromptFunctions(functions);
-    tools.setMessageFunctions(functions)
+    tools.setMessageFunctions(functions);
     return tools;
 };
 test(
@@ -145,7 +134,7 @@ test(
         const messageInstance = await Message.getInstance();
         const messages = await messageInstance.model.findAll({
             where: {
-                _chat: chat.dataValues.id
+                _chat: chat.dataValues.id,
             },
         });
         const clientMessages = messages.filter((m) => m._human);

@@ -96,7 +96,6 @@ test("Builder.saveAnswer() debe guardar la respuesta del agente en la base de da
         },
         order: [['createdAt', 'DESC']],
     }) ).dataValues
-    console.log(lastAgentMessage)
 
     expect(lastAgentMessage).toBeDefined();
     expect(lastAgentMessage._agent).toEqual(testAgent.id);

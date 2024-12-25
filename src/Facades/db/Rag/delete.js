@@ -5,7 +5,6 @@ class Delete {
 
     async one({ id }) {
         try {
-            console.log("Iniciando eliminación de documento", { id });
 
             if (!id) {
                 console.error("ID requerido para eliminación");
@@ -17,7 +16,6 @@ class Delete {
                 args: [id],
             });
 
-            console.log("Documento eliminado exitosamente");
             return result;
 
         } catch (error) {
@@ -30,9 +28,6 @@ class Delete {
 
     async many(ids) {
         try {
-            console.log("Iniciando eliminación múltiple", {
-                count: ids.length,
-            });
 
             if (!Array.isArray(ids) || ids.length === 0) {
                 console.error("Se requiere un array de IDs no vacío");
@@ -45,9 +40,6 @@ class Delete {
                 args: ids,
             });
 
-            console.log("Documentos eliminados exitosamente", {
-                count: ids.length,
-            });
             return result;
 
         } catch (error) {
@@ -60,7 +52,6 @@ class Delete {
 
     async byCategory({ category }) {
         try {
-            console.log("Iniciando eliminación por categoría", { category });
 
             if (!category) {
                 console.error("Categoría requerida");
@@ -72,7 +63,6 @@ class Delete {
                 args: [category],
             });
 
-            console.log("Documentos eliminados por categoría exitosamente");
             return result;
 
         } catch (error) {

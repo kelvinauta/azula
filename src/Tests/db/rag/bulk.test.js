@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import Bulk from "../../../Facades/db/Rag";
 
 test("should perform all operations without errors", async () => {
-    const bulk = await Bulk();
+    const bulk = Bulk();
     const uniqueId = uuidv4();
 
     try {

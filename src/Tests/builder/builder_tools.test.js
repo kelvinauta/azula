@@ -1,4 +1,4 @@
-import { test, beforeAll, expect, spyOn } from "bun:test";
+import { test, beforeAll, expect } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import Builder from "../../Facades/builder";
@@ -39,7 +39,7 @@ test_tools.setAiTools([
         parameters: z.object({
             producto_id: z.string(),
         }),
-        execute: async ({ producto_id }) => {
+        execute: async () => {
             return {
                 disponible: true,
                 cantidad: 50,
@@ -136,8 +136,6 @@ test(
 );
 test("Builder.saveAnswer() debe guardar la respuesta del agente incluyendo resultados de tools", async () => {
     const answer = await builderInstance.run();
-    console.log( `const answer = await builderInstance.run();` )
-    console.log(answer)
     await builderInstance.saveAnswer(answer);
     const messageInstance = await Message.getInstance();
     const lastAgentMessage = ( await messageInstance.model.findOne({

@@ -3,7 +3,6 @@ import _Human from "./tables/Humans";
 import _Message from "./tables/Messages";
 import _Agent from "./tables/Agents";
 import _Chat from "./tables/Chats";
-import { define } from "superstruct";
 //TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id
 class _DB {
     static async getInstance() {
@@ -65,7 +64,6 @@ class _DB {
         return answer_data.dataValues;
     }
     async pushMessage(message, context) {
-        console.log(context);
         const { channel, chat_external_id, human_external_id, agent_id } =
             context;
         const chat = await this.Chat.touch_one({

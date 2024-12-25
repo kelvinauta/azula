@@ -1,7 +1,6 @@
 import { Sequelize } from 'sequelize';
 class Postgres {
     static instance = null;
-    #logger;
     static getInstance() {
         if(Postgres.instance) return Postgres.instance;
         Postgres.instance = new Postgres();
@@ -20,10 +19,8 @@ class Postgres {
     }
     async connect() {
         try {
-            console.log("Connecting to Postgres");
             await this.sequelize.authenticate();
             this.is_connected = true;
-            console.log("Postgres connected");
             return this;
         } catch (error) {
             this.is_connected = false;
