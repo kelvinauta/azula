@@ -4,7 +4,7 @@ import _Message from "./tables/Messages";
 import _Agent from "./tables/Agents";
 import _Chat from "./tables/Chats";
 import { define } from "superstruct";
-//TODO: Añadir una capa de cache para no consultar varias veces la base de datos para los chat_external_id
+//TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id
 class _DB {
     static async getInstance() {
         await Provider.build();
@@ -31,6 +31,14 @@ class _DB {
             },
         });
         return agent.dataValues;
+    }
+    async getAgentDefault(){
+        const agent = await this.Agent.touch_one({
+            where:{
+                channel:"default"
+            }
+        })
+        return agent.dataValues
     }
     async getAgentById(agent_id) {
         const agent = await this.Agent.model.findOne({
@@ -109,6 +117,19 @@ class _DB {
             external_id,
             channel,
         });
+    }
+    async addAgent({name, prompt}){
+        const agent = await this.Agent.touch_one({
+            name,
+            config:{
+                prompt
+            }
+        })
+        return agent.dataValues
+    }
+    async getAnyAgent(){
+        const agent = await this.Agent.model.findOne()
+        return agent?.dataValues
     }
 }
 

@@ -38,9 +38,10 @@ class Data {
         return message_data;
     }
     async getAgent() {
-        const agent = this.context.agent
+        let agent = this.context.agent
             ? await DB.getAgentById(this.context.agent)
             : await DB.getAgentByChannel(this.context.channel);
+        if(!agent) agent = await DB.getAgentDefault()
         this.data.agent_id = agent.id;
         return agent;
     }
@@ -62,6 +63,14 @@ class Data {
             })
             .flat();
         return history;
+    }
+    async addAgent({name, prompt}){
+        // TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase
+        return DB.addAgent({name, prompt})
+    }
+    async isEmptyData(){
+        let agent = await DB.getAnyAgent()
+        return !Boolean(agent)
     }
 }
 export default Data;

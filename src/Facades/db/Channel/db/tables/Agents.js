@@ -1,6 +1,14 @@
 import _Table from "./_Table.js";
 import { DataTypes } from "sequelize";
-import { object, string, define, optional, enums, number, defaulted } from "superstruct";
+import {
+    object,
+    string,
+    define,
+    optional,
+    enums,
+    number,
+    defaulted,
+} from "superstruct";
 import isUuid from "is-uuid";
 
 class Agent extends _Table {
@@ -13,6 +21,7 @@ class Agent extends _Table {
         },
         name: {
             type: DataTypes.STRING,
+            defaultValue: "default_name",
             allowNull: false,
             unique: true,
         },
@@ -22,17 +31,26 @@ class Agent extends _Table {
         },
         config: {
             type: DataTypes.JSON,
+            defaultValue: { prompt: "" },
             allowNull: false,
         },
         channel: {
             type: DataTypes.STRING,
-            allowNull: false
+            defaultValue: "default",
+            allowNull: false,
         },
-        llm_engine:{
+        llm_engine: {
             type: DataTypes.JSON,
-            allowNull: false
-        }
-    }
+            defaultValue: {
+                model: "gpt-4o",
+                provider: "openai",
+                max_tokens: 256,
+            },
+            allowNull: false,
+            temperature: 1,
+            api_key: process.env.OPENAI_API_KEY, // TODO: la API key por defecto debe tener un limite de uso
+        },
+    };
     static schema = {
         id: optional(define("id", (value) => isUuid.v4(value))),
         name: string(),
@@ -47,7 +65,7 @@ class Agent extends _Table {
             temperature: defaulted(number(), 1),
             api_key: string(),
         }),
-        channel: string()
+        channel: string(),
     };
     static options = {
         paranoid: true,

@@ -2,12 +2,9 @@ import SQLite from "../adapters/sqlite";
 import { DataTypes, Model } from "sequelize";
 import {
     assert,
-    enums,
     define,
     object,
     string,
-    number,
-    array,
 } from "superstruct";
 import isUuid from "is-uuid";
 class _Table {
