@@ -68,9 +68,5 @@ class Data {
         /* TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase */
         return DB.addAgent({name, prompt})
     }
-    async isEmptyData(){
-        let agent = await DB.getAnyAgent()
-        return !Boolean(agent)
-    }
 }
 export default Data;

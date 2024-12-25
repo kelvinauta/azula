@@ -1,15 +1,11 @@
 import template from "./get_template";
 import Data from "../Facades/db";
 import Bulk from "../Facades/db/Rag";
+import Cli from "../Cli"
 const data = new Data()
-async function db_empty() {
-    return Boolean(await data.isEmptyData());
-    /* TODO: En vez de usar Start cuando db_empty, mejor usar un flag en CLI */
-}
 async function Start() {
     try {
-        const is_db_empty = await db_empty();
-        if (!is_db_empty) return;
+        if(!Cli.start) return
         const { docs, agents } = await template();
         const bulk = Bulk();
         let promises = [];

@@ -124,10 +124,6 @@ class _DB {
         });
         return agent?.dataValues;
     }
-    async getAnyAgent() {
-        const agent = await this.Agent.model.findOne();
-        return agent?.dataValues;
-    }
 }
 
 export default await _DB.getInstance();
