@@ -48,6 +48,6 @@ app.post(
     },
 );
 export default {
-    port: 3333,
+    port: process.env.APP_PORT,
     fetch: app.fetch,
 };

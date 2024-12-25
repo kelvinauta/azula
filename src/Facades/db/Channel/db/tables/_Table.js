@@ -1,11 +1,6 @@
 import SQLite from "../adapters/sqlite";
 import { DataTypes, Model } from "sequelize";
-import {
-    assert,
-    define,
-    object,
-    string,
-} from "superstruct";
+import { assert, define, object, string } from "superstruct";
 import isUuid from "is-uuid";
 class _Table {
     static instance = null;
@@ -79,9 +74,13 @@ class _Table {
     async sync() {
         this.#validate_db();
         this.constructor.is_synced = true;
-        if (process.env.DEV_MODE && process.env.DEV_DB_ALTER)
+        const DEV_MODE = process.env.DEV_MODE === "true";
+        const DEV_DB_ALTER = process.env.DEV_DB_ALTER === "true";
+        if (DEV_MODE && DEV_DB_ALTER) {
+            console.log(`if (DEV_MODE && DEV_DB_ALTER) {`)
             return await this.model.sync({ force: true });
-         /* NOTE: sqlite BUG with sync -> alter:true */
+        }
+        /* NOTE: sqlite BUG with sync -> alter:true */
         return await this.model.sync();
     }
     ref(ref_table, foreign_key_name) {
