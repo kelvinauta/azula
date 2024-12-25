@@ -4,7 +4,7 @@ import Bulk from "../Facades/db/Rag";
 const data = new Data()
 async function db_empty() {
     return Boolean(await data.isEmptyData());
-    // TODO: En vez de usar Start cuando db_empty, mejor usar un flag en CLI
+    /* TODO: En vez de usar Start cuando db_empty, mejor usar un flag en CLI */
 }
 async function Start() {
     try {

@@ -3,7 +3,7 @@ import _Human from "./tables/Humans";
 import _Message from "./tables/Messages";
 import _Agent from "./tables/Agents";
 import _Chat from "./tables/Chats";
-//TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id
+/* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
 class _DB {
     static async getInstance() {
         await Provider.build();

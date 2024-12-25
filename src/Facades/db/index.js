@@ -1,7 +1,7 @@
 import DB from "./Channel/db";
 
 class Data {
-    // NOTE: Objeto desechable de un unico uso
+    /*  NOTE: Objeto desechable de un unico uso */
     constructor() {
         this.context;
         this.message;
@@ -65,7 +65,7 @@ class Data {
         return history;
     }
     async addAgent({name, prompt}){
-        // TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase
+        /* TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase */
         return DB.addAgent({name, prompt})
     }
     async isEmptyData(){

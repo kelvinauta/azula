@@ -10,15 +10,11 @@ class Core {
         this.client = null;
         this.url = `file:${this.path}/${this.name}`;
     }
-
     async init() {
         fs.ensureDir(this.path);
-        // Crear cliente libSQL
         this.client = createClient({
             url: this.url,
         });
-
-        // Crear tabla bulks con soporte para embeddings
         await this.client.batch(
             [
                 `CREATE TABLE IF NOT EXISTS bulks (
@@ -30,12 +26,10 @@ class Core {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
-                // Crear índice para búsqueda por similitud de embeddings
                 `CREATE INDEX IF NOT EXISTS bulks_embedding_idx ON bulks (libsql_vector_idx(embedding))`,
             ],
             "write",
         );
-
         return this.client;
     }
 }

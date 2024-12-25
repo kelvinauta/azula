@@ -15,7 +15,7 @@ class Message extends _Table {
             allowNull: false,
         },
         tools: {
-            // TODO: Se debe guardar historial de las llamadas a las tools
+            /*  TODO: Se debe guardar historial de las llamadas a las tools */
             type: DataTypes.JSON,
             allowNull: true,
         },

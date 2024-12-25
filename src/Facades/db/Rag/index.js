@@ -3,7 +3,7 @@ import Insert from "./insert";
 import Delete from "./delete";
 import Query from "./query";
 import Update from "./update";
-// NOTE: colocamos core en el archivo para que solo sea ejecutado una vez en todo el programa
+/* NOTE: colocamos core en el archivo para que solo sea ejecutado una vez en todo el programa*/
 const core = new Core();
 await core.init();
 function Bulk() {

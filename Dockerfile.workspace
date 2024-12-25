@@ -1,43 +1,22 @@
 FROM archlinux:latest
-
-# Instalar dependencias necesarias
 RUN pacman -Syu --noconfirm \
     && pacman -S --noconfirm curl git base-devel unzip glibc
-
-# Instalar Bun
 RUN curl -fsSL https://bun.sh/install | bash
-
-# Establecer el path de Bun
 ENV PATH="/root/.bun/bin:$PATH"
-
-# Instalar SQLite3
 RUN pacman -S --noconfirm sqlite
-
-# Crear un usuario para evitar usar root y cumplir requisitos de makepkg
 RUN useradd -m builder -G wheel
-
-# Configurar sudo para permitir al usuario 'builder' usar sudo sin contraseña
 RUN echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-
-# Cambiar a usuario 'builder'
 USER builder
 WORKDIR /home/builder
-
-# Clonar y construir yay
 RUN git clone https://aur.archlinux.org/yay.git \
     && cd yay \
     && makepkg -si --noconfirm
-
-# Cambiar a usuario root para continuar con instalaciones
 USER root
-
-# Establecer directorio de trabajo
 WORKDIR /app
 COPY package.json bun.lockb ./
 COPY . .
 COPY .env .
 COPY .cli/docker-mode.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-mode.sh
-
 EXPOSE 3000
 ENTRYPOINT ["/usr/local/bin/docker-mode.sh"]

@@ -81,7 +81,7 @@ class _Table {
         this.constructor.is_synced = true;
         if (process.env.DEV_MODE && process.env.DEV_DB_ALTER)
             return await this.model.sync({ force: true });
-        // NOTE: sqlite BUG with sync -> alter:true 
+         /* NOTE: sqlite BUG with sync -> alter:true */
         return await this.model.sync();
     }
     ref(ref_table, foreign_key_name) {

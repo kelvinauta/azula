@@ -46,7 +46,7 @@ class Agent extends _Table {
                 provider: "openai",
                 max_tokens: 256,
                 temperature: 1,
-                api_key: process.env.OPENAI_API_KEY, // TODO: la API key por defecto debe tener un limite de uso
+                api_key: process.env.OPENAI_API_KEY, /*  TODO: la API key por defecto debe tener un limite de uso */
             },
             allowNull: false,
         },

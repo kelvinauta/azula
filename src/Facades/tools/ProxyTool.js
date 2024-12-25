@@ -4,15 +4,9 @@ class ProxyTool {
         description: "Este es un ProxyTool",
         strict: true,
         parameters: {
-            // Json Schema
-            // https://platform.openai.com/docs/api-reference/chat/create
-            // https://json-schema.org/understanding-json-schema
         },
     };
     async run(parameters) {
-        // Consulta a la API
-        // Parsing de Datos
-        // * Validate Result #validate_result
     }
     #validate_result(result) {
         const max_length = 4500;
@@ -23,5 +17,4 @@ class ProxyTool {
         return true;
     }
 }
-
 export default ProxyTool
