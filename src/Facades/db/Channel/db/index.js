@@ -30,15 +30,13 @@ class _DB {
                 channel,
             },
         });
-        return agent.dataValues;
+        return agent?.dataValues;
     }
-    async getAgentDefault(){
+    async getAgentDefault() {
         const agent = await this.Agent.touch_one({
-            where:{
-                channel:"default"
-            }
-        })
-        return agent.dataValues
+            channel: "default",
+        });
+        return agent?.dataValues;
     }
     async getAgentById(agent_id) {
         const agent = await this.Agent.model.findOne({
@@ -46,7 +44,7 @@ class _DB {
                 id: agent_id,
             },
         });
-        return agent.dataValues;
+        return agent?.dataValues;
     }
     async pushAnswer(answer, chat_id, agent_id, channel) {
         let message_answer = {
@@ -67,6 +65,7 @@ class _DB {
         return answer_data.dataValues;
     }
     async pushMessage(message, context) {
+        console.log(context);
         const { channel, chat_external_id, human_external_id, agent_id } =
             context;
         const chat = await this.Chat.touch_one({
@@ -118,18 +117,18 @@ class _DB {
             channel,
         });
     }
-    async addAgent({name, prompt}){
+    async addAgent({ name, prompt }) {
         const agent = await this.Agent.touch_one({
             name,
-            config:{
-                prompt
-            }
-        })
-        return agent.dataValues
+            config: {
+                prompt,
+            },
+        });
+        return agent?.dataValues;
     }
-    async getAnyAgent(){
-        const agent = await this.Agent.model.findOne()
-        return agent?.dataValues
+    async getAnyAgent() {
+        const agent = await this.Agent.model.findOne();
+        return agent?.dataValues;
     }
 }
 

@@ -45,10 +45,10 @@ class Agent extends _Table {
                 model: "gpt-4o",
                 provider: "openai",
                 max_tokens: 256,
+                temperature: 1,
+                api_key: process.env.OPENAI_API_KEY, // TODO: la API key por defecto debe tener un limite de uso
             },
             allowNull: false,
-            temperature: 1,
-            api_key: process.env.OPENAI_API_KEY, // TODO: la API key por defecto debe tener un limite de uso
         },
     };
     static schema = {

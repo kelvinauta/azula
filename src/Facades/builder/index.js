@@ -1,4 +1,4 @@
-import { string, array, object, optional, assert , define} from "superstruct";
+import { string, array, object, optional, assert, define } from "superstruct";
 import LLM from "../llm";
 import Data from "../db";
 import Text from "../text";
@@ -25,6 +25,9 @@ class Builder {
     constructor({ context, message, tools }) {
         this.context = context;
         this.message = message;
+        if (!this.context.chat) {
+            this.context.chat = `${this.context.channel}-${this.context.human}`;
+        }
         this.answer = null;
         this.Tools = tools || new Tools();
         this.Data = new Data();
@@ -33,9 +36,12 @@ class Builder {
     async run() {
         assert(this.context, Builder.input_schema.context);
         assert(this.message, Builder.input_schema.message);
-        assert(this.context, define("Human or Agent required",((context)=>{
-            return Boolean(context.agent)  || Boolean(context.human)
-        })))
+        assert(
+            this.context,
+            define("Human or Agent required", (context) => {
+                return Boolean(context.agent) || Boolean(context.human);
+            }),
+        );
         const { messages, llm, tools } = await this.#build();
         const answer = await llm.generate_text(messages, tools.get().to.ai);
         this.answer = answer;
@@ -46,11 +52,11 @@ class Builder {
                 toolResults: answer.toolResults,
                 finishReason: answer.finishReason,
             },
-            input:{
+            input: {
                 messages,
                 tools,
-                llm_engine: llm.llm_engine
-            }
+                llm_engine: llm.llm_engine,
+            },
         };
     }
     async saveAnswer(answer) {
