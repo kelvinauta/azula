@@ -42,7 +42,7 @@ class LLM {
     constructor(llm_engine) {
         this.llm_engine = this.#generate_llm_engine(llm_engine);
     }
-    async generate_text(messages, tools) {
+    async generate_text(messages, tools, { maxSteps = 5 } = {}) {
         const _messages = this.#build_message(messages);
         const generateTextConfig = {
             model: this.llm_engine.model,
@@ -50,6 +50,7 @@ class LLM {
             maxTokens: this.llm_engine.max_tokens,
         };
         if (tools) generateTextConfig.tools = this.#build_tools(tools);
+        if (maxSteps) generateTextConfig.maxSteps = maxSteps;
         const response = await generateText(generateTextConfig);
 
         return response;
