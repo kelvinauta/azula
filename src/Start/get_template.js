@@ -1,8 +1,8 @@
 import fs from "fs-extra";
 import path from "path";
-const TEMPLATE_PATH = "../../templates/my_template"
+const TEMPLATE_PATH = "../../templates/my_template";
 async function get_docs() {
-    const docsPath = path.join(__dirname,`${TEMPLATE_PATH}/docs`);
+    const docsPath = path.join(__dirname, `${TEMPLATE_PATH}/docs`);
     const files = await fs.readdir(docsPath);
     return await Promise.all(
         files.map(async (file) => {
@@ -26,7 +26,8 @@ async function get_agents() {
     );
 }
 async function get_functions() {
-    const { ai, messages, prompt } = await import(`${TEMPLATE_PATH}/functions/`);
+    const functions = await import(`${TEMPLATE_PATH}/functions/`);
+    const { ai, messages, prompt } = functions.default;
     return {
         ai,
         messages,
