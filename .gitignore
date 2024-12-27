@@ -11,3 +11,6 @@ launch.json
 .chat
 .tmp
 templates/my_template/
+docker-compose.yml
+Dockerfile
+Dockerfile.workspace
