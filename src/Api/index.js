@@ -35,7 +35,7 @@ app.post(
             });
             const answer = await builder.run();
             builder.saveAnswer(answer).catch(console.error);
-            return c.json(answer);
+            return c.json(answer.output);
         } catch (error) {
             console.error("Error en /v1/chat:", error);
             return c.json(
