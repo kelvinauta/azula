@@ -1,5 +1,4 @@
 import _Table from "../../../Facades/db/Channel/db/tables/_Table";
-import SQLite from "../../../Facades/db/Channel/db/adapters/sqlite";
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { DataTypes } from "sequelize";
 // Clase de prueba que hereda de _Table
@@ -63,12 +62,6 @@ describe('Pruebas para _Table y TestTable', () => {
             it('debería crear instancia correctamente usando getInstance', async () => {
                 const instance = await TableClass.getInstance();
                 expect(instance).toBeInstanceOf(TableClass);
-            });
-
-            it('db debería ser instancia de SQLite después de getInstance', async () => {
-                const instance = await TableClass.getInstance();
-                expect(instance.db).toBeInstanceOf(SQLite);
-                expect(SQLite.instance.is_connected).toBe(true);
             });
 
             it('sync debería setear is_synced como true', async () => {

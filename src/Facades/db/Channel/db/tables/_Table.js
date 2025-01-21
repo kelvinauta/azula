@@ -1,7 +1,9 @@
 import SQLite from "../adapters/sqlite";
+import Postgres from "../adapters/postgres";
 import { DataTypes, Model } from "sequelize";
 import { assert, define, object, string } from "superstruct";
 import isUuid from "is-uuid";
+const DB_ADAPTER = Postgres
 class _Table {
     static instance = null;
     static is_synced = false;
@@ -31,9 +33,9 @@ class _Table {
     }
     static async db_connected() {
         let db;
-        if (_Table.db && _Table.db instanceof SQLite) db = _Table.db;
+        if (_Table.db && _Table.db instanceof DB_ADAPTER) db = _Table.db;
         else {
-            db = SQLite.getInstance();
+            db = DB_ADAPTER.getInstance();
             await db.connect();
             _Table.db = db;
         }
@@ -161,7 +163,7 @@ class _Table {
     }
     #validate_db() {
         if (!this.constructor.db) throw new Error("Db is required");
-        if ((!this.constructor.db) instanceof SQLite)
+        if ((!this.constructor.db) instanceof DB_ADAPTER)
             throw new Error("Db is not connected");
         if (!this.constructor.db.is_connected)
             throw new Error("Db.is_connected is false");

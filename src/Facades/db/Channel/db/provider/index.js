@@ -1,4 +1,5 @@
-import SQLite from "../adapters/sqlite";
+//import SQLite from "../adapters/sqlite";
+import Postgres from "../adapters/postgres";
 import _Table from "../tables/_Table";
 import Agent from "../tables/Agents";
 import Chat from "../tables/Chats";
@@ -26,7 +27,7 @@ import {assert, define} from "superstruct";
     constructor() {
         if(!Provider.#instance_with_build) throw new Error("first constructor is disabled, use build() instead");
         if(Provider.instance) return Provider.instance;
-        this.db = SQLite.getInstance();
+        this.db = Postgres.getInstance();
         this.tables = {};
     }
     static all_is_ok(){
