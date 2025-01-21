@@ -5,6 +5,11 @@ node_modules/
 .idea
 launch.json
 .env
+.env.dev
+.env.bak
+.env.local
+.env.prod
+.env.production
 .volumes
 .chats
 .chat
