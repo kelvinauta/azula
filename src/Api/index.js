@@ -40,7 +40,7 @@ app.post(
             console.error("Error en /v1/chat:", error);
             return c.json(
                 {
-                    error: "Error interno del servidor",
+                    error,
                 },
                 500,
             );
