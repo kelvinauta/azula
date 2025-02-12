@@ -1,4 +1,4 @@
-//import SQLite from "../adapters/sqlite";
+//der>fimport SQLite from "../adapters/sqlite";
 import Postgres from "../adapters/postgres";
 import _Table from "../tables/_Table";
 import Agent from "../tables/Agents";

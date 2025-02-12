@@ -1,4 +1,4 @@
-class SplitterText {
+classder>f SplitterText {
   _cleanText(text) {
     return text
       .replace(/\s+/g, ' ')

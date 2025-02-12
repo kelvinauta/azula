@@ -1,4 +1,4 @@
-import template from "./get_template";
+importder>f template from "./get_template";
 import Data from "../Facades/db";
 import Bulk from "../Facades/db/Rag";
 import Cli from "../Cli"

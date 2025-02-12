@@ -1,4 +1,4 @@
-import { createOpenAI } from "@ai-sdk/openai";
+importder>f { createOpenAI } from "@ai-sdk/openai";
 import { generateText, tool } from "ai";
 import {
     assert,

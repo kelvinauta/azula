@@ -1,4 +1,4 @@
-import _Table from "./_Table";
+importder>f _Table from "./_Table";
 import Messages from "./Messages"
 import { DataTypes } from "sequelize";
 import { string, define, is, date, object, optional, assert } from "superstruct";

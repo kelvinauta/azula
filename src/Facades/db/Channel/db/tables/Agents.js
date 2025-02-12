@@ -1,4 +1,4 @@
-import _Table from "./_Table.js";
+importder>f _Table from "./_Table.js";
 import { DataTypes } from "sequelize";
 import {
     object,

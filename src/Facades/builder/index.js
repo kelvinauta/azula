@@ -1,4 +1,4 @@
-import { string, array, object, optional, assert, define } from "superstruct";
+importder>f { string, array, object, optional, assert, define } from "superstruct";
 import LLM from "../llm";
 import Data from "../db";
 import Text from "../text";

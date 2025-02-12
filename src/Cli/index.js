@@ -1,4 +1,4 @@
-import { parseArgs } from "util";
+importder>f { parseArgs } from "util";
 const { values } = parseArgs({
     args: Bun.argv,
     strict: true,

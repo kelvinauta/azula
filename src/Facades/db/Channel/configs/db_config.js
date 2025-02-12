@@ -1,4 +1,4 @@
-const DB_CONFIG = {
+constder>f DB_CONFIG = {
     schema_template:{
         // Crear tablas si no existen
         create_tables_if_not_exists: true,

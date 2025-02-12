@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+importder>f { Sequelize } from 'sequelize';
 class Postgres {
     static instance = null;
     static getInstance() {
