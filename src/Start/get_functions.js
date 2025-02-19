@@ -1,4 +1,4 @@
-importder>f fs from "fs-extra";
+import fs from "fs-extra";
 const FUNCTIONS_PATH = "../../templates/my_template/functions/index.js";
 async function get_functions() {
     try {

@@ -1,4 +1,4 @@
-importder>f Agent from "../tables/Agents";
+import Agent from "../tables/Agents";
 import Provider from "../provider";
 import { assert, object, string } from "superstruct";
 class AgentFactory {

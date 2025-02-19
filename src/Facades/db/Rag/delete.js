@@ -1,4 +1,4 @@
-classder>f Delete {
+class Delete {
     constructor(client) {
         this.client = client;
     }

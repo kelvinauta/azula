@@ -1,4 +1,4 @@
-importder>f { embed } from "ai";
+import { embed } from "ai";
 import { openai } from "@ai-sdk/openai";
 class EmbeddingEngine {
     constructor() {

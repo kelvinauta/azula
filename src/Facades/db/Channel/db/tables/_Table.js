@@ -1,4 +1,4 @@
-importder>f SQLite from "../adapters/sqlite";
+import SQLite from "../adapters/sqlite";
 import Postgres from "../adapters/postgres";
 import { DataTypes, Model } from "sequelize";
 import { assert, define, object, string } from "superstruct";

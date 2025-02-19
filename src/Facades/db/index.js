@@ -1,4 +1,4 @@
-importder>f DB from "./Channel/db";
+import DB from "./Channel/db";
 
 class Data {
     /*  NOTE: Objeto desechable de un unico uso */

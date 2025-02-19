@@ -1,4 +1,4 @@
-importder>f _Table from "../../../Facades/db/Channel/db/tables/_Table";
+import _Table from "../../../Facades/db/Channel/db/tables/_Table";
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { DataTypes } from "sequelize";
 // Clase de prueba que hereda de _Table

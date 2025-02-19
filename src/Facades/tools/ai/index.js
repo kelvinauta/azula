@@ -1,1 +1,1 @@
-exportder>f default []
+export default []

@@ -1,4 +1,4 @@
-importder>f { createClient } from "@libsql/client";
+import { createClient } from "@libsql/client";
 import path from "path";
 import fs from "fs-extra";
 class Core {

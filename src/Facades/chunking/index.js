@@ -1,4 +1,4 @@
-importder>f EmbeddingEngine from "./embedding_engine";
+import EmbeddingEngine from "./embedding_engine";
 import SplitterText from "./splitter_text";
 class Chunking {
     constructor() {

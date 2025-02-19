@@ -1,11 +1,11 @@
-importder>f { Hono } from "hono";
+import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import Builder from "../Facades/builder";
 import Start from "../Start";
 
-await Start();
 const app = new Hono();
+await Start();
 const chatSchema = z.object({
     context: z.object({
         human: z.string().optional(),

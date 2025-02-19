@@ -1,4 +1,4 @@
-importder>f fs from "fs-extra";
+import fs from "fs-extra";
 import path from "path";
 const TEMPLATE_PATH = "../../templates/my_template";
 async function get_docs() {

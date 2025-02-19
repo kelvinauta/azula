@@ -1,4 +1,4 @@
-importder>f { test, expect } from "bun:test";
+import { test, expect } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import Builder from "../../Facades/builder";
 import Provider from "../../Facades/db/Channel/db/provider";

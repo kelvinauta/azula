@@ -1,4 +1,4 @@
-asyncder>f function processor({ text, functions, args }) {
+async function processor({ text, functions, args }) {
     if(!functions) return text
     const tokenRegex = /{{([^}]+)}}/g;
     const matches = [...text.matchAll(tokenRegex)];

@@ -1,4 +1,4 @@
-importder>f { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 class SQLite {
     static instance = null;
     #NAME = process.env.SQLITE_APP_NAME;

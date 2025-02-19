@@ -1,4 +1,4 @@
-/*der>f TODO: Si un documento tiene el mismo title  que uno que ya existe entonces reemplaza el anterior */
+/* TODO: Si un documento tiene el mismo title  que uno que ya existe entonces reemplaza el anterior */
 import { embed, embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
 class Insert {

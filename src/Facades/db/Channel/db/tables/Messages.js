@@ -1,4 +1,4 @@
-importder>f _Table from "./_Table";
+import _Table from "./_Table";
 import { DataTypes } from "sequelize";
 import { object, string, array, define, optional, assert } from "superstruct";
 import isUuid from "is-uuid";

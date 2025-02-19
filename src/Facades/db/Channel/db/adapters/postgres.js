@@ -1,4 +1,4 @@
-importder>f { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 class Postgres {
     static instance = null;
     static getInstance() {
@@ -14,6 +14,11 @@ class Postgres {
             host: process.env.POSTGRES_HOST,
             port: process.env.POSTGRES_PORT,
             dialect: "postgres",
+            dialectOptions:{
+                ssl:{
+                    require: true
+                }
+            },
             logging: false,
         })
     }

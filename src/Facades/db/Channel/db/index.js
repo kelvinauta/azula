@@ -1,4 +1,4 @@
-importder>f Provider from "./provider";
+import Provider from "./provider";
 import _Human from "./tables/Humans";
 import _Message from "./tables/Messages";
 import _Agent from "./tables/Agents";

@@ -1,4 +1,4 @@
-importder>f Core from "./core";
+import Core from "./core";
 import Insert from "./insert";
 import Delete from "./delete";
 import Query from "./query";

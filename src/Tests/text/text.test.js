@@ -1,4 +1,4 @@
-importder>f { expect, test, mock } from "bun:test";
+import { expect, test, mock } from "bun:test";
 import Text from "../../Facades/text";
 const { processor } = Text;
 test("processor - función simple sin argumentos", async () => {

@@ -1,4 +1,4 @@
-importder>f { expect, test, describe } from "bun:test";
+import { expect, test, describe } from "bun:test";
 import LLM from "../../Facades/llm";
 import { z } from "zod";
 describe("LLM class", () => {
