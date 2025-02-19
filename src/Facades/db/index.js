@@ -41,7 +41,7 @@ class Data {
         let agent = this.context.agent
             ? await DB.getAgentById(this.context.agent)
             : await DB.getAgentByChannel(this.context.channel);
-        if(!agent) agent = await DB.getAgentDefault()
+        if (!agent) agent = await DB.getAgentDefault();
         this.data.agent_id = agent.id;
         return agent;
     }
@@ -51,22 +51,30 @@ class Data {
             chat_external_id,
             this.context.channel,
         );
-        const history = messages
-            .map((msg) => {
-                const msg_data = msg;
-                const agent = msg_data._agent && "assistant";
-                const human = msg_data._human && "user";
-                return msg_data.texts.map((txt) => ({
+        let history = [];
+        messages.forEach((msg) => {
+            const msg_data = msg;
+            const agent = msg_data._agent && "assistant";
+            const human = msg_data._human && "user";
+            if (!agent && !human) {
+                console.warn(
+                    `In message ${msg_data.id} agent and human is null`,
+                );
+                return;
+            }
+            const push_history = msg_data.texts
+                .map((txt) => ({
                     role: agent || human,
                     content: txt,
-                }));
-            })
-            .flat();
+                }))
+                .flat();
+            history = [...history, ...push_history];
+        });
         return history;
     }
-    async addAgent({name, prompt}){
+    async addAgent({ name, prompt }) {
         /* TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase */
-        return DB.addAgent({name, prompt})
+        return DB.addAgent({ name, prompt });
     }
 }
 export default Data;
