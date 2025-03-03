@@ -1,26 +1,38 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from "sequelize";
 class Postgres {
     static instance = null;
     static getInstance() {
-        if(Postgres.instance) return Postgres.instance;
+        if (Postgres.instance) return Postgres.instance;
         Postgres.instance = new Postgres();
         return Postgres.instance;
     }
     constructor() {
-        if (Postgres.instance) throw new Error("This is a singleton class use .getInstance()")
+        if (Postgres.instance)
+            throw new Error("This is a singleton class use .getInstance()");
         Postgres.instance = this;
         this.is_connected = false;
-        this.sequelize = new Sequelize(process.env.POSTGRES_DB, process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
+        this.options = {
             host: process.env.POSTGRES_HOST,
             port: process.env.POSTGRES_PORT,
             dialect: "postgres",
-            dialectOptions:{
-                ssl:{
-                    require: true
-                }
-            },
             logging: false,
-        })
+        };
+        const ssl_require = process.env.POSTGRES_SSL_REQUIRE;
+        if (ssl_require) {
+            this.options.dialectOptions = {
+                dialectOptions: {
+                    ssl: true,
+                },
+            };
+        }
+        this.sequelize = new Sequelize(
+            process.env.POSTGRES_DB,
+            process.env.POSTGRES_USER,
+            process.env.POSTGRES_PASSWORD,
+            {
+                ...this.options,
+            },
+        );
     }
     async connect() {
         try {
@@ -29,7 +41,7 @@ class Postgres {
             return this;
         } catch (error) {
             this.is_connected = false;
-            throw error
+            throw error;
         }
     }
     async getTablesSchemas() {
@@ -53,18 +65,18 @@ class Postgres {
             `;
             const [results] = await this.sequelize.query(query);
             const schemas = {};
-            results.forEach(row => {
+            results.forEach((row) => {
                 if (!schemas[row.table_name]) {
                     schemas[row.table_name] = {
-                        columns: []
+                        columns: [],
                     };
                 }
                 schemas[row.table_name].columns.push({
                     name: row.column_name,
                     type: row.data_type,
                     maxLength: row.character_maximum_length,
-                    nullable: row.is_nullable === 'YES',
-                    default: row.column_default
+                    nullable: row.is_nullable === "YES",
+                    default: row.column_default,
                 });
             });
             return schemas;
@@ -73,4 +85,4 @@ class Postgres {
         }
     }
 }
-export default Postgres
+export default Postgres;
