@@ -12,6 +12,7 @@ launch.json
 .env.production
 .env.skypostal
 .volumes
+volumes
 .chats
 .chat
 .tmp
