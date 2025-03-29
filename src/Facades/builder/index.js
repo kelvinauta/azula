@@ -48,9 +48,8 @@ class Builder {
         return {
             output: {
                 text: answer.text,
-                toolCalls: answer.toolCalls,
-                toolResults: answer.toolResults,
                 finishReason: answer.finishReason,
+                llm_messages: answer.response.messages
             },
             input: {
                 messages,

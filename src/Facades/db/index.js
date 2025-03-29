@@ -1,4 +1,4 @@
-import DB from "./Channel/db";
+import DB from './Channel/db';
 
 class Data {
     /*  NOTE: Objeto desechable de un unico uso */
@@ -22,7 +22,7 @@ class Data {
             answer,
             this.data.chat_id,
             this.data.agent_id,
-            this.context.channel,
+            this.context.channel
         );
         return answer_data;
     }
@@ -47,27 +47,29 @@ class Data {
     }
     async getHistory() {
         const chat_external_id = this.context.chat;
-        const messages = await DB.getHistoryByExternalId(
-            chat_external_id,
-            this.context.channel,
-        );
+        const messages = await DB.getHistoryByExternalId(chat_external_id, this.context.channel);
         let history = [];
         messages.forEach((msg) => {
             const msg_data = msg;
-            const agent = msg_data._agent && "assistant";
-            const human = msg_data._human && "user";
-            if (!agent && !human) {
-                console.warn(
-                    `In message ${msg_data.id} agent and human is null`,
-                );
+            const agent = msg_data._agent && 'assistant';
+            const human = msg_data._human && 'user';
+            function msg_parse(texts, role) {
+                return texts
+                    .map((txt) => ({
+                        role,
+                        content: txt,
+                    }))
+                    .flat();
+            }
+            let push_history;
+            if (human) {
+                push_history = msg_parse(msg_data.texts, human);
+            } else if (agent) {
+                push_history = msg_data.llm_messages || msg_parse(msg_data.texts, agent);
+            } else {
+                console.warn(`In message ${msg_data.id} agent and human is null`);
                 return;
             }
-            const push_history = msg_data.texts
-                .map((txt) => ({
-                    role: agent || human,
-                    content: txt,
-                }))
-                .flat();
             history = [...history, ...push_history];
         });
         return history;

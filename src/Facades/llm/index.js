@@ -1,5 +1,5 @@
-import { createOpenAI } from "@ai-sdk/openai";
-import { generateText, tool } from "ai";
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateText, tool } from 'ai';
 import {
     assert,
     defaulted,
@@ -11,13 +11,14 @@ import {
     boolean,
     func,
     create,
-} from "superstruct";
+    any
+} from 'superstruct';
 class LLM {
     static schema = {
         input: {
             llm_engine: {
                 model: string(),
-                provider: enums(["openai", "anthropic"]),
+                provider: enums(['openai', 'anthropic']),
                 max_tokens: defaulted(number(), 256),
                 temperature: defaulted(number(), 1),
                 api_key: string(),
@@ -26,8 +27,8 @@ class LLM {
                 messages: array(
                     object({
                         role: string(),
-                        content: string(),
-                    }),
+                        content: any()
+                    })
                 ),
             },
             tool: {
@@ -52,7 +53,6 @@ class LLM {
         if (tools) generateTextConfig.tools = this.#build_tools(tools);
         if (maxSteps) generateTextConfig.maxSteps = maxSteps;
         const response = await generateText(generateTextConfig);
-        console.dir(response, {depth: null})
         return response;
     }
     #build_message(messages) {
@@ -71,10 +71,10 @@ class LLM {
     #generate_llm_engine(llm_engine) {
         assert(llm_engine, object(LLM.schema.input.llm_engine));
         const engine = create(llm_engine, object(LLM.schema.input.llm_engine));
-        if (engine.provider === "openai") {
+        if (engine.provider === 'openai') {
             engine.model = createOpenAI({
                 apiKey: engine.api_key,
-                compatibility: "strict",
+                compatibility: 'strict',
             })(engine.model);
         }
         return engine;

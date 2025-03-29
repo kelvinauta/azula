@@ -1,8 +1,8 @@
-import Provider from "./provider";
-import _Human from "./tables/Humans";
-import _Message from "./tables/Messages";
-import _Agent from "./tables/Agents";
-import _Chat from "./tables/Chats";
+import Provider from './provider';
+import _Human from './tables/Humans';
+import _Message from './tables/Messages';
+import _Agent from './tables/Agents';
+import _Chat from './tables/Chats';
 /* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
 class _DB {
     static async getInstance() {
@@ -33,7 +33,7 @@ class _DB {
     }
     async getAgentDefault() {
         const agent = await this.Agent.touch_one({
-            channel: "default",
+            channel: 'default',
         });
         return agent?.dataValues;
     }
@@ -50,22 +50,19 @@ class _DB {
             _agent: agent_id,
             _chat: chat_id,
             texts: [],
+            llm_messages: [],
         };
-        if (answer.output.toolResults?.length) {
-            message_answer.texts = [JSON.stringify(answer.output.toolResults)];
+        if (answer.output.llm_messages) {
+            message_answer.llm_messages = answer.output.llm_messages
         }
         if (answer.output.text) {
-            message_answer.texts = [
-                answer.output.text,
-                ...message_answer.texts,
-            ];
+            message_answer.texts = [answer.output.text, ...message_answer.texts];
         }
         const answer_data = await this.Message.model.create(message_answer);
         return answer_data.dataValues;
     }
     async pushMessage(message, context) {
-        const { channel, chat_external_id, human_external_id, agent_id } =
-            context;
+        const { channel, chat_external_id, human_external_id, agent_id } = context;
         const chat = await this.Chat.touch_one({
             external_id: chat_external_id,
             channel: channel,
@@ -89,9 +86,9 @@ class _DB {
                 })
             ).dataValues.id;
         }
-        if (!message_input._chat) throw new Error("Chat is required");
+        if (!message_input._chat) throw new Error('Chat is required');
         if (!message_input._human && !message_input._agent)
-            throw new Error("human or agent assign in message is required");
+            throw new Error('human or agent assign in message is required');
         const new_message = await this.Message.model.create(message_input);
         return new_message.dataValues;
     }
@@ -106,7 +103,7 @@ class _DB {
             where: {
                 _chat: chat_id,
             },
-            order: [["createdAt", "ASC"]],
+            order: [['createdAt', 'ASC']],
         });
     }
     async getChatByExternalId(external_id, channel) {

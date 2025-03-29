@@ -14,10 +14,9 @@ class Message extends _Table {
             type: DataTypes.JSON,
             allowNull: false,
         },
-        tools: {
-            /*  TODO: Se debe guardar historial de las llamadas a las tools */
+        llm_messages: {
             type: DataTypes.JSON,
-            allowNull: true,
+            allowNull: true
         },
         files: {
             type: DataTypes.JSON,
