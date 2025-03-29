@@ -5,7 +5,8 @@ class Core {
     #PATH = process.env.SQLITE_PATH;
     #NAME = process.env.SQLITE_EMBEDDING_NAME
     constructor() {
-        this.path = path.join(process.cwd(), this.#PATH);
+        //this.path = path.join(process.cwd(), this.#PATH);
+        this.path = this.#PATH
         this.name = this.#NAME;
         this.client = null;
         this.url = `file:${this.path}/${this.name}`;

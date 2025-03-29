@@ -3,7 +3,9 @@ import Postgres from "../adapters/postgres";
 import { DataTypes, Model } from "sequelize";
 import { assert, define, object, string } from "superstruct";
 import isUuid from "is-uuid";
-const DB_ADAPTER = Postgres
+let DB_ADAPTER
+if(process.env.DB_ADAPTER == "postgres") DB_ADAPTER=Postgres
+if(process.env.DB_ADAPTER == "sqlite") DB_ADAPTER=SQLite
 class _Table {
     static instance = null;
     static is_synced = false;

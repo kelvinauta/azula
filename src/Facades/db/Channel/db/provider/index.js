@@ -1,4 +1,4 @@
-//import SQLite from "../adapters/sqlite";
+import SQLite from "../adapters/sqlite";
 import Postgres from "../adapters/postgres";
 import _Table from "../tables/_Table";
 import Agent from "../tables/Agents";
@@ -11,6 +11,7 @@ import {assert, define} from "superstruct";
     static #instance_with_build = false;
     static #db_ok = false;
     static #sync_ok = false;
+    static db_adapter = process.env.DB_ADAPTER || "sqlite"
     static tables_schema = define("tables_schema", (tables)=>{
         if(typeof tables !== "object") return false;
         if(!Object.values(tables).every((table)=> table instanceof _Table)) return false;
@@ -27,7 +28,8 @@ import {assert, define} from "superstruct";
     constructor() {
         if(!Provider.#instance_with_build) throw new Error("first constructor is disabled, use build() instead");
         if(Provider.instance) return Provider.instance;
-        this.db = Postgres.getInstance();
+        if(Provider.db_adapter == "sqlite") this.db = SQLite.getInstance()
+        if(Provider.db_adapter == "postgres") this.db = Postgres.getInstance()
         this.tables = {};
     }
     static all_is_ok(){
