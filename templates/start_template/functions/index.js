@@ -3,7 +3,7 @@ import functions_prompt from "./prompt";
 import functions_ai from "./ai";
 
 export default {
-    functions_message,
-    functions_prompt,
-    functions_ai,
+    messages: functions_message,
+    prompt: functions_prompt,
+    ai: functions_ai,
 };

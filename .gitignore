@@ -1,7 +1,7 @@
 node_modules/
 .logs
 .posting
-.http
+.http/private
 .idea
 launch.json
 .env

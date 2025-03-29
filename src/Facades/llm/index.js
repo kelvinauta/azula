@@ -52,6 +52,7 @@ class LLM {
         if (tools) generateTextConfig.tools = this.#build_tools(tools);
         if (maxSteps) generateTextConfig.maxSteps = maxSteps;
         const response = await generateText(generateTextConfig);
+        console.dir(response, {depth: null})
         return response;
     }
     #build_message(messages) {

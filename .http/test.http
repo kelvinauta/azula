@@ -1,0 +1,15 @@
+POST localhost:3000/v1/chat
+accept: aplication/json
+content-type: application/json
+
+{
+    "context":{
+        "human": "username",
+        "channel": "default"
+    },
+    "message":{
+        "texts": [
+            "Hola"
+        ]
+    }
+}
