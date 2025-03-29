@@ -16,7 +16,7 @@ class update {
                 const { embedding: newembedding } = await embed({
                     model: openai.embedding("text-embedding-3-large"),
                     value: content,
-                    apikey: process.env.openai_api_key,
+                    apikey: process.env.OPENAI_API_KEY,
                 });
                 embedding = newembedding;
             }
