@@ -37,6 +37,10 @@ class Data {
         this.data.human_id = message_data._human;
         return message_data;
     }
+    async getAllAgents(){
+        const agents = await DB.getAllAgents()
+        return agents
+    }
     async getAgent() {
         let agent = this.context.agent
             ? await DB.getAgentById(this.context.agent)
@@ -74,9 +78,12 @@ class Data {
         });
         return history;
     }
-    async addAgent({ name, prompt }) {
+    async addAgent({ name, prompt, channel, llm_engine }) {
         /* TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase */
-        return DB.addAgent({ name, prompt });
+        return DB.addAgent({ name, prompt, channel, llm_engine });
+    }
+    async addTool({ name, description, parameters, source, agent_id }) {
+        return await DB.addTool({ name, description, parameters, source, agent_id });
     }
 }
 export default Data;

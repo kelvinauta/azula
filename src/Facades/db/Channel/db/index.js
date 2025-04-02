@@ -3,17 +3,19 @@ import _Human from './tables/Humans';
 import _Message from './tables/Messages';
 import _Agent from './tables/Agents';
 import _Chat from './tables/Chats';
+import _Tool from './tables/Tools.js';
 /* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
 class _DB {
     static async getInstance() {
         await Provider.build();
-        const [Human, Message, Agent, Chat] = await Promise.all([
+        const [Human, Message, Agent, Chat, Tool] = await Promise.all([
             _Human.getInstance(),
             _Message.getInstance(),
             _Agent.getInstance(),
             _Chat.getInstance(),
+            _Tool.getInstance(),
         ]);
-        const Tables = { Human, Message, Agent, Chat };
+        const Tables = { Human, Message, Agent, Chat, Tool };
 
         return new _DB(Tables);
     }
@@ -22,6 +24,7 @@ class _DB {
         this.Message = Tables.Message;
         this.Human = Tables.Human;
         this.Chat = Tables.Chat;
+        this.Tool = Tables.Tool;
     }
     async getAgentByChannel(channel) {
         const agent = await this.Agent.model.findOne({
@@ -53,7 +56,7 @@ class _DB {
             llm_messages: [],
         };
         if (answer.output.llm_messages) {
-            message_answer.llm_messages = answer.output.llm_messages
+            message_answer.llm_messages = answer.output.llm_messages;
         }
         if (answer.output.text) {
             message_answer.texts = [answer.output.text, ...message_answer.texts];
@@ -112,14 +115,39 @@ class _DB {
             channel,
         });
     }
-    async addAgent({ name, prompt }) {
-        const agent = await this.Agent.touch_one({
+    async getAllAgents() {
+        let agents = await this.Agent.model.findAll();
+        agents = agents.map(({ dataValues }) => {
+            delete dataValues.llm_engine.api_key;
+            return dataValues;
+        });
+        return agents;
+    }
+    async addAgent({ name, prompt, channel, llm_engine }) {
+        let agent_data = {
             name,
             config: {
                 prompt,
             },
-        });
+        };
+        if (channel) agent_data.channel = channel;
+        if (llm_engine) agent_data.llm_engine = llm_engine;
+        const agent = await this.Agent.touch_one(agent_data);
         return agent?.dataValues;
+    }
+    async addTool({ name, description, parameters, dependencies, source, agent_id }) {
+        const agent = await this.Agent.touch_one({
+            id: agent_id,
+        });
+        const tool = await this.Tool.model.create({
+            name,
+            description,
+            parameters,
+            dependencies,
+            source,
+            _agent: agent.id,
+        });
+        return tool?.dataValues;
     }
 }
 
