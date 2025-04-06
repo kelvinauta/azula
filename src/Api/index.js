@@ -127,6 +127,19 @@ app.post(
         }
     }
 );
+app.get("/v1/tools", async (c) => {
+    try {
+        const {agent_id} = c.req.query()
+        const data = new Data();
+        const tools = await data.getTools(agent_id);
+        return c.json(tools);
+    } catch (error) {
+        console.error("Error GET /v1/tools");
+        return c.json({
+            error: error.message,
+        });
+    }
+});
 export default {
     port: process.env.APP_PORT,
     fetch: app.fetch,

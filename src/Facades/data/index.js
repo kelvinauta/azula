@@ -83,8 +83,10 @@ class Data {
         return DB.addAgent({ name, prompt, channel, llm_engine });
     }
     async addTool(tool_data, http_data) {
-        console.log(`async addTool(tool_data, http_data) {`)
         return await DB.addTool(tool_data, http_data);
+    }
+    async getTools(agent_id) {
+        return await DB.getToolsFromAgent(agent_id);
     }
 }
 export default Data;

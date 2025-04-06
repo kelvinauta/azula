@@ -163,8 +163,10 @@ class _DB {
         for (const key of keys_tool) {
             if (tool_data[key]) newTool[key] = tool_data[key];
         }
+        newTool._agent = newTool.agent_id;
+        delete newTool.agent_id;
         await this.Agent.touch_one({
-            id: tool_data.agent_id,
+            id: newTool._agent,
         });
         if (http_data) {
             newHttp = {};
@@ -176,6 +178,14 @@ class _DB {
         }
         const tool = await this.Tool.model.create(newTool);
         return tool?.dataValues;
+    }
+    async getToolsFromAgent(agent_id) {
+        let tools = await this.Tool.model.findAll({
+            where: {
+                _agent: agent_id,
+            },
+        });
+        return tools.map(({ dataValues }) => dataValues);
     }
 }
 
