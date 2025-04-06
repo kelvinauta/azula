@@ -1,11 +1,11 @@
 import { test, expect } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
 import Builder from "../../Facades/builder";
-import Provider from "../../Facades/db/Channel/db/provider";
-import AgentFactory from "../../Facades/db/Channel/db/factory/AgentFactory";
-import Agent from "../../Facades/db/Channel/db/tables/Agents";
-import Message from "../../Facades/db/Channel/db/tables/Messages";
-import Chat from "../../Facades/db/Channel/db/tables/Chats";
+import Provider from "../../Facades/data/Channel/db/provider";
+import AgentFactory from "../../Facades/data/Channel/db/factory/AgentFactory";
+import Agent from "../../Facades/data/Channel/db/tables/Agents";
+import Message from "../../Facades/data/Channel/db/tables/Messages";
+import Chat from "../../Facades/data/Channel/db/tables/Chats";
 import Tools from "../../Facades/tools";
 import axios from "axios";
 import { z } from "zod";

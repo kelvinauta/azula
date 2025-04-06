@@ -26,7 +26,7 @@ class Tools extends _Table {
         },
         source: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true,
         },
         dependencies: {
             type: DataTypes.JSON,

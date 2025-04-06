@@ -1,8 +1,8 @@
-import Provider from './provider';
-import _Human from './tables/Humans';
-import _Message from './tables/Messages';
-import _Agent from './tables/Agents';
-import _Chat from './tables/Chats';
+import Provider from './provider/index.js';
+import _Human from './tables/Humans.js';
+import _Message from './tables/Messages.js';
+import _Agent from './tables/Agents.js';
+import _Chat from './tables/Chats.js';
 import _Tool from './tables/Tools.js';
 /* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
 class _DB {
@@ -135,18 +135,24 @@ class _DB {
         const agent = await this.Agent.touch_one(agent_data);
         return agent?.dataValues;
     }
-    async addTool({ name, description, parameters, dependencies, source, agent_id }) {
+    async addTool(data) {
+        const keys = [
+            'name',
+            'description',
+            'parameters',
+            'dependencies',
+            'source',
+            'mode',
+            'agent_id',
+        ];
         const agent = await this.Agent.touch_one({
             id: agent_id,
         });
-        const tool = await this.Tool.model.create({
-            name,
-            description,
-            parameters,
-            dependencies,
-            source,
-            _agent: agent.id,
-        });
+        let newTool = {};
+        for (const key of keys) {
+            if (data[key]) newTool[key] = data[key];
+        }
+        const tool = await this.Tool.model.create(newTool);
         return tool?.dataValues;
     }
 }

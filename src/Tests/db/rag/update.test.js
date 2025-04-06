@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
-import Update from "../../../Facades/db/Rag/update";
-import Insert from "../../../Facades/db/Rag/insert";
-import Core from "../../../Facades/db/Rag/core";
+import Update from "../../../Facades/data/Rag/update";
+import Insert from "../../../Facades/data/Rag/insert";
+import Core from "../../../Facades/data/Rag/core";
 const core = new Core();
 await core.init();
 const insert = new Insert(core.client);

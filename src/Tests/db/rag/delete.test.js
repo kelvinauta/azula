@@ -2,9 +2,9 @@
 // delete.test.js
 import { expect, test } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
-import Delete from "../../../Facades/db/Rag/delete";
-import Insert from "../../../Facades/db/Rag/insert";
-import Core from "../../../Facades/db/Rag/core";
+import Delete from "../../../Facades/data/Rag/delete";
+import Insert from "../../../Facades/data/Rag/insert";
+import Core from "../../../Facades/data/Rag/core";
 
 const core = new Core();
 await core.init();

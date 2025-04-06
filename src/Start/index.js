@@ -1,6 +1,6 @@
 import template from "./get_template";
-import Data from "../Facades/db";
-import Bulk from "../Facades/db/Rag";
+import Data from "../Facades/data";
+import Bulk from "../Facades/data/Rag";
 import Cli from "../Cli"
 const data = new Data()
 async function Start() {

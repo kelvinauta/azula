@@ -1,5 +1,5 @@
 import { expect, test, beforeAll } from "bun:test";
-import Core from "../../../Facades/db/Rag/core";
+import Core from "../../../Facades/data/Rag/core";
 import { createClient } from "@libsql/client";
 
 const core = new Core();

@@ -1,8 +1,8 @@
 import { expect, test, beforeAll } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
-import AgentFactory from "../../../Facades/db/Channel/db/factory/AgentFactory";
-import Agent from "../../../Facades/db/Channel/db/tables/Agents";
-import Provider from "../../../Facades/db/Channel/db/provider";
+import AgentFactory from "../../../Facades/data/Channel/db/factory/AgentFactory";
+import Agent from "../../../Facades/data/Channel/db/tables/Agents";
+import Provider from "../../../Facades/data/Channel/db/provider";
 test("AgentFactory debe crear un agente correctamente", async () => {
   await Provider.build();
   const agentInstance = await Agent.getInstance();

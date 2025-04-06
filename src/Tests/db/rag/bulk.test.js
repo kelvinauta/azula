@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
-import Bulk from "../../../Facades/db/Rag";
+import Bulk from "../../../Facades/data/Rag";
 test("should perform all operations without errors", async () => {
     const bulk = Bulk();
     const uniqueId = uuidv4();
