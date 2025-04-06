@@ -22,7 +22,7 @@ class Tools extends _Table {
         mode: {
             type: DataTypes.ENUM("source", "http"),
             allowNull: false,
-            defaultValue: "source"
+            defaultValue: "http"
         },
         source: {
             type: DataTypes.TEXT,

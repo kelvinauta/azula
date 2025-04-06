@@ -157,21 +157,22 @@ class _DB {
             "headers_static",
             "timeout",
         ];
-        await this.Agent.touch_one({
-            id: agent_id,
-        });
         let newTool = {};
         let newHttp;
+
+        for (const key of keys_tool) {
+            if (tool_data[key]) newTool[key] = tool_data[key];
+        }
+        await this.Agent.touch_one({
+            id: tool_data.agent_id,
+        });
         if (http_data) {
-            http_data = {};
+            newHttp = {};
             for (const key of keys_http) {
                 if (http_data[key]) newHttp[key] = http_data[key];
             }
-            const http = await this.Http.model.create(newHttp)
-            newTool._http = http.dataValues.id
-        }
-        for (const key of keys_tool) {
-            if (tool_data[key]) newTool[key] = tool_data[key];
+            const http = await this.Http.model.create(newHttp);
+            newTool._http = http.dataValues.id;
         }
         const tool = await this.Tool.model.create(newTool);
         return tool?.dataValues;
