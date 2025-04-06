@@ -19,6 +19,11 @@ class Tools extends _Table {
             type: DataTypes.TEXT,
             allowNull: true,
         },
+        mode: {
+            type: DataTypes.ENUM("source", "http"),
+            allowNull: false,
+            defaultValue: "source"
+        },
         source: {
             type: DataTypes.TEXT,
             allowNull: false,

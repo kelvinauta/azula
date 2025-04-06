@@ -6,6 +6,7 @@ import Chat from '../tables/Chats';
 import Human from '../tables/Humans';
 import Message from '../tables/Messages';
 import Tools from '../tables/Tools';
+import Http from '../tables/Http';
 import { assert, define } from 'superstruct';
 class Provider {
     static instance = null;
@@ -45,14 +46,17 @@ class Provider {
         const humans = await Human.getInstance();
         const messages = await Message.getInstance();
         const tools = await Tools.getInstance();
+        const http = await Http.getInstance()
         const relations_many_to_many = [];
         messages.ref(agents);
         messages.ref(humans);
         messages.ref(chats);
         tools.ref(agents);
+        tools.ref(http)
         await agents.sync();
         await chats.sync();
         await humans.sync();
+        await http.sync()
         await tools.sync();
         await messages.sync();
         for (const relation of relations_many_to_many) {
@@ -64,6 +68,7 @@ class Provider {
         this.tables[humans.get_name()] = humans;
         this.tables[messages.get_name()] = messages;
         this.tables[tools.get_name()] = tools;
+        this.tables[http.get_name()] = http
         Provider.#sync_ok = true;
     }
     getTables() {
