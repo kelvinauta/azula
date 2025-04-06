@@ -1,21 +1,23 @@
-import Provider from './provider/index.js';
-import _Human from './tables/Humans.js';
-import _Message from './tables/Messages.js';
-import _Agent from './tables/Agents.js';
-import _Chat from './tables/Chats.js';
-import _Tool from './tables/Tools.js';
+import Provider from "./provider/index.js";
+import _Human from "./tables/Humans.js";
+import _Message from "./tables/Messages.js";
+import _Agent from "./tables/Agents.js";
+import _Chat from "./tables/Chats.js";
+import _Tool from "./tables/Tools.js";
+import _Http from "./tables/Http.js";
 /* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
 class _DB {
     static async getInstance() {
         await Provider.build();
-        const [Human, Message, Agent, Chat, Tool] = await Promise.all([
+        const [Human, Message, Agent, Chat, Tool, Http] = await Promise.all([
             _Human.getInstance(),
             _Message.getInstance(),
             _Agent.getInstance(),
             _Chat.getInstance(),
             _Tool.getInstance(),
+            _Http.getInstance(),
         ]);
-        const Tables = { Human, Message, Agent, Chat, Tool };
+        const Tables = { Human, Message, Agent, Chat, Tool, Http };
 
         return new _DB(Tables);
     }
@@ -25,6 +27,7 @@ class _DB {
         this.Human = Tables.Human;
         this.Chat = Tables.Chat;
         this.Tool = Tables.Tool;
+        this.Http = Tables.Http;
     }
     async getAgentByChannel(channel) {
         const agent = await this.Agent.model.findOne({
@@ -36,7 +39,7 @@ class _DB {
     }
     async getAgentDefault() {
         const agent = await this.Agent.touch_one({
-            channel: 'default',
+            channel: "default",
         });
         return agent?.dataValues;
     }
@@ -89,9 +92,9 @@ class _DB {
                 })
             ).dataValues.id;
         }
-        if (!message_input._chat) throw new Error('Chat is required');
+        if (!message_input._chat) throw new Error("Chat is required");
         if (!message_input._human && !message_input._agent)
-            throw new Error('human or agent assign in message is required');
+            throw new Error("human or agent assign in message is required");
         const new_message = await this.Message.model.create(message_input);
         return new_message.dataValues;
     }
@@ -106,7 +109,7 @@ class _DB {
             where: {
                 _chat: chat_id,
             },
-            order: [['createdAt', 'ASC']],
+            order: [["createdAt", "ASC"]],
         });
     }
     async getChatByExternalId(external_id, channel) {
@@ -135,22 +138,40 @@ class _DB {
         const agent = await this.Agent.touch_one(agent_data);
         return agent?.dataValues;
     }
-    async addTool(data) {
-        const keys = [
-            'name',
-            'description',
-            'parameters',
-            'dependencies',
-            'source',
-            'mode',
-            'agent_id',
+    async addTool(tool_data, http_data) {
+        const keys_tool = [
+            "name",
+            "description",
+            "parameters",
+            "dependencies",
+            "source",
+            "mode",
+            "agent_id",
         ];
-        const agent = await this.Agent.touch_one({
+        const keys_http = [
+            "method",
+            "url",
+            "data_mode",
+            "body_static",
+            "params_static",
+            "headers_static",
+            "timeout",
+        ];
+        await this.Agent.touch_one({
             id: agent_id,
         });
         let newTool = {};
-        for (const key of keys) {
-            if (data[key]) newTool[key] = data[key];
+        let newHttp;
+        if (http_data) {
+            http_data = {};
+            for (const key of keys_http) {
+                if (http_data[key]) newHttp[key] = http_data[key];
+            }
+            const http = await this.Http.model.create(newHttp)
+            newTool._http = http.dataValues.id
+        }
+        for (const key of keys_tool) {
+            if (tool_data[key]) newTool[key] = tool_data[key];
         }
         const tool = await this.Tool.model.create(newTool);
         return tool?.dataValues;

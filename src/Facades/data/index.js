@@ -1,4 +1,4 @@
-import DB from './Channel/db';
+import DB from "./Channel/db";
 
 class Data {
     /*  NOTE: Objeto desechable de un unico uso */
@@ -37,9 +37,9 @@ class Data {
         this.data.human_id = message_data._human;
         return message_data;
     }
-    async getAllAgents(){
-        const agents = await DB.getAllAgents()
-        return agents
+    async getAllAgents() {
+        const agents = await DB.getAllAgents();
+        return agents;
     }
     async getAgent() {
         let agent = this.context.agent
@@ -55,8 +55,8 @@ class Data {
         let history = [];
         messages.forEach((msg) => {
             const msg_data = msg;
-            const agent = msg_data._agent && 'assistant';
-            const human = msg_data._human && 'user';
+            const agent = msg_data._agent && "assistant";
+            const human = msg_data._human && "user";
             function msg_parse(texts, role) {
                 return texts
                     .map((txt) => ({
@@ -82,8 +82,8 @@ class Data {
         /* TODO: Quiza operaciones como addAgent deberia ser manejado por otra clase */
         return DB.addAgent({ name, prompt, channel, llm_engine });
     }
-    async addTool({ name, description, parameters, source, agent_id }) {
-        return await DB.addTool({ name, description, parameters, source, agent_id });
+    async addTool(tool_data, http_data) {
+        return await DB.addTool(tool_data, http_data);
     }
 }
 export default Data;

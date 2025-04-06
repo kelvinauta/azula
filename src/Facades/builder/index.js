@@ -1,6 +1,6 @@
 import { string, array, object, optional, assert, define } from "superstruct";
 import LLM from "../llm";
-import Data from "../db";
+import Data from "../data";
 import Text from "../text";
 import Tools from "../tools";
 class Builder {
