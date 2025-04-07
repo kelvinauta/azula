@@ -3,9 +3,9 @@ import Postgres from "../adapters/postgres";
 import { DataTypes, Model } from "sequelize";
 import { assert, define, object, string } from "superstruct";
 import isUuid from "is-uuid";
-let DB_ADAPTER
-if(process.env.DB_ADAPTER == "postgres") DB_ADAPTER=Postgres
-if(process.env.DB_ADAPTER == "sqlite") DB_ADAPTER=SQLite
+let DB_ADAPTER;
+if (process.env.DB_ADAPTER == "postgres") DB_ADAPTER = Postgres;
+if (process.env.DB_ADAPTER == "sqlite") DB_ADAPTER = SQLite;
 class _Table {
     static instance = null;
     static is_synced = false;
@@ -25,8 +25,7 @@ class _Table {
         id: define("id", (value) => isUuid(value)),
     };
     static async getInstance(params) {
-        if (this.name === _Table.name)
-            throw new Error("Table cannot be instantiated");
+        if (this.name === _Table.name) throw new Error("Table cannot be instantiated");
         if (this.instance) return this.instance;
         await this.db_connected();
         const instance = new this(params);
@@ -48,8 +47,7 @@ class _Table {
         this.#validate_db();
         if (this.constructor.instance) return this.constructor.instance;
         if (params) {
-            if (typeof params !== "object")
-                throw new Error("Params must be an object");
+            if (typeof params !== "object") throw new Error("Params must be an object");
             const params_schema = object({
                 name: string(),
                 attributes: object(),
@@ -69,7 +67,7 @@ class _Table {
         this.model = this.sequelize.define(
             this.params.name,
             this.params.attributes,
-            this.params.options,
+            this.params.options
         );
     }
     get_name() {
@@ -80,11 +78,15 @@ class _Table {
         this.constructor.is_synced = true;
         const DEV_MODE = process.env.DEV_MODE === "true";
         const DEV_DB_ALTER = process.env.DEV_DB_ALTER === "true";
+        let model_sync;
         if (DEV_MODE && DEV_DB_ALTER) {
-            return await this.model.sync({ force: true });
+            model_sync = await this.model.sync({ force: true });
+        } else {
+            model_sync = await this.model.sync();
         }
         /* NOTE: sqlite BUG with sync -> alter:true */
-        return await this.model.sync();
+        console.log(`table_name ${this.params.name} Sync success`);
+        return model_sync;
     }
     ref(ref_table, foreign_key_name) {
         if (foreign_key_name && typeof foreign_key_name !== "string")
@@ -120,15 +122,13 @@ class _Table {
     }
     async touch_one(where_params) {
         if (!where_params) throw new Error("Where params are required");
-        if (typeof where_params !== "object")
-            throw new Error("Where params must be an object");
+        if (typeof where_params !== "object") throw new Error("Where params must be an object");
         let row = await this.model.findOne({ where: where_params });
         if (!row) row = await this.model.create(where_params);
         return row;
     }
     #build_many2many_params(tableA, tableB) {
-        if (!tableA || !tableB)
-            throw new Error("TableA and TableB are required");
+        if (!tableA || !tableB) throw new Error("TableA and TableB are required");
         this.#validate_table(tableA);
         this.#validate_table(tableB);
         return {
@@ -155,8 +155,7 @@ class _Table {
     #validate_table(table) {
         if (table === this) return true;
         if (!table) throw new Error("Table is required");
-        if (!(table instanceof _Table))
-            throw new Error("Table must be an instance of _Table");
+        if (!(table instanceof _Table)) throw new Error("Table must be an instance of _Table");
         if (!table.model) throw new Error("Table must be defined");
         if (table.constructor.name === this.constructor.name)
             throw new Error("Table must be different from the current table");
@@ -164,10 +163,8 @@ class _Table {
     }
     #validate_db() {
         if (!this.constructor.db) throw new Error("Db is required");
-        if ((!this.constructor.db) instanceof DB_ADAPTER)
-            throw new Error("Db is not connected");
-        if (!this.constructor.db.is_connected)
-            throw new Error("Db.is_connected is false");
+        if ((!this.constructor.db) instanceof DB_ADAPTER) throw new Error("Db is not connected");
+        if (!this.constructor.db.is_connected) throw new Error("Db.is_connected is false");
     }
 }
 export default _Table;
