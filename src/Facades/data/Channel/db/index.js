@@ -138,7 +138,7 @@ class _DB {
         const agent = await this.Agent.touch_one(agent_data);
         return agent?.dataValues;
     }
-    async addTool(tool_data, http_data) {
+    async addTool(tool_data, http_data, { create_agent_if_not_exist = false } = {}) {
         const keys_tool = [
             "name",
             "description",
@@ -165,9 +165,18 @@ class _DB {
         }
         newTool._agent = newTool.agent_id;
         delete newTool.agent_id;
-        await this.Agent.touch_one({
-            id: newTool._agent,
-        });
+        if (create_agent_if_not_exist) {
+            await this.Agent.touch_one({
+                id: newTool._agent,
+            });
+        }else{
+            const agent = await this.Agent.model.findOne({
+                where:{
+                    id: newTool._agent
+                }
+            })
+            if(!agent) throw new Error(`Agent with id: ${newTool._agent} not exist`)
+        }
         if (http_data) {
             newHttp = {};
             for (const key of keys_http) {
