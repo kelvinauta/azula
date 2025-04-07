@@ -81,7 +81,6 @@ class _Table {
         const DEV_MODE = process.env.DEV_MODE === "true";
         const DEV_DB_ALTER = process.env.DEV_DB_ALTER === "true";
         if (DEV_MODE && DEV_DB_ALTER) {
-            console.log(`if (DEV_MODE && DEV_DB_ALTER) {`)
             return await this.model.sync({ force: true });
         }
         /* NOTE: sqlite BUG with sync -> alter:true */
