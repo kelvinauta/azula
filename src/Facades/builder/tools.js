@@ -7,7 +7,7 @@ function _builder_tool({ id, name, description, mode, source, dependencies, para
         name,
         description,
         parameters,
-        execute: _build_execute(mode, source, dependencies, parameters, Http),
+        execute: _build_execute({ mode, source, dependencies, parameters, Http }),
     };
     return tool;
 }
@@ -18,6 +18,7 @@ function _build_execute({ mode, source, dependencies, parameters, Http }) {
     if (mode === "source") {
         throw new Error("source mode not implemented yet");
     }
+    throw new Error(`mode is ${mode} and must by enum[http,source]`);
 }
 function _build_mode_http(
     parameters,
@@ -36,10 +37,11 @@ function _build_mode_http(
             _params = { ..._params, ...params_by_llm };
         }
         const _params_string = new URLSearchParams(_params).toString() || "";
-        _url += _params_string;
+        _url += _params_string ? "?" + _params_string : "";
         let fetch_options = { method: _method };
         if (Object.keys(_headers).length) fetch_options.headers = _headers;
         if (Object.keys(_body).length) fetch_options.body = _body;
+        console.dir({ _url, fetch_options }, { depth: null });
         const result = await fetch(_url, {
             ...fetch_options,
         });
@@ -57,8 +59,8 @@ const default_tools = {
     },
 };
 
-module.exports = {
-    agent_tools: builder_tools,
-    system_tools: default_tools,
-    message_tools: default_tools,
-};
+const agent_tools = builder_tools;
+const system_tools = default_tools;
+const message_tools = default_tools;
+
+export default { agent_tools, system_tools, message_tools };

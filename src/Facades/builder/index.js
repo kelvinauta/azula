@@ -2,7 +2,8 @@ import { string, array, object, optional, assert, define } from "superstruct";
 import LLM from "../llm";
 import Data from "../data";
 import Text from "../text";
-import { agent_tools, system_tools, message_tools } from "./tools.js";
+import Tools from "./tools.js";
+const { agent_tools, system_tools, message_tools } = Tools;
 class Builder {
     static input_schema = {
         context: object({
@@ -63,7 +64,7 @@ class Builder {
     async #build() {
         const [agent, history] = await Promise.all([this.Data.getAgent(), this.Data.getHistory()]);
         const tools_of_agent = await this.Data.getTools(agent.id);
-        const tools = await agent_tools(tools_of_agent);
+        const tools = agent_tools(tools_of_agent);
         const args = this.#getArgs({
             message: this.message,
             history,
