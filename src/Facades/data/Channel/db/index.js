@@ -169,13 +169,13 @@ class _DB {
             await this.Agent.touch_one({
                 id: newTool._agent,
             });
-        }else{
+        } else {
             const agent = await this.Agent.model.findOne({
-                where:{
-                    id: newTool._agent
-                }
-            })
-            if(!agent) throw new Error(`Agent with id: ${newTool._agent} not exist`)
+                where: {
+                    id: newTool._agent,
+                },
+            });
+            if (!agent) throw new Error(`Agent with id: ${newTool._agent} not exist`);
         }
         if (http_data) {
             newHttp = {};
@@ -193,7 +193,9 @@ class _DB {
             where: {
                 _agent: agent_id,
             },
+            include: { model: this.Http.model },
         });
+
         return tools.map(({ dataValues }) => dataValues);
     }
 }

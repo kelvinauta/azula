@@ -80,6 +80,7 @@ class _Table {
         const DEV_DB_ALTER = process.env.DEV_DB_ALTER === "true";
         let model_sync;
         if (DEV_MODE && DEV_DB_ALTER) {
+            console.warn("force overwrite table cause DEV_MODE and DEV_DB_ALTER env vars is true");
             model_sync = await this.model.sync({ force: true });
         } else {
             model_sync = await this.model.sync();

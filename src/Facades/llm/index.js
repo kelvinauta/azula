@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { generateText, tool } from 'ai';
 import {
     assert,
+    optional,
     defaulted,
     number,
     object,

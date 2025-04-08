@@ -2,7 +2,7 @@ import { string, array, object, optional, assert, define } from "superstruct";
 import LLM from "../llm";
 import Data from "../data";
 import Text from "../text";
-import Tools from "../tools";
+import { agent_tools, system_tools, message_tools } from "./tools.js";
 class Builder {
     static input_schema = {
         context: object({
@@ -15,21 +15,20 @@ class Builder {
                     name: optional(string()),
                     phone: optional(string()),
                     profile_url: optional(string()),
-                }),
+                })
             ),
         }),
         message: object({
             texts: array(string()),
         }),
     };
-    constructor({ context, message, tools }) {
+    constructor({ context, message }) {
         this.context = context;
         this.message = message;
         if (!this.context.chat) {
             this.context.chat = `${this.context.channel}-${this.context.human}`;
         }
         this.answer = null;
-        this.Tools = tools || new Tools();
         this.Data = new Data();
         this.Data.setContext(this.context);
     }
@@ -40,16 +39,16 @@ class Builder {
             this.context,
             define("Human or Agent required", (context) => {
                 return Boolean(context.agent) || Boolean(context.human);
-            }),
+            })
         );
         const { messages, llm, tools } = await this.#build();
-        const answer = await llm.generate_text(messages, tools.get().to.ai);
+        const answer = await llm.generate_text(messages, tools);
         this.answer = answer;
         return {
             output: {
                 text: answer.text,
                 finishReason: answer.finishReason,
-                llm_messages: answer.response.messages
+                llm_messages: answer.response.messages,
             },
             input: {
                 messages,
@@ -62,11 +61,9 @@ class Builder {
         return await this.Data.pushAnswer(answer);
     }
     async #build() {
-        const tools = this.Tools;
-        const [agent, history] = await Promise.all([
-            this.Data.getAgent(),
-            this.Data.getHistory(),
-        ]);
+        const [agent, history] = await Promise.all([this.Data.getAgent(), this.Data.getHistory()]);
+        const tools_of_agent = await this.Data.getTools(agent.id);
+        const tools = await agent_tools(tools_of_agent);
         const args = this.#getArgs({
             message: this.message,
             history,
@@ -77,18 +74,13 @@ class Builder {
             system_prompt: agent.config.prompt,
             message: this.message,
             args,
-            tools,
         });
         this.Data.setMessage({
             texts: new_messages,
         });
         const message = await this.Data.getMessage();
         const llm = new LLM(agent.llm_engine);
-        const messages = this.#parseMessagesToLLM(
-            system,
-            message.texts,
-            history,
-        );
+        const messages = this.#parseMessagesToLLM(system, message.texts, history);
         return {
             messages,
             llm,
@@ -107,9 +99,9 @@ class Builder {
         return [system_llm, ...history, ...user_messages];
     }
 
-    async #buildMessages({ system_prompt, message, args, tools }) {
-        const functionsPrompt = tools.get().to.prompt;
-        const functionsMessage = tools.get().to.message;
+    async #buildMessages({ system_prompt, message, args }) {
+        const functionsPrompt = system_tools;
+        const functionsMessage = message_tools;
         const system = await Text.processor({
             text: system_prompt,
             functions: functionsPrompt,
@@ -120,7 +112,7 @@ class Builder {
                 text: txt,
                 functions: functionsMessage,
                 args,
-            }),
+            })
         );
         const new_messages = await Promise.all(promises);
         return {
