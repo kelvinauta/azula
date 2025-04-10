@@ -10,6 +10,10 @@ class Message extends _Table {
             allowNull: false,
             primaryKey: true,
         },
+        role: {
+            type:  DataTypes.ENUM("user", "assistant", "developer", "system"),
+            allowNull: false,
+        },
         texts: {
             type: DataTypes.JSON,
             allowNull: false,
