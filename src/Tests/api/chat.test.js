@@ -1,117 +1,44 @@
-import { describe, test, expect, beforeAll } from "bun:test";
-import { v4 as uuidv4 } from "uuid";
-import Provider from "../../Facades/data/Channel/db/provider";
-import AgentFactory from "../../Facades/data/Channel/db/factory/AgentFactory";
-import Agent from "../../Facades/data/Channel/db/tables/Agents";
-
-describe("Chat API Tests", () => {
-    let testAgent;
-    const CHANNEL_ID = uuidv4();
-    const API_URL = "http://localhost:3333";
-
-    beforeAll(async () => {
-        // Configurar base de datos
-        await Provider.build();
-
-        // Crear agente de prueba
-        const agentInstance = await Agent.getInstance();
-        const factory = new AgentFactory(agentInstance);
-
-        testAgent = await factory.simple({
-            name: `memory-test-agent-${uuidv4()}`,
-            description: "Agente para pruebas de memoria conversacional",
-            config: {
-                prompt: "Eres un asistente amigable. Tu trabajo es recordar la información personal que los usuarios te comparten y usarla cuando sea relevante en la conversación. Debes ser preciso al recordar nombres y detalles.",
-            },
-            llm_engine: {
-                model: "gpt-3.5-turbo",
-                provider: "openai",
-                max_tokens: 256,
-                temperature: 0.7,
-                api_key: process.env.OPENAI_API_KEY,
-            },
-            channel: CHANNEL_ID,
-        });
+async function request_azula(payload) {
+    const HOST = "localhost:3000";
+    const ENDPOINT = "v1/chat";
+    const URL = `${HOST}/${ENDPOINT}`;
+    return await fetch(URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
     });
-
-    test(
-        "Debe recordar el nombre completo del usuario",
-        async () => {
-            const chat_id = uuidv4();
-            const nombre_completo = "Rogelio Alberto Flores";
-
-            // Primera solicitud - Presentación
-            const start1 = performance.now();
-
-            const res1 = await fetch(`${API_URL}/v1/chat`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    context: {
-                        human: "test_human_remeber_my_name",
-                        chat: chat_id,
-                        channel: CHANNEL_ID,
-                        metadata: {
-                            name: "Test User",
-                        },
-                    },
-                    message: {
-                        texts: [`Hola, me llamo ${nombre_completo}`],
-                    },
-                }),
-            });
-
-            const end1 = performance.now();
-            console.log(
-                `⏱️ Primera solicitud completada en ${((end1 - start1) / 1000).toFixed(2)}s (${(end1 - start1).toFixed(2)}ms)`,
-            );
-
-            expect(res1.status).toBe(200);
-
-            // Segunda solicitud - Pregunta por el nombre
-            const start2 = performance.now();
-
-            const res2 = await fetch(`${API_URL}/v1/chat`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    context: {
-                        human: "test_human_remeber_my_name",
-                        chat: chat_id,
-                        channel: CHANNEL_ID,
-                        metadata: {
-                            name: "Test User",
-                        },
-                    },
-                    message: {
-                        texts: ["¿Cuál es mi nombre completo?"],
-                    },
-                }),
-            });
-
-            const end2 = performance.now();
-            console.log(
-                `⏱️ Segunda solicitud completada en ${((end2 - start2) / 1000).toFixed(2)}s (${(end2 - start2).toFixed(2)}ms)`,
-            );
-
-            expect(res2.status).toBe(200);
-
-            const response2 = await res2.json();
-            const respuesta_texto = response2.output.text.toLowerCase();
-
-            // Verificar que la respuesta contenga el nombre completo
-            expect(
-                respuesta_texto.includes(nombre_completo.toLowerCase()),
-            ).toBe(true);
-
-            console.log(
-                `⏱️ Tiempo total: ${((end2 - start1) / 1000).toFixed(2)}s (${(end2 - start1).toFixed(2)}ms)`,
-            );
+}
+describe("Endpoint Chat", () => {
+    const payload = {
+        context: {
+            human: "human_1",
+            channel: "default",
         },
-        { timeout: 30000 },
-    );
+        message: {
+            texts: ["This message is a test, just say: test done"],
+        },
+    };
+
+    test("wait to response of Agent and Agent response", async () => {
+        const response = await request_azula(payload);
+        const output = await response.json();
+        expect(response.ok).toBe(true);
+        expect(output.text).toEqual(expect.any(String));
+        expect(output.text).toMatch(/test done/i);
+    });
+    test("no waiting for response of agent, server respond with 200 instant", async () => {
+        const startTime = Date.now();
+        const response = await request_azula({
+            ...payload,
+            config: { wait: false },
+            message: {
+                texts: ["Escribe un ensayo de 2 páginas sobre Google"],
+            },
+        });
+        const output = await response.text();
+        const elapsed = Date.now() - startTime;
+        expect(elapsed).toBeLessThan(500); // WARN: respuesta en menos de 500ms
+        expect(response.status).toBe(200);
+        expect(output).toBeDefined();
+    });
 });

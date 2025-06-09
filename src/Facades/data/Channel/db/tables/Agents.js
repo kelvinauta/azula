@@ -1,15 +1,6 @@
 import _Table from "./_Table.js";
 import { DataTypes } from "sequelize";
-import {
-    object,
-    string,
-    define,
-    optional,
-    enums,
-    number,
-    defaulted,
-} from "superstruct";
-import isUuid from "is-uuid";
+import { z } from "zod";
 
 class Agent extends _Table {
     static attributes = {
@@ -51,22 +42,23 @@ class Agent extends _Table {
             allowNull: false,
         },
     };
-    static schema = {
-        id: optional(define("id", (value) => isUuid.v4(value))),
-        name: string(),
-        description: optional(string()),
-        config: object({
-            prompt: string(),
+    
+    static schema = z.object({
+        id: z.string().uuid().optional(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        config:z.object({
+            prompt: z.string(),
         }),
-        llm_engine: object({
-            model: string(),
-            provider: enums(["openai", "anthropic"]),
-            max_tokens: defaulted(number(), 256),
-            temperature: defaulted(number(), 1),
-            api_key: string(),
+        llm_engine: z.object({
+            model: z.string(),
+            provider: z.enum(["openai", "anthropic"]),
+            max_tokens: z.number().default(256),
+            temperature: z.number().default(1),
+            api_key: z.string()
         }),
-        channel: string(),
-    };
+        channel: z.string()
+    })
     static options = {
         paranoid: true,
     };
@@ -76,7 +68,8 @@ class Agent extends _Table {
     async getAgent(id) {
         const agent = await this.model.findOne({ where: { id } });
         if (!agent) throw new Error("Agent not found");
-        return agent;
+        const validatedAgent = Agent.schema.parse(agent.dataValues);
+        return validatedAgent;
     }
 }
 export default Agent;

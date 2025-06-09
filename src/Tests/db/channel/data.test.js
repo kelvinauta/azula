@@ -1,6 +1,6 @@
 import { test, beforeAll, expect } from "bun:test";
 import { v4 as uuidv4 } from "uuid";
-import Data from "../../../Facades/db";
+import Data from "../../../Facades/data";
 import AgentFactory from "../../../Facades/data/Channel/db/factory/AgentFactory";
 import Agent from "../../../Facades/data/Channel/db/tables/Agents";
 import Provider from "../../../Facades/data/Channel/db/provider";

@@ -1,8 +1,8 @@
 import SQLite from "../adapters/sqlite";
 import Postgres from "../adapters/postgres";
 import { DataTypes, Model } from "sequelize";
-import { assert, define, object, string } from "superstruct";
 import isUuid from "is-uuid";
+import { z } from "zod";
 let DB_ADAPTER;
 if (process.env.DB_ADAPTER == "postgres") DB_ADAPTER = Postgres;
 if (process.env.DB_ADAPTER == "sqlite") DB_ADAPTER = SQLite;
@@ -21,9 +21,12 @@ class _Table {
     static options = {
         paranoid: true,
     };
-    static schema = {
-        id: define("id", (value) => isUuid(value)),
-    };
+    static schema = z.object({
+        id: z.string().refine((value) => isUuid.v4(value), {
+            message: "Invalid UUID",
+        }),
+    });
+    
     static async getInstance(params) {
         if (this.name === _Table.name) throw new Error("Table cannot be instantiated");
         if (this.instance) return this.instance;
@@ -48,12 +51,12 @@ class _Table {
         if (this.constructor.instance) return this.constructor.instance;
         if (params) {
             if (typeof params !== "object") throw new Error("Params must be an object");
-            const params_schema = object({
-                name: string(),
-                attributes: object(),
-                options: object(),
+            const params_schema = z.object({
+                name: z.string(),
+                attributes:  z.object({}).optional(),
+                options:  z.object({}).optional(),
             });
-            assert(params, params_schema);
+            params_schema.parse(params)
         }
         // logic
         this.db = this.constructor.db;

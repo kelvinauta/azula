@@ -24,7 +24,9 @@ class LLM {
                 name: z.string(),
                 description: z.string(),
                 strict: z.boolean().default(false).optional(),
-                parameters: z.object({}).passthrough(),
+                parameters: z.custom((val)=>{
+                    return val instanceof z.Schema
+                }),
                 execute: z.function(),
             },
         },
@@ -52,12 +54,9 @@ class LLM {
     }
 
     #build_tools(tools) {
-        const toolSchema = z.object(LLM.schema.input.tool);
-        const toolsSchema = z.array(toolSchema);
-        const validatedTools = toolsSchema.parse(tools);
+        tools = z.array(z.object(LLM.schema.input.tool)).parse(tools)
         let new_tools = {};
-        for (const t of validatedTools) {
-            t.parameters = jsonSchema(t.parameters); // normalized jsonSchema compatible with ai/vercel
+        for (const t of tools) {
             new_tools[t.name] = tool(t);
         }
         return new_tools;

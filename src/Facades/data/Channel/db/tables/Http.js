@@ -1,8 +1,7 @@
 
 import _Table from "./_Table.js"
 import { DataTypes } from "sequelize"
-import { object, string, array, define, optional, assert } from "superstruct"
-import isUuid from "is-uuid"
+import { z } from "zod";
 
 class Http extends _Table {
     static attributes = {
@@ -45,16 +44,16 @@ class Http extends _Table {
         },
     };
 
-    static schema = {
-        id: optional(define("id", (value) => isUuid.v4(value))),
-        method: string(),
-        url: string(),
-        data_mode: optional(string()),
-        body_static: optional(object()),
-        params_static: optional(object()),
-        headers_static: optional(object()),
-        timeout: optional(string()),
-    };
+    static schema = z.object({
+        id:z.string().uuid().optional(),
+        method: z.string(),
+        url: z.string(),
+        data_mode: z.string().optional(),
+        body_static: z.object({}).optional(),
+        params_static: z.object({}).optional(),
+        headers_static: z.object({}).optional(),
+        timeout: z.string().optional(),
+    })
 
     constructor(...all) {
         super(...all);

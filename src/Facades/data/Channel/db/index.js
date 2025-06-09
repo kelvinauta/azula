@@ -5,19 +5,21 @@ import _Agent from "./tables/Agents.js";
 import _Chat from "./tables/Chats.js";
 import _Tool from "./tables/Tools.js";
 import _Http from "./tables/Http.js";
+import _WebHook from "./tables/Webhooks.js";
 /* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
 class _DB {
     static async getInstance() {
         await Provider.build();
-        const [Human, Message, Agent, Chat, Tool, Http] = await Promise.all([
+        const [Human, Message, Agent, Chat, Tool, Http, WebHook] = await Promise.all([
             _Human.getInstance(),
             _Message.getInstance(),
             _Agent.getInstance(),
             _Chat.getInstance(),
             _Tool.getInstance(),
             _Http.getInstance(),
+            _WebHook.getInstance(),
         ]);
-        const Tables = { Human, Message, Agent, Chat, Tool, Http };
+        const Tables = { Human, Message, Agent, Chat, Tool, Http, WebHook };
 
         return new _DB(Tables);
     }
@@ -28,19 +30,53 @@ class _DB {
         this.Chat = Tables.Chat;
         this.Tool = Tables.Tool;
         this.Http = Tables.Http;
+        this.WebHook = Tables.WebHook;
     }
     async getAgentByChannel(channel) {
+        // TODO: una sola sola consulta para agent y webhooks, associations
         const agent = await this.Agent.model.findOne({
             where: {
                 channel,
             },
+            include: [
+                {
+                    model: this.WebHook.model,
+                    attributes: [
+                        "id",
+                        "method",
+                        "body",
+                        "headers",
+                        "url",
+                        "event_listener",
+                        "_agent",
+                    ],
+                },
+            ],
+            attributes: ["id", "name", "description", "config", "channel", "llm_engine"],
         });
+
         return agent?.dataValues;
     }
     async getAgentDefault() {
         const agent = await this.Agent.touch_one({
             channel: "default",
+            include: [
+                {
+                    model: this.WebHook.model,
+                    attributes: [
+                        "id",
+                        "method",
+                        "body",
+                        "headers",
+                        "url",
+                        "event_listener",
+                        "_agent",
+                    ],
+                },
+            ],
+            attributes: ["id", "name", "description", "config", "channel", "llm_engine"],
         });
+
         return agent?.dataValues;
     }
     async getAgentById(agent_id) {
@@ -48,7 +84,23 @@ class _DB {
             where: {
                 id: agent_id,
             },
+            include: [
+                {
+                    model: this.WebHook.model,
+                    attributes: [
+                        "id",
+                        "method",
+                        "body",
+                        "headers",
+                        "url",
+                        "event_listener",
+                        "_agent",
+                    ],
+                },
+            ],
+            attributes: ["id", "name", "description", "config", "channel", "llm_engine"],
         });
+
         return agent?.dataValues;
     }
     async pushAnswer(answer, chat_id, agent_id, channel) {
@@ -188,6 +240,30 @@ class _DB {
         const tool = await this.Tool.model.create(newTool);
         return tool?.dataValues;
     }
+    async addWebhook(webhook_data, { create_agent_if_not_exist = false } = {}) {
+        const agent_id = webhook_data.agent_id;
+        delete webhook_data.agent_id;
+
+        if (create_agent_if_not_exist) {
+            await this.Agent.touch_one({
+                id: agent_id,
+            });
+        } else {
+            const agent = await this.Agent.model.findOne({
+                where: {
+                    id: agent_id,
+                },
+            });
+            if (!agent) throw new Error("Agent not found");
+        }
+
+        const webhook = await this.WebHook.model.create({
+            ...webhook_data,
+            _agent: agent_id,
+        });
+
+        return webhook.dataValues;
+    }
     async getToolsFromAgent(agent_id) {
         let tools = await this.Tool.model.findAll({
             where: {
@@ -197,6 +273,16 @@ class _DB {
         });
 
         return tools.map(({ dataValues }) => dataValues);
+    }
+    async getWebHookFromAgent(agent_id) {
+        let webhooks = await this.WebHook.model.findAll({
+            where: {
+                _agent: agent_id,
+            },
+            include: { model: this.Agent.model?.dataValues },
+        });
+
+        return webhooks.map(({ dataValues }) => dataValues);
     }
 }
 

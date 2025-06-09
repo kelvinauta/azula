@@ -1,49 +1,54 @@
-import { string, array, object, optional, assert, define } from "superstruct";
 import LLM from "../llm";
 import Data from "../data";
 import Text from "../text";
 import Tools from "./tools.js";
+import Webhooks from "./webhooks.js";
+import { z } from "zod";
 const { agent_tools, system_tools, message_tools } = Tools;
+const { builder_webhooks } = Webhooks;
 class Builder {
-    static input_schema = {
-        context: object({
-            chat: string(),
-            human: optional(string()),
-            agent: optional(string()),
-            channel: string(),
-            metadata: optional(
-                object({
-                    name: optional(string()),
-                    phone: optional(string()),
-                    profile_url: optional(string()),
-                })
-            ),
+    static input_schema = z.object({
+        context: z
+            .object({
+                chat: z.string(),
+                human: z.string(),
+                agent: z.string().optional(),
+                channel: z.string(),
+                metadata: z
+                    .object({
+                        name: z.string().optional(),
+                        phone: z.string().optional(),
+                        profile_url: z.string().optional(),
+                    })
+                    .optional(),
+            })
+            .refine((context) => Boolean(context.agent) || Boolean(context.human), {
+                message: "Human or Agent required",
+            }),
+        message: z.object({
+            texts: z.array(z.string()),
         }),
-        message: object({
-            texts: array(string()),
-        }),
-    };
+    });
     constructor({ context, message }) {
         this.context = context;
         this.message = message;
         if (!this.context.chat) {
             this.context.chat = `${this.context.channel}-${this.context.human}`;
         }
+        Builder.input_schema.parse({ context: this.context, message: this.message });
+
         this.answer = null;
         this.Data = new Data();
         this.Data.setContext(this.context);
     }
     async run() {
-        assert(this.context, Builder.input_schema.context);
-        assert(this.message, Builder.input_schema.message);
-        assert(
-            this.context,
-            define("Human or Agent required", (context) => {
-                return Boolean(context.agent) || Boolean(context.human);
-            })
-        );
-        const { messages, llm, tools } = await this.#build();
+        const { messages, llm, tools, agent } = await this.#build();
         const answer = await llm.generate_text(messages, tools);
+        this.#build_data_template(agent, answer, this.context);
+
+        // TODO: build_data_template build_webhook
+        // TODO: const run_webhooks = build_webhook(webhooks, data_template)
+        // TODO: trycatch: run_webhooks()
         this.answer = answer;
         return {
             output: {
@@ -63,6 +68,7 @@ class Builder {
     }
     async #build() {
         const [agent, history] = await Promise.all([this.Data.getAgent(), this.Data.getHistory()]);
+
         const tools_of_agent = await this.Data.getTools(agent.id);
         const tools = agent_tools(tools_of_agent);
         const args = this.#getArgs({
@@ -86,6 +92,7 @@ class Builder {
             messages,
             llm,
             tools,
+            agent,
         };
     }
     #parseMessagesToLLM(system, new_messages, history) {
@@ -120,6 +127,21 @@ class Builder {
             system,
             new_messages,
         };
+    }
+    #build_data_template(agent, answer, context) {
+        const webhookData = agent.Webhooks[0]?.dataValues;
+
+        const templateData = {
+            human: context.human,
+            channel: agent.channel,
+            answer: answer.text,
+        };
+
+        if (webhookData) {
+            builder_webhooks(webhookData, templateData);
+        } else {
+            console.log("webhookData is undefined");
+        }
     }
     #getArgs({ message, history, agent, context }) {
         return {

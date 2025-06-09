@@ -1,9 +1,8 @@
 FROM archlinux:latest
 RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm curl git base-devel unzip glibc
+    && pacman -S --noconfirm curl git base-devel unzip glibc python-distutils-extra sqlite sqlite3
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="/root/.bun/bin:$PATH"
-RUN pacman -S --noconfirm sqlite
 RUN useradd -m builder -G wheel
 RUN echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 USER builder

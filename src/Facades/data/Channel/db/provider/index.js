@@ -7,18 +7,24 @@ import Human from "../tables/Humans";
 import Message from "../tables/Messages";
 import Tools from "../tables/Tools";
 import Http from "../tables/Http";
-import { assert, define } from "superstruct";
+import WebHook from "../tables/Webhooks";
+import { z } from "zod";
 class Provider {
     static instance = null;
     static #instance_with_build = false;
     static #db_ok = false;
     static #sync_ok = false;
     static db_adapter = process.env.DB_ADAPTER || "sqlite";
-    static tables_schema = define("tables_schema", (tables) => {
-        if (typeof tables !== "object") return false;
-        if (!Object.values(tables).every((table) => table instanceof _Table)) return false;
-        return true;
-    });
+    static tables_schema = z
+        .record(z.any())
+        .refine(
+            (tables) =>
+                typeof tables === "object" &&
+                Object.values(tables).every((table) => table instanceof _Table),
+            {
+                message: "All tables must be objects and instances of _Table",
+            }
+        );
     static async build() {
         if (Provider.instance && Provider.#instance_with_build) return Provider.instance;
         Provider.#instance_with_build = true;
@@ -48,17 +54,20 @@ class Provider {
         const messages = await Message.getInstance();
         const tools = await Tools.getInstance();
         const http = await Http.getInstance();
+        const webhook = await WebHook.getInstance();
         const relations_many_to_many = [];
         messages.ref(agents);
         messages.ref(humans);
         messages.ref(chats);
         tools.ref(agents);
         tools.ref(http);
+        webhook.ref(agents);
         await agents.sync();
         await chats.sync();
         await humans.sync();
         await http.sync();
         await tools.sync();
+        await webhook.sync();
         await messages.sync();
         for (const relation of relations_many_to_many) {
             await relation.sync();
@@ -70,11 +79,12 @@ class Provider {
         this.tables[messages.get_name()] = messages;
         this.tables[tools.get_name()] = tools;
         this.tables[http.get_name()] = http;
+        this.tables[webhook.get_name()] = webhook;
         Provider.#sync_ok = true;
     }
     getTables() {
         if (!this.tables) throw new Error("Tables not built");
-        assert(this.tables, Provider.tables_schema);
+        Provider.tables_schema.parse(this.tables);
         return this.tables;
     }
 }

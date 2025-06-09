@@ -41,12 +41,21 @@ class Data {
         const agents = await DB.getAllAgents();
         return agents;
     }
+    
     async getAgent() {
-        let agent = this.context.agent
-            ? await DB.getAgentById(this.context.agent)
-            : await DB.getAgentByChannel(this.context.channel);
-        if (!agent) agent = await DB.getAgentDefault();
-        this.data.agent_id = agent.id;
+        let agent;
+        if (this.context.agent) {
+            agent = await DB.getAgentById(this.context.agent);
+        } else if (this.context.channel) {
+            agent = await DB.getAgentByChannel(this.context.channel);
+        } else {
+            agent = await DB.getAgentDefault();
+        }
+        if (agent) {
+            this.data.agent_id = agent.id;
+        }
+
+        
         return agent;
     }
     async getHistory() {
@@ -84,6 +93,12 @@ class Data {
     }
     async addTool(tool_data, http_data) {
         return await DB.addTool(tool_data, http_data);
+    }
+    async addWebhook(webhook){
+        return await DB.addWebhook(webhook);
+    }
+    async getWebhooks(agent_id) {
+        return await DB.getWebHookFromAgent(agent_id);
     }
     async getTools(agent_id) {
         return await DB.getToolsFromAgent(agent_id);

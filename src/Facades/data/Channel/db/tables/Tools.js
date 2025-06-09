@@ -1,7 +1,6 @@
-import _Table from "./_Table.js"
-import { DataTypes } from "sequelize"
-import { object, string, array, define, optional, assert } from "superstruct"
-import isUuid from "is-uuid"
+import _Table from "./_Table.js";
+import { DataTypes } from "sequelize";
+import { z } from "zod";
 
 class Tools extends _Table {
     static attributes = {
@@ -22,7 +21,7 @@ class Tools extends _Table {
         mode: {
             type: DataTypes.ENUM("source", "http"),
             allowNull: false,
-            defaultValue: "http"
+            defaultValue: "http",
         },
         source: {
             type: DataTypes.TEXT,
@@ -38,14 +37,14 @@ class Tools extends _Table {
         },
     };
 
-    static schema = {
-        id: optional(define("id", (value) => isUuid.v4(value))),
-        name: string(),
-        description: optional(string()),
-        source: string(),
-        dependencies: optional(array(string())),
-        parameters: optional(object()),
-    };
+    static schema = z.object({
+        id: z.string().uuid().optional(),
+        name: z.string(),
+        description: z.string().optional(),
+        source: z.string(),
+        dependencies: z.array(z.string()).optional(),
+        parameters: z.object({}).optional(),
+    });
 
     constructor(...all) {
         super(...all);

@@ -1,3 +1,6 @@
+# Requeriments:
+curl git unzip glibc python python-distutils-extra sqlite sqlite3
+
 # Documentación API Azula
 
 Esta documentación describe el uso de la API de Azula, una plataforma para la gestión de agentes conversacionales.

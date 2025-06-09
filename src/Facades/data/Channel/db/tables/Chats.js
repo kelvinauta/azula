@@ -1,8 +1,7 @@
 import _Table from "./_Table";
-import Messages from "./Messages"
+import Messages from "./Messages";
 import { DataTypes } from "sequelize";
-import { string, define, is, date, object, optional, assert } from "superstruct";
-import isUuid from "is-uuid";
+import { z } from "zod";
 class Chat extends _Table {
     static attributes = {
         id: {
@@ -24,21 +23,21 @@ class Chat extends _Table {
             allowNull: true,
         },
     };
-    static schema = {
-        id: optional(define("id", (value) => isUuid.v4(value))),
-        external_id: optional(string()),
-        channel: optional(string()),
-        last_interaction: optional(date()),
-    };
+
+    static schema = z.object({
+        id: z.string().uuid().optional(),
+        external_id: z.string().optional(),
+        channel: z.string().optional(),
+        last_interaction: z.date().optional(),
+    });
     static schema_strict = {
-        id: define("id", (value) => isUuid.v4(value)),
-        external_id: string(),
-        channel: string(),
-        last_interaction: optional(date()),
-    }
+        id: z.string().uuid().optional(),
+        external_id: z.string(),
+        channel: z.string(),
+        last_interaction: z.date().optional(),
+    };
     constructor(...all) {
         super(...all);
     }
-    
 }
 export default Chat;

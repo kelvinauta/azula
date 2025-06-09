@@ -1,7 +1,6 @@
 import _Table from "./_Table";
 import { DataTypes } from "sequelize";
-import { object, string, define, optional } from "superstruct";
-import isUuid from "is-uuid";
+import { z } from "zod";
 class Human extends _Table {
     static attributes = {
         id: {
@@ -20,12 +19,12 @@ class Human extends _Table {
             allowNull: true,
         },
     };
-    static schema = {
-        id: optional(define("id", (value) => isUuid.v4(value))),
-        external_id: optional(string()),
-        type: optional(string()),
-        info: optional(object()),
-    };
+    static schema = z.object({
+        id: z.string().uuid().optional(),
+        external_id: z.string().optional(),
+        type: z.string().optional(),
+        info: z.object({}).optional(),
+    });
     constructor(...all) {
         super(...all);
     }
