@@ -33,7 +33,6 @@ class _DB {
         this.WebHook = Tables.WebHook;
     }
     async getAgentByChannel(channel) {
-        // TODO: una sola sola consulta para agent y webhooks, associations
         const agent = await this.Agent.model.findOne({
             where: {
                 [Op.or]: [{ channel }, { channel: "default" }],
@@ -54,7 +53,6 @@ class _DB {
             ],
             attributes: ["id", "name", "description", "config", "channel", "llm_engine"],
         });
-
         return agent?.dataValues;
     }
     async getAgentDefault() {

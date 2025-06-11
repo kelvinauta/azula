@@ -34,7 +34,7 @@ class Agent extends _Table {
         llm_engine: {
             type: DataTypes.JSON,
             defaultValue: {
-                model: "gpt-4o",
+                model: "gpt-4.1-mini",
                 provider: "openai",
                 max_tokens: 256,
                 temperature: 1,
