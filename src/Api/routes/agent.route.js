@@ -28,7 +28,8 @@ export const agentRoute = (app) => {
         try {
             const data = new Data();
             const agents = await data.getAllAgents();
-            return c.json(agents);
+            const res = c.json(agents);
+            return res;
         } catch (error) {
             console.error("Error GET /v1/agents");
             return c.json({

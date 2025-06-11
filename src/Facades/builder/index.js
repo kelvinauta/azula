@@ -46,9 +46,6 @@ class Builder {
         const answer = await llm.generate_text(messages, tools);
         this.#build_data_template(agent, answer, this.context);
 
-        // TODO: build_data_template build_webhook
-        // TODO: const run_webhooks = build_webhook(webhooks, data_template)
-        // TODO: trycatch: run_webhooks()
         this.answer = answer;
         return {
             output: {
@@ -68,7 +65,10 @@ class Builder {
     }
     async #build() {
         const [agent, history] = await Promise.all([this.Data.getAgent(), this.Data.getHistory()]);
-
+        if (!agent)
+            throw new Error(
+                "There is no LLM agent that can answer this request; try creating one with channel=default."
+            );
         const tools_of_agent = await this.Data.getTools(agent.id);
         const tools = agent_tools(tools_of_agent);
         const args = this.#getArgs({
@@ -139,8 +139,6 @@ class Builder {
 
         if (webhookData) {
             builder_webhooks(webhookData, templateData);
-        } else {
-            console.log("webhookData is undefined");
         }
     }
     #getArgs({ message, history, agent, context }) {

@@ -1,5 +1,38 @@
-# Requeriments:
-curl git unzip glibc python python-distutils-extra sqlite sqlite3
+# Requisitos:
+curl git unzip glibc python gcc python-distutils-extra sqlite sqlite3
+
+# Uso Inicial:
+TLDR `bun run start --agents`
+
+## Crea tus primeros agentes
+Para que la API funcione necesita tener al menos un agente LLM que reponda, necesitas crear un agente manualmente, para ello puedes simplemente usar los Endpoints de creacion de agente o puedes compenzar con un template, al agregar la flag `--agents` al comando entonces le estás pidiendo al software que comience con un template, este template lo tomará de templates/start_template o tambien puedes setear uno personalizado en variables de entorno TEMPLATE_DIR.
+
+Notas:
+- Los agentes creados con `--agents` se guardan en DB, si hay conflictos por agents ya existentes en DB simplemente no sobrescribirá los ya existentes
+- un "Template Dir" es un directorio donde podras tener un template inicial de agentes, funciones y quiza otras configuraciones, guarda Template Dir en otro repositorio para que puedas clonarlo en el futuro
+
+Recomendacion al iniciar:
+- `cp -r templates/start_template /tmp/my/path`
+- Modifica env Var `TEMPLATE_DIR=/tmp/my/path`
+- Ponle un prompt a tu agente por defecto en $TEMPLATE_DIR/agents/default.md
+- Puedes crear los agentes que quieras en la carpeta agents
+- `bun run start --start`
+
+## Funciones js
+si usas la flag `--functions` entonces los archivos js de $TEMPLATE_DIR/functions podran ser accedido por todos tus agentes, de esa manera podrás usar simple javascript para poder crear Tools para tus AI.
+
+WARN: Ten en cuenta que estas funciones JS se ejecutan en el entorno actual por lo que debes tener cuidado de no permitir que el agente pueda hacer cambios a tu sistema o que los usuarios puedan injectar código malicioso.
+
+Notas:
+- Las tools tambien se pueden crear por API (Documentacion del endpoint /tools aun está pendiente)
+- `--functions` no guarda las funciones en DB por lo que cuando no uses esta flag esta funcion simplemente no estará disponible
+
+
+### Tipo de funciones
+Si observas el template de que está en la carpeta templates/example_dragon_ball_template verás que la carpeta functions tiene 3 carpetas: ai, messages. prompt, explicare cada uno.
+- ai: este es el mas importante y quizá el unico que necesitas, son aquellas tools que la AI es consciente de su existencia y puede usar para ejecutar, mira los comentarios de ai/index.js para mas informacion
+- prompt: estas funciones se usan al momento de usar una plantilla como esta: {{/now}} en el prompt de un agente, es decir, el agente LLM no es consciente de que existe este tipo de funciones ya que se reemplazan con el resultado de dicha funcion al momento de construir su prompt, por lo tanto por ejemplo si la funcion {{/now}} está en el prompt del agente el agente solo verá el resultado de dicha funcion o sea la fecha actual. Este tipo de funciones son utiles para tener un prompt dinamico que cambia segun el contexto y el momento de la consulta, tambien esta funcion tiene args especiales que pueden ser utiles, recomiendo mirar prompt/index.js y leer los comentarios
+- messages: es lo mismo que `prompt` solo que para los mensajes de usuarios en vez del prompt del agente
 
 # Documentación API Azula
 

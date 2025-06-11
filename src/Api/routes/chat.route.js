@@ -12,9 +12,17 @@ export const chatRoute = (app) => {
                 message: body.message,
             });
             if (!config.wait) {
-                builder.run().then((answer) => builder.saveAnswer(answer).catch(console.error));
+                builder
+                    .run()
+                    .then((answer) => builder.saveAnswer(answer).catch(console.error))
+                    .catch((err) => {
+                        c.status(500)
+                        return c.json(err)
+                    });
                 c.status(200);
-                return c.text("Your request is being processed");
+                return c.json({
+                    sucess: "Your request is being processed",
+                });
             } else {
                 const answer = await builder.run();
                 builder.saveAnswer(answer).catch(console.error);

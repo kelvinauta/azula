@@ -19,18 +19,4 @@ export const webhookRouter = (app) => {
             }
         }
     );
-
-    app.get("/v1/webhooks", async (c) => {
-        try {
-            const { agent_id } = c.req.query();
-            const data = new Data();
-            const webhooks = await data.getWebhooks(agent_id);
-            return c.json(webhooks);
-        } catch (error) {
-            console.error("Error GET /v1/webhooks");
-            return c.json({
-                error: error.message,
-            });
-        }
-    });
 };

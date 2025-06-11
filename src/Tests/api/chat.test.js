@@ -12,7 +12,7 @@ describe("Endpoint Chat", () => {
     const payload = {
         context: {
             human: "human_1",
-            channel: "default",
+            channel: "nodefault",
         },
         message: {
             texts: ["This message is a test, just say: test done"],
@@ -22,6 +22,7 @@ describe("Endpoint Chat", () => {
     test("wait to response of Agent and Agent response", async () => {
         const response = await request_azula(payload);
         const output = await response.json();
+        console.dir(output, { depth: null });
         expect(response.ok).toBe(true);
         expect(output.text).toEqual(expect.any(String));
         expect(output.text).toMatch(/test done/i);

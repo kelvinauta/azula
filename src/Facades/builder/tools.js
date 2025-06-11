@@ -1,3 +1,6 @@
+import Cli from "../../Cli";
+import get_template from "../../Start/get_template";
+import { z } from "zod";
 function builder_tools(tools_of_agent) {
     return tools_of_agent.map((tool) => _builder_tool(tool));
 }
@@ -50,17 +53,31 @@ function _build_mode_http(
     return request_http;
 }
 
-const default_tools = {
-    now: () => {
-        return new Date().toLocaleString();
-    },
-    context: (args) => {
-        return JSON.stringify(args.context, null, 2);
-    },
-};
+const default_tools = {};
 
-const agent_tools = builder_tools;
-const system_tools = default_tools;
-const message_tools = default_tools;
+let agent_tools = builder_tools;
+let system_tools = default_tools;
+let message_tools = default_tools;
 
+if (Cli.functions) {
+    // get from $TEMPLATE_DIR/functions
+    try {
+        const { functions } = await get_template();
+        system_tools = {
+            ...system_tools,
+            ...functions.prompt,
+        };
+        message_tools = {
+            ...message_tools,
+            ...functions.messages,
+        };
+        agent_tools = (tools) => {
+            const normal_tools = builder_tools(tools);
+            let template_tools = functions.ai;
+            return [...normal_tools, ...template_tools];
+        };
+    } catch (error) {
+        console.warn(error.message);
+    }
+}
 export default { agent_tools, system_tools, message_tools };

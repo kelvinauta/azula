@@ -1,19 +1,23 @@
-import template from "./get_template";
+import get_template from "./get_template";
 import Data from "../Facades/data";
-import Bulk from "../Facades/data/Rag";
-import Cli from "../Cli"
-const data = new Data()
+import Cli from "../Cli";
+const data = new Data();
 async function Start() {
     try {
-        if(!Cli.start) return
-        const { docs, agents } = await template();
-        const bulk = Bulk();
+        if (!Cli.agents) return;
+        let agents;
+        try {
+            agents = (await get_template()).agents;
+        } catch (error) {
+            console.error(error.message);
+            return;
+        }
         let promises = [];
-        promises.push(bulk.insert.many(docs));
-        agents.forEach(({ name, prompt }) =>
-            promises.push(data.addAgent({ name, prompt })),
-        );
-        await Promise.all(promises);
+        agents.forEach(async ({ name, prompt }) => {
+            await data.addAgent({ name, channel: name, prompt });
+            console.log(`Add Agent from template: ${name}`)
+        });
+
         return true;
     } catch (error) {
         console.error(error);

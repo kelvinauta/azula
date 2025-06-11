@@ -27,6 +27,7 @@ class LLM {
                 parameters: z.custom((val)=>{
                     return val instanceof z.Schema
                 }),
+                // parameters: z.any(),
                 execute: z.function(),
             },
         },

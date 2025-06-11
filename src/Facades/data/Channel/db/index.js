@@ -6,7 +6,7 @@ import _Chat from "./tables/Chats.js";
 import _Tool from "./tables/Tools.js";
 import _Http from "./tables/Http.js";
 import _WebHook from "./tables/Webhooks.js";
-/* TODO: Añadir un Proxy de cache para no consultar varias veces la base de datos para los chat_external_id*/
+const { Op } = require("sequelize");
 class _DB {
     static async getInstance() {
         await Provider.build();
@@ -36,7 +36,7 @@ class _DB {
         // TODO: una sola sola consulta para agent y webhooks, associations
         const agent = await this.Agent.model.findOne({
             where: {
-                channel,
+                [Op.or]: [{ channel }, { channel: "default" }],
             },
             include: [
                 {

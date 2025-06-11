@@ -79,11 +79,10 @@ class _Table {
     async sync() {
         this.#validate_db();
         this.constructor.is_synced = true;
-        const DEV_MODE = process.env.DEV_MODE === "true";
-        const DEV_DB_ALTER = process.env.DEV_DB_ALTER === "true";
+        const DELETE_AND_CREATE_DB_WHEN_START = process.env.DELETE_AND_CREATE_DB_WHEN_START  === "true";
         let model_sync;
-        if (DEV_MODE && DEV_DB_ALTER) {
-            console.warn("force overwrite table cause DEV_MODE and DEV_DB_ALTER env vars is true");
+        if (DELETE_AND_CREATE_DB_WHEN_START) {
+            console.warn("force overwrite table cause DELETE_AND_CREATE_DB_WHEN_START env vars is true");
             model_sync = await this.model.sync({ force: true });
         } else {
             model_sync = await this.model.sync();

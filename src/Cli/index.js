@@ -4,10 +4,12 @@ const { values } = parseArgs({
     strict: true,
     allowPositionals: true,
     options: {
-        start: {
+        agents: {
             type: "boolean",
-            short: "s",
         },
+        functions: {
+            type: "boolean"
+        }
     },
 });
 export default values;

@@ -17,7 +17,7 @@ class Postgres {
             dialect: "postgres",
             logging: false,
         };
-        const ssl_require = process.env.POSTGRES_SSL_REQUIRE;
+        const ssl_require = process.env.POSTGRES_SSL_REQUIRE === "true";
         if (ssl_require) {
             this.options.dialectOptions = {
                 dialectOptions: {

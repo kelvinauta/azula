@@ -29,6 +29,7 @@ class Agent extends _Table {
             type: DataTypes.STRING,
             defaultValue: "default",
             allowNull: false,
+            unique: true
         },
         llm_engine: {
             type: DataTypes.JSON,
