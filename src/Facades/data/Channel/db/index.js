@@ -261,15 +261,7 @@ class _DB {
             await this.Agent.touch_one({
                 id: agent_id,
             });
-        } else {
-            const agent = await this.Agent.model.findOne({
-                where: {
-                    id: agent_id,
-                },
-            });
-            if (!agent) throw new Error("Agent not found");
         }
-
         const webhook = await this.WebHook.model.create({
             ...webhook_data,
             _agent: agent_id,

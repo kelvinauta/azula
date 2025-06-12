@@ -156,7 +156,7 @@ class Builder {
         const template_data = {
             human: context.human,
             channel: agent.channel,
-            answer: jsesc(answer.text, { json: true, wrap: false }),
+            answer: answer.text
         };
         const webhooks_template = agent.Webhooks.map((wh) => wh.dataValues);
         const webhooks = webhooks_template.map((wh) => builder_webhooks(wh, template_data));
