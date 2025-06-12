@@ -1,4 +1,7 @@
 export default [
+    // ────────────────────────────────────────────────────────────
+    // Búsqueda de personajes de Dragon Ball (ejemplo original)
+    // ────────────────────────────────────────────────────────────
     {
         name: "search_character",
         description: "Search a character of Dragon Ball Z API",

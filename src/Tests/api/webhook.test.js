@@ -11,15 +11,22 @@ async function request_webhook(method, payload, agentIdQuery) {
 }
 
 describe("Endpoint Webhooks", () => {
-    const agent_id = "40cb5722-b85d-490c-9f5d-03a5d7ba2d66"; //TODO: static test
-    const payload = {
-        method: "POST",
-        body: JSON.stringify({ event: "test_event" }),
-        headers: JSON.stringify({ "Content-Type": "application/json" }),
-        url: "https://example.com/webhook",
-        event_listener: { answer: false },
-        agent_id,
-    };
+    const agent_id = "e80de033-da1c-41d4-9ae0-68524c0e1b4e"; //TODO: static test
+        const payload = {
+            method: "POST",
+            url: "https://www.uchat.com.au/api/subscriber/send-text",
+            headers: JSON.stringify({
+                accept: "application/json",
+                Authorization: `Bearer ${process.env.TEST_UCHAT_KEY}`,
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify({
+                user_ns: "{{human}}",
+                content: "{{answer}}",
+            }),
+            event_listener: { answer: false },
+            agent_id,
+        };
     test("POST /v1/webhooks", async () => {
         const response = await request_webhook("POST", payload);
         const output = await response.json();

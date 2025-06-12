@@ -169,7 +169,22 @@ class _DB {
         });
     }
     async getAllAgents() {
-        let agents = await this.Agent.model.findAll();
+        let agents = await this.Agent.model.findAll({
+            include: [
+                {
+                    model: this.WebHook.model,
+                    attributes: [
+                        "id",
+                        "method",
+                        "body",
+                        "headers",
+                        "url",
+                        "event_listener",
+                        "_agent",
+                    ],
+                },
+            ],
+        });
         agents = agents.map(({ dataValues }) => {
             delete dataValues.llm_engine.api_key;
             return dataValues;

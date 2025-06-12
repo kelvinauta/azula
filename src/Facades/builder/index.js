@@ -4,8 +4,10 @@ import Text from "../text";
 import Tools from "./tools.js";
 import Webhooks from "./webhooks.js";
 import { z } from "zod";
+import jsesc from "jsesc";
 const { agent_tools, system_tools, message_tools } = Tools;
 const { builder_webhooks } = Webhooks;
+
 class Builder {
     static input_schema = z.object({
         context: z
@@ -44,9 +46,9 @@ class Builder {
     async run() {
         const { messages, llm, tools, agent } = await this.#build();
         const answer = await llm.generate_text(messages, tools);
-        this.#build_data_template(agent, answer, this.context);
-
+        const webhooks = this.#build_webhooks(agent, answer, this.context);
         this.answer = answer;
+        this.webhooks = webhooks;
         return {
             output: {
                 text: answer.text,
@@ -63,6 +65,28 @@ class Builder {
     async saveAnswer(answer) {
         return await this.Data.pushAnswer(answer);
     }
+    execute_webhooks() {
+        const webhooks = this.webhooks;
+        if (!webhooks || !webhooks.length) return;
+        for (let index = 0; index < webhooks.length; index++) {
+            const webhook = webhooks[index];
+            if (!webhook.url) return;
+            if (!webhook.method) return;
+            console.log("Webhook:");
+            console.dir(webhook, { depth: null });
+            let config_fetch = {
+                method: webhook.method,
+            };
+            if (webhook.body && typeof webhook.body === "object")
+                config_fetch.body = JSON.stringify(webhook.body);
+            if (webhook.headers && typeof webhook.headers === "object")
+                config_fetch.headers = webhook.headers;
+            fetch(webhook.url, config_fetch)
+                .then(() => console.log("Webhook success"))
+                .catch(console.error);
+        }
+    }
+
     async #build() {
         const [agent, history] = await Promise.all([this.Data.getAgent(), this.Data.getHistory()]);
         if (!agent)
@@ -128,18 +152,15 @@ class Builder {
             new_messages,
         };
     }
-    #build_data_template(agent, answer, context) {
-        const webhookData = agent.Webhooks[0]?.dataValues;
-
-        const templateData = {
+    #build_webhooks(agent, answer, context) {
+        const template_data = {
             human: context.human,
             channel: agent.channel,
-            answer: answer.text,
+            answer: jsesc(answer.text),
         };
-
-        if (webhookData) {
-            builder_webhooks(webhookData, templateData);
-        }
+        const webhooks_template = agent.Webhooks.map((wh) => wh.dataValues);
+        const webhooks = webhooks_template.map((wh) => builder_webhooks(wh, template_data));
+        return webhooks;
     }
     #getArgs({ message, history, agent, context }) {
         return {

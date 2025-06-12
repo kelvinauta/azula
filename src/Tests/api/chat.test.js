@@ -11,8 +11,8 @@ async function request_azula(payload) {
 describe("Endpoint Chat", () => {
     const payload = {
         context: {
-            human: "human_1",
-            channel: "nodefault",
+            human: "f62083u300269395",
+            channel: "default",
         },
         message: {
             texts: ["This message is a test, just say: test done"],

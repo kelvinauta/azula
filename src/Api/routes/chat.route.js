@@ -16,9 +16,10 @@ export const chatRoute = (app) => {
                     .run()
                     .then((answer) => builder.saveAnswer(answer).catch(console.error))
                     .catch((err) => {
-                        c.status(500)
-                        return c.json(err)
-                    });
+                        c.status(500);
+                        return c.json(err);
+                    })
+                    .finally(() => builder.execute_webhooks());
                 c.status(200);
                 return c.json({
                     sucess: "Your request is being processed",
@@ -26,6 +27,7 @@ export const chatRoute = (app) => {
             } else {
                 const answer = await builder.run();
                 builder.saveAnswer(answer).catch(console.error);
+                builder.execute_webhooks()
                 return c.json(answer.output);
             }
         } catch (error) {

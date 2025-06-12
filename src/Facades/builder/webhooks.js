@@ -1,28 +1,25 @@
+import { stringify } from "uuid";
+
 const Mustache = require("mustache");
 const { z } = require("zod");
-// webhookData = contenido de DataValues
-// keys_templates:[str]= [url. headers, body]
-// keys_json_parsed = [headers, body]
-// webhook_parsed={} este es un webhook ya procesado con objetos en vez de string
-// for keys_templates: webhook_parsed[key] = Mustache.render(webook_crudo[key], templateData)]
-// for keys_json_parsed = webhook_parsed[key] = JSON.parse(webhook_parsed[key])
-function builder_webhooks(webhookData, templateData) {
+function builder_webhooks(webhook_template, template_data) {
     const keys_templates = ["url", "headers", "body"];
     const keys_json_parsed = ["headers", "body"];
-
+    const keys_static = ["method"];
     let webhook_parsed = {};
 
     keys_templates.forEach((key) => {
-        const stringified = JSON.stringify(webhookData[key]);
-        const rendered = Mustache.render(stringified, templateData);
-        webhook_parsed[key] = JSON.parse(rendered);
+        const result = Mustache.render(webhook_template[key], template_data);
+        webhook_parsed[key] = result;
     });
 
     keys_json_parsed.forEach((key) => {
-        keys_templates[key] = keys_templates[key];
+        webhook_parsed[key] = JSON.parse(webhook_parsed[key]);
     });
-    console.log("Final webhook_parsed:", webhook_parsed);
 
+    keys_static.forEach((key) => {
+        webhook_parsed[key] = webhook_template[key];
+    });
     return webhook_parsed;
 }
 
