@@ -11,24 +11,21 @@ export const chatRoute = (app) => {
                 context: body.context,
                 message: body.message,
             });
-            if (!config.wait) {
-                builder
+            if (config.wait) {
+                const answer = await builder.run();
+                builder.saveAnswer(answer).catch(console.error);
+                builder.execute_webhooks();
+                return c.json(answer.output);
+            } else {
+                void builder
                     .run()
-                    .then((answer) => builder.saveAnswer(answer).catch(console.error))
-                    .catch((err) => {
-                        c.status(500);
-                        return c.json(err);
-                    })
+                    .then((answer) => builder.saveAnswer(answer))
+                    .catch(console.error)
                     .finally(() => builder.execute_webhooks());
                 c.status(200);
                 return c.json({
                     sucess: "Your request is being processed",
                 });
-            } else {
-                const answer = await builder.run();
-                builder.saveAnswer(answer).catch(console.error);
-                builder.execute_webhooks()
-                return c.json(answer.output);
             }
         } catch (error) {
             console.error("Error en /v1/chat:", error);
